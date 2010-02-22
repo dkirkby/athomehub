@@ -1,3 +1,3 @@
 class Device < ActiveRecord::Base
-  has_many :readings
+  has_many :samples
 end
