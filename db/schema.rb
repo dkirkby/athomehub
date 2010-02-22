@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100222232612) do
+ActiveRecord::Schema.define(:version => 20100222233026) do
 
   create_table "devices", :force => true do |t|
     t.boolean  "configured"
@@ -17,6 +17,15 @@ ActiveRecord::Schema.define(:version => 20100222232612) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "identifier"
+  end
+
+  create_table "samples", :force => true do |t|
+    t.integer  "seqno"
+    t.integer  "temperature"
+    t.integer  "lighting"
+    t.integer  "artificial"
+    t.integer  "power"
+    t.datetime "created_at"
   end
 
 end

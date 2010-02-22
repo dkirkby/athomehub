@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  device_id: 
+  seqno: 1
+  temperature: 1
+  lighting: 1
+  artificial: 1
+  power: 1
+
+two:
+  device_id: 
+  seqno: 1
+  temperature: 1
+  lighting: 1
+  artificial: 1
+  power: 1
