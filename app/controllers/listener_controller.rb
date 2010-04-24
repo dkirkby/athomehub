@@ -24,8 +24,8 @@ class ListenerController < ApplicationController
     if port == nil then
       Rails.logger.warn("No hub serial device found")
     else
-      # Start the listener in a spawned subprocess
-      listener = spawn(:nice=>1,:method=>fork) do
+      # Start the listener in a forked subprocess
+      listener = spawn({:nice=>1,:method=>:fork}) do
         # Open a serial connection to the hub device
         hub = SerialPort.new(port,115200)
         hub.read_timeout = -1 # don't wait for input
