@@ -26,12 +26,20 @@ class ListenerController < ApplicationController
     else
       # Start the listener in a forked subprocess
       listener = spawn({:nice=>1,:method=>:fork}) do
+        # Prepare a regexp parser
+        parser = Regexp.compile('^([0-9A-F]+) \[([0-9A-F]+)\] ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)(?: \*([0-9A-F]+))?$')
         # Open a serial connection to the hub device
         hub = SerialPort.new(port,115200)
         hub.read_timeout = -1 # don't wait for input
         while true do
           hub.readlines.each do |packet|
-            print packet
+            parseOK,deviceID,sequenceNumber,word0,word1,word2,word3,status = *(parser.match(packet.strip()))
+            if parseOK == nil then
+              print "Parse error: #{packet}"
+            else
+              print packet
+              #print "Received #{word0} #{word1} #{word2} #{word3} from #{deviceID}\n"
+            end
           end
           sleep 0.25
         end
