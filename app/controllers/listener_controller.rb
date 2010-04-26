@@ -31,13 +31,31 @@ class ListenerController < ApplicationController
         # Open a serial connection to the hub device
         hub = SerialPort.new(port,115200)
         hub.read_timeout = -1 # don't wait for input
+        partialPacket = ""
         while true do
           hub.readlines.each do |packet|
-            parseOK,deviceID,sequenceNumber,word0,word1,word2,word3,status = *(parser.match(packet.strip()))
-            if parseOK == nil then
-              print "Parse error: #{packet}"
+            # add any earlier partial packet
+            packet = partialPacket + packet
+            # need to make sure we have a complete packet here (a line might be split)
+            if packet[-1..-1] != "\n" then
+              partialPacket = packet
+              next
             else
-              print packet
+              packet.rstrip!
+              partialPacket = ""
+            end
+            parseOK,deviceID,sequenceNumber,word0,word1,word2,word3,status = *(parser.match(packet))
+            if parseOK == nil then
+              print "Parse error: #{packet}\n"
+            else
+              # perform string conversions
+              deviceID,sequenceNumber = deviceID.hex,sequenceNumber.hex
+              payload = [word0,word1,word2,word3].map { |x| x.to_i }
+              if deviceID > 0x8000 then
+                print "#{payload[0]} #{payload[1]}\n#{payload[2]} #{payload[3]}\n"
+              else
+                print "#{packet}\n"
+              end
               #print "Received #{word0} #{word1} #{word2} #{word3} from #{deviceID}\n"
             end
           end
