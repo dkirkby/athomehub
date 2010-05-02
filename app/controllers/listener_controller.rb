@@ -55,6 +55,15 @@ class ListenerController < ApplicationController
                 print "#{payload[0]} #{payload[1]}\n#{payload[2]} #{payload[3]} #{payload[4]}\n"
               else
                 print "#{packet}\n"
+                # this is where we write the new sample into the database
+                Sample.create(
+                  :seqno => sequenceNumber,
+                  :lighting => payload[0],
+                  :artificial => payload[1],
+                  :lighting2 => payload[2],
+                  :artificial2 => payload[3],
+                  :temperature => payload[4]
+                )
               end
               #print "Received #{word0} #{word1} #{word2} #{word3} from #{deviceID}\n"
             end
