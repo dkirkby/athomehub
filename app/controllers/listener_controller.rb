@@ -27,7 +27,7 @@ class ListenerController < ApplicationController
       # Start the listener in a forked subprocess
       listener = spawn({:nice=>1,:method=>:fork}) do
         # Prepare a regexp parser
-        parser = Regexp.compile('^([0-9A-F]+) \[([0-9A-F]+)\] ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)(?: \*([0-9A-F]+))?$')
+        parser = Regexp.compile('^([0-9A-F]+) \[([0-9A-F]+)\] ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)(?: \*([0-9A-F]+))?$')
         # Open a serial connection to the hub device
         hub = SerialPort.new(port,115200)
         hub.read_timeout = -1 # don't wait for input
@@ -44,15 +44,15 @@ class ListenerController < ApplicationController
               packet.rstrip!
               partialPacket = ""
             end
-            parseOK,deviceID,sequenceNumber,word0,word1,word2,word3,status = *(parser.match(packet))
+            parseOK,deviceID,sequenceNumber,word0,word1,word2,word3,word4,status = *(parser.match(packet))
             if parseOK == nil then
               print "Parse error: #{packet}\n"
             else
               # perform string conversions
               deviceID,sequenceNumber = deviceID.hex,sequenceNumber.hex
-              payload = [word0,word1,word2,word3].map { |x| x.to_i }
+              payload = [word0,word1,word2,word3,word4].map { |x| x.to_i }
               if deviceID > 0x8000 then
-                print "#{payload[0]} #{payload[1]}\n#{payload[2]} #{payload[3]}\n"
+                print "#{payload[0]} #{payload[1]}\n#{payload[2]} #{payload[3]} #{payload[4]}\n"
               else
                 print "#{packet}\n"
               end
