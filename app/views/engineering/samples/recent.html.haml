@@ -1,5 +1,8 @@
 %h1 Engineering::Samples#recent
 
+-if flash[:notice]
+	#error_msg= flash[:notice]
+
 %p Displaying most recent #{@nrecent} of #{@count} samples
 
 %table
