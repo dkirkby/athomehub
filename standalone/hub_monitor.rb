@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'serialport'
+require 'IRB'
 
 # Look for a hub serial device
 port = (Dir.glob("/dev/tty.usbserial-*") | Dir.glob("/dev/ttyusb*")).first
