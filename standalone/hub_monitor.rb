@@ -13,6 +13,7 @@ else
   print "\n\nConnected to #{port}...use ^C to disconnect\n\n"
   inputBuffer = ""
   stdin = IO::open($stdin.fileno)
+  # This probably won't work, but we'll try anyway
   stdin.fcntl(Fcntl::O_NONBLOCK)
   begin
     while true do
@@ -21,6 +22,7 @@ else
         print line
         if not inputBuffer.empty? then
           # repeat any partial line that got clobbered by the last print
+          # (this will only work if STDIN is unbuffered, which it probably isn't)
           print ">>#{inputBuffer}"
         end
       end
@@ -29,7 +31,8 @@ else
         while gotInput = stdin.read_nonblock(1)
           inputBuffer += gotInput
           if gotInput == "\n" then
-            print ">> Sending #{inputBuffer}\n"
+            print ">> Sending #{inputBuffer}"
+            hub.write(inputBuffer)
             inputBuffer = ""
           end
         end
