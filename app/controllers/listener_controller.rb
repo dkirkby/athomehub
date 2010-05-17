@@ -44,6 +44,12 @@ class ListenerController < ApplicationController
               packet.rstrip!
               partialPacket = ""
             end
+            # Parse a complete packet by splitting it into white-spaced separated
+            # tokens. The first token is the command and the rest are values.
+            cmd,*values = packet.split
+            puts "#{cmd} => #{values.join(',')}"
+            next
+            
             parseOK,deviceID,sequenceNumber,word0,word1,word2,word3,word4,status = *(parser.match(packet))
             if parseOK == nil then
               print "Parse error: #{packet}\n"
