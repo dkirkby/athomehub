@@ -13,10 +13,11 @@ else
   listener = spawn({:nice=>1,:method=>:fork}) do
     # Prepare a regexp parser
     parser = Regexp.compile('^([0-9A-F]+) \[([0-9A-F]+)\] ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)(?: \*([0-9A-F]+))?$')
-    # Open a serial connection to the hub device
+    # Open a serial connection to the hub device (which causes it to restart)
     hub = SerialPort.new(port,115200)
     hub.read_timeout = -1 # don't wait for input
     partialPacket = ""
+    starting = true
     while true do
       hub.readlines.each do |packet|
         # add any earlier partial packet
@@ -33,7 +34,20 @@ else
         # tokens. The first token is the command and the rest are values.
         cmd,*values = packet.split
         puts "#{cmd} => #{values.join(',')}"
-        next
+        if cmd != 'HUB' and starting then
+          # ignore anything in the serial buffer before the hub is restarted
+          next
+        end
+        starting = false
+        # HUB and LAM packets have the same format
+        if cmd == 'HUB' or cmd == 'LAM' then
+          # parse and validate the fields
+          serialNumber = values[0].hex
+          commitTimestamp = values[1].to_i
+          commitID = values[2]
+          modified = values[3]
+          puts serialNumber,commitTimestamp,commitID,modified
+        end
       end
       sleep 0.25
     end
