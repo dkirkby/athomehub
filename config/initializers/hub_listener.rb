@@ -43,9 +43,19 @@ else
         if cmd == 'HUB' or cmd == 'LAM' then
           # parse and validate the fields
           serialNumber = values[0].hex
-          commitTimestamp = values[1].to_i
+          commitTimestamp = Time.at(values[1].to_i)
           commitID = values[2]
-          modified = values[3]
+          if commitID.length != 40 then
+            Rails.logger.warn "Unexpected commit ID length in '#{commitID}'"
+          end
+          if values[3] == '0' then
+            modified = false
+          else
+            if values[3] != '1' then
+              Rails.logger.warn "Unexpected LAM modified field '#{values[3]}'"
+            end
+            modified = true
+          end
           puts serialNumber,commitTimestamp,commitID,modified
         end
       end
