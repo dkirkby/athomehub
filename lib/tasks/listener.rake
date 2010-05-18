@@ -1,18 +1,20 @@
+require 'hub_listener'
+
 namespace :listener do
   
   desc "Checks if a hub listener is already running"
   task :status do
-    puts "Checking the hub listener status..."
+    puts HubListener.instance.status
   end
   
   desc "Starts a new hub listener process"
   task :start => :environment do
-    puts "Starting the hub listener..."
+    HubListener.instance.start
   end
 
   desc "Stops a running hub listener process"
   task :stop do
-    puts "Stopping the hub listener..."
+    HubListener.instance.stop
   end
 
   desc "Restarts a running hub listener process"
