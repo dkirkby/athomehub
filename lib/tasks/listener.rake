@@ -9,7 +9,8 @@ namespace :listener do
   
   desc "Starts a new hub listener process"
   task :start => :environment do
-    HubListener.instance.start
+    include Spawn
+    HubListener.instance.start ENV['DEBUG']
   end
 
   desc "Stops a running hub listener process"
