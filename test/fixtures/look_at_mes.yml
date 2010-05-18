@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  serialNumber: MyString
+  commitDate: 2010-05-18 15:17:57
+  commitID: MyString
+  modified: false
+
+two:
+  serialNumber: MyString
+  commitDate: 2010-05-18 15:17:57
+  commitID: MyString
+  modified: false
