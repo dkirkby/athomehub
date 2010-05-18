@@ -105,22 +105,24 @@ class HubListener
     @starting = false
     # HUB and LAM messages have the same format
     if msgType == 'HUB' or msgType == 'LAM' then
+      lam = LookAtMe.new
       # parse and validate the fields
-      serialNumber = values[0].hex
-      commitTimestamp = Time.at(values[1].to_i)
-      commitID = values[2]
-      if commitID.length != 40 then
-        @logger.warn "Unexpected commit ID length #{commitID.length} in '#{commitID}'"
+      lam.serialNumber = sprintf "%08x",values[0].hex
+      lam.commitDate = Time.at(values[1].to_i)
+      lam.commitID = values[2]
+      if lam.commitID.length != 40 then
+        @logger.warn "Unexpected commit ID length #{lam.commitID.length} in '#{lam.commitID}'"
       end
       if values[3] == '0' then
-        modified = false
+        lam.modified = false
       else
         if values[3] != '1' then
           @logger.warn "Unexpected LAM modified field '#{values[3]}'"
         end
-        modified = true
+        lam.modified = true
       end
-      @logger.info sprintf("%08x %s %s %s",serialNumber,commitTimestamp,commitID,modified)
+      # save this message in the db
+      lam.save
     end
   end
   
