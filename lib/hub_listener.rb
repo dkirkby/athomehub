@@ -97,7 +97,7 @@ class HubListener
     self.cleanup
   end
   
-  protected
+protected
   
   # Cleans up any old PID file and removes any record of a running process
   def cleanup

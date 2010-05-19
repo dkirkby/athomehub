@@ -1,0 +1,21 @@
+%h1 Engineering::LookAtMe#recent
+
+-if flash[:notice]
+	#error_msg= flash[:notice]
+
+%p Displaying most recent #{@nrecent} of #{@count} samples
+
+%table
+	%tr
+		%th Timestamp
+		%th Serial #
+		%th Commit Date
+		%th Commit ID
+		%th Modified?
+	-@lams.reverse_each do |l|
+		%tr
+			%td=l.created_at
+			%td=l.serialNumber
+			%td=l.commitDate
+			%td=l.commitID
+			%td=l.modified
