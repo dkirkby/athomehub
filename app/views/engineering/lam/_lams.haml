@@ -1,0 +1,14 @@
+%table
+	%tr
+		%th Timestamp
+		%th Serial #
+		%th Commit Date
+		%th Commit ID
+		%th Modified?
+	-@lams.reverse_each do |l|
+		%tr
+			%td=l.created_at
+			%td=format_serialNumber(l)
+			%td=l.commitDate
+			%td=link_to_commitID(l)
+			%td=l.modified
