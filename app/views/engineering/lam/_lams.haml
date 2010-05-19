@@ -5,7 +5,7 @@
 		%th Commit Date
 		%th Commit ID
 		%th Modified?
-	-@lams.reverse_each do |l|
+	-@lams.each do |l|
 		%tr
 			%td=l.created_at
 			%td=format_serialNumber(l)

@@ -6,7 +6,7 @@ module Engineering::LamHelper
   end
   
   def link_to_commitID(lam)
-    link_to lam.commitID,"http://github.com/dkirkby/athomehub/commit/#{lam.commitID}" 
+    link_to lam.commitID,"http://github.com/dkirkby/athomeleaf/commit/#{lam.commitID}" 
   end
   
 end
