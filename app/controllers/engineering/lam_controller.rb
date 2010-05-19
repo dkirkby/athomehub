@@ -9,9 +9,9 @@ class Engineering::LamController < Engineering::ApplicationController
   end
 
   def bydate
-    @lams = LookAtMe.find(:all,
-      :conditions=>['created_at > ? and created_at < ?',@beginAt,@endAt],
-      :order=>'created_at DESC',:readonly=>true)
+    #@lams = LookAtMe.find(:all,
+    #  :conditions=>['created_at > ? and created_at < ?',@beginAt,@endAt],
+    #  :order=>'created_at DESC',:readonly=>true)
   end
 
   def active

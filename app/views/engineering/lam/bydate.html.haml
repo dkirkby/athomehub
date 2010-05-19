@@ -1,2 +1,6 @@
 %h1 Engineering::Lam#bydate
-%p Find me in app/views/engineering/lam/bydate.html.haml
+
+-if flash[:notice]
+	#error_msg= flash[:notice]
+
+%p="Displaying LAMs received for #{@ival}s, from #{@begin_at} to #{@end_at}"
