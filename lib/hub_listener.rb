@@ -64,13 +64,27 @@ class HubListener
       rescue
         puts "error while saving hub listener PID to #{@pidFile}"
       end
-      # wait a few seconds
-      sleep 3
-      # check that the hub reported its startup info
-      # ...
-      # detach the listener process so its does not become a zombie
-      Process.detach @pid
-      puts "bye"
+      # wait a few seconds for the hub to (re)start and send its LAM info
+      delay = 10
+      sleep delay
+      # check that we can find the hub's new LAM info in the db
+      recent = LookAtMe.find(:all,:conditions=>["created_at > ?",(delay+5).seconds.ago])
+      foundHub = false
+      recent.each do |lam|
+        if (lam.serialNumber.hex & 0x80000000) == 0x80000000 then
+          msg = "hub s/n #{lam.serialNumber}: commit #{lam.commitID} at #{lam.commitDate}"
+          msg += " (modified)" if lam.modified
+          puts msg
+          foundHub = true
+        end
+      end
+      if foundHub then
+        # detach the listener process so its does not become a zombie
+        Process.detach @pid
+      else
+        puts "hub did not register at startup...stopping"
+        self.stop
+      end
     end
   end
 
@@ -79,6 +93,7 @@ class HubListener
   def stop
     raise "no hub listener process is running" unless @pid
     Process.kill("INT",@pid)
+    puts "stopped hub listener PID #{@pid}"
     self.cleanup
   end
   
