@@ -1,10 +1,10 @@
-class Engineering::LamController < ApplicationController
+class Engineering::LamController < Engineering::ApplicationController
   
   before_filter :valid_n,:only=>:recent
   
   def recent
     @count = LookAtMe.count
-    @lams = LookAtMe.find(:all,:limit=>@nrecent,:order=>'created_at DESC',:readonly=>true)
+    @lams = LookAtMe.find(:all,:limit=>@n,:order=>'created_at DESC',:readonly=>true)
   end
 
   def bydate
@@ -14,18 +14,5 @@ class Engineering::LamController < ApplicationController
   end
 
 protected
-
-  # Validates params['n'] and uses it to set @nrecent
-  def valid_n
-    @nrecent = 10 # this is the default
-    if params.has_key? 'n'
-      value = params['n'].to_i
-      if value < 1 or value > 1000
-        flash[:notice] = "Invalid parameter n=#{params['n']}. Using #{@nrecent} instead."
-      else
-        @nrecent = value
-      end
-    end
-  end
 
 end
