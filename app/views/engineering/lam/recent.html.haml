@@ -15,7 +15,7 @@
 	-@lams.reverse_each do |l|
 		%tr
 			%td=l.created_at
-			%td=l.serialNumber
+			%td=format_serialNumber(l)
 			%td=l.commitDate
-			%td=l.commitID
+			%td=link_to_commitID(l)
 			%td=l.modified
