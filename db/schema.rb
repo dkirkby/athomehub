@@ -23,14 +23,6 @@ ActiveRecord::Schema.define(:version => 20100520154435) do
     t.string   "serialNumber"
   end
 
-  create_table "devices", :force => true do |t|
-    t.boolean  "configured"
-    t.string   "location"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "identifier"
-  end
-
   create_table "look_at_mes", :force => true do |t|
     t.string   "serialNumber"
     t.datetime "commitDate"
