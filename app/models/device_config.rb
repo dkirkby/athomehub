@@ -13,5 +13,11 @@ class DeviceConfig < ActiveRecord::Base
     
   validates_format_of :serialNumber, :with=>/^[0-9a-fA-F]{8}$/,
     :message=>"is invalid (expected 8 hex digits)"
+    
+  validate :min_less_than_max
+  
+  def min_less_than_max
+    errors.add_to_base("min temperature must be < max temperature") unless minTemperature < maxTemperature
+  end
 
 end
