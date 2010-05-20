@@ -15,7 +15,7 @@ class Engineering::ConfigController < ApplicationController
   def create
     @config = DeviceConfig.new(params[:device_config])
     if @config.save
-      flash[:notice] = 'DeviceConfig was successfully created.'
+      flash[:notice] = 'Device configuration was successfully created.'
       redirect_to :action=>"index"
     else
       render :action=>"new"
@@ -26,7 +26,7 @@ class Engineering::ConfigController < ApplicationController
     @config = DeviceConfig.find(params[:id])
     if @config.update_attributes(params[:device_config])
       flash[:notice] = 'Device configuration was successfully updated.'
-      redirect_to :action=>index
+      redirect_to :action=>"index"
     else
       render :action=>"edit"
     end
