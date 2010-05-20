@@ -9,7 +9,18 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100518221757) do
+ActiveRecord::Schema.define(:version => 20100520152645) do
+
+  create_table "device_configs", :force => true do |t|
+    t.string   "location"
+    t.integer  "networkID"
+    t.boolean  "lightingFeedback"
+    t.boolean  "temperatureFeedback"
+    t.decimal  "minTemperature",      :precision => 5, :scale => 2
+    t.decimal  "maxTemperature",      :precision => 5, :scale => 2
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "devices", :force => true do |t|
     t.boolean  "configured"
