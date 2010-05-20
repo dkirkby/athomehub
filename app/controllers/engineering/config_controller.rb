@@ -13,12 +13,12 @@ class Engineering::ConfigController < ApplicationController
   end
 
   def create
-    @config = DeviceConfig.new(params[:config])
+    @config = DeviceConfig.new(params[:device_config])
     if @config.save
       flash[:notice] = 'DeviceConfig was successfully created.'
-      redirect_to @config
+      redirect_to :action=>"index"
     else
-      render :action => "new"
+      render :action=>"new"
     end
   end
 
@@ -26,16 +26,16 @@ class Engineering::ConfigController < ApplicationController
     @config = DeviceConfig.find(params[:id])
     if @config.update_attributes(params[:config])
       flash[:notice] = 'DeviceConfig was successfully updated.'
-      redirect_to @config
+      redirect_to :action=>index
     else
-      render :action => "edit"
+      render :action=>"edit"
     end
   end
 
   def destroy
     @config = DeviceConfig.find(params[:id])
     @config.destroy
-    redirect_to engineering_configs_url
+    redirect_to :action=>"index"
   end
 
 end

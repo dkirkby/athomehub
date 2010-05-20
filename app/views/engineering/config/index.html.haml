@@ -1,28 +1,32 @@
 %h1 Engineering::Config#index
 
-%table
-  %tr
-    %th Location
-    %th Network ID
-    %th Lighting Feedback?
-    %th Temperature Feedback?
-    %th Min Temperature (F)
-    %th Max Temperature (F)
-    %th Serial Number
+-if flash[:notice]
+	#error_msg= flash[:notice]
 
--@configs.each do |config|
-  %tr
-    %th=h config.location
-    %th=h config.networkID
-    %th=h config.lightingFeedback
-    %th=h config.temperatureFeedback
-    %th=h config.minTemperature
-    %th=h config.maxTemperature
-    %th=h config.serialNumber
-    %th=link_to 'Show', config
-    %th=link_to 'Edit', edit_config_path(config)
-    %th=link_to 'Destroy', config, :confirm => 'Are you sure?', :method => :delete
+Displaying #{@configs.length} device configurations.
+
+%table
+	%tr
+		%th Location
+		%th Network ID
+		%th Lighting Feedback?
+		%th Temperature Feedback?
+		%th Min Temperature (F)
+		%th Max Temperature (F)
+		%th Serial Number
+
+	-@configs.each do |c|
+		%tr
+			%td=h c.location
+			%td=h c.networkID
+			%td=h c.lightingFeedback
+			%td=h c.temperatureFeedback
+			%td=h c.minTemperature
+			%td=h c.maxTemperature
+			%td=h c.serialNumber
+			%td=link_to 'Edit', :action=>:edit, :id => c
+			%td=link_to 'Destroy', :id=>c, :confirm => 'Are you sure?', :method => :delete
 
 %br
 
-=link_to 'New Device Config', :action=> :new
+=link_to 'New Device Config', :action=>:new
