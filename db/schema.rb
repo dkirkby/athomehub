@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100520152645) do
+ActiveRecord::Schema.define(:version => 20100520154435) do
 
   create_table "device_configs", :force => true do |t|
     t.string   "location"
@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(:version => 20100520152645) do
     t.decimal  "maxTemperature",      :precision => 5, :scale => 2
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "serialNumber"
   end
 
   create_table "devices", :force => true do |t|
