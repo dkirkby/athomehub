@@ -24,8 +24,8 @@ class Engineering::ConfigController < ApplicationController
 
   def update
     @config = DeviceConfig.find(params[:id])
-    if @config.update_attributes(params[:config])
-      flash[:notice] = 'DeviceConfig was successfully updated.'
+    if @config.update_attributes(params[:device_config])
+      flash[:notice] = 'Device configuration was successfully updated.'
       redirect_to :action=>index
     else
       render :action=>"edit"

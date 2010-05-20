@@ -1,31 +1,9 @@
 %h1 New Device Configuration
 
--form_for(:device_config,@config,:url=>{:action=>"create"}) do |f|
-	= f.error_messages
+-form_for(:device_config,@config,:url=>{:action=>"create"}) do |@form|
+	= @form.error_messages
+	=render :partial => "form"
 	%p
-		Serial Number (8 hex digits):
-		= f.text_field :serialNumber, :size=>8
-		Network ID (0-255):
-		= f.text_field :networkID, :size=>3
-	%p
-		Location (must be unique)
-		%br
-		= f.text_field :location, :size=>40
-	%p
-		Capabilities		
-		%br
-		= f.check_box :lightingFeedback
-		lighting feedback
-		= f.check_box :temperatureFeedback
-		temperature feedback
-	%p
-		Temperature comfort zone
-		%br
-		Minimum (F):
-		= f.text_field :minTemperature, :size=>6
-		Maximum (F):
-		= f.text_field :maxTemperature, :size=>6
-	%p
-		= f.submit 'Create'
+		= @form.submit 'Create'
 
 = link_to 'Back', :action => :index
