@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  location: MyString
+  networkID: 1
+  lightingFeedback: false
+  temperatureFeedback: false
+  minTemperature: 9.99
+  maxTemperature: 9.99
+
+two:
+  location: MyString
+  networkID: 1
+  lightingFeedback: false
+  temperatureFeedback: false
+  minTemperature: 9.99
+  maxTemperature: 9.99
