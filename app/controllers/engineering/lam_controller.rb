@@ -5,7 +5,7 @@ class Engineering::LamController < Engineering::ApplicationController
   
   def recent
     @count = LookAtMe.count
-    @lams = LookAtMe.find(:all,:limit=>@n,:order=>'created_at DESC',:readonly=>true)
+    @lams = LookAtMe.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
   end
 
   def bydate
@@ -15,6 +15,7 @@ class Engineering::LamController < Engineering::ApplicationController
   end
 
   def active
+    @lams = LookAtMe.find(:all,:group=>'serialNumber',:readonly=>true)
   end
 
 protected

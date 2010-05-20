@@ -4,7 +4,7 @@ class Engineering::SamplesController < ApplicationController
 
   def recent
     @count = Sample.count
-    @samples = Sample.find(:all,:limit=>@nrecent,:order=>'created_at DESC',:readonly=>true)
+    @samples = Sample.find(:all,:limit=>@nrecent,:order=>'id DESC',:readonly=>true)
   end
 
   def bydate
