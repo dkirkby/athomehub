@@ -5,8 +5,8 @@ class CreateDeviceConfigs < ActiveRecord::Migration
       t.integer :networkID
       t.boolean :lightingFeedback
       t.boolean :temperatureFeedback
-      t.decimal :minTemperature
-      t.decimal :maxTemperature
+      t.decimal :minTemperature, :precision=>5, :scale=>2
+      t.decimal :maxTemperature, :precision=>5, :scale=>2
 
       t.timestamps
     end
