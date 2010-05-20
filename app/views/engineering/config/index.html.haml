@@ -25,7 +25,7 @@ Displaying #{@configs.length} device configurations.
 			%td=h c.maxTemperature
 			%td=h c.serialNumber
 			%td=link_to 'Edit', :action=>:edit, :id => c
-			%td=link_to 'Destroy', :id=>c, :confirm => 'Are you sure?', :method => :delete
+			%td=link_to 'Delete', {:action=>:destroy, :id=>c}, options=:confirm => 'Are you sure?'
 
 %br
 
