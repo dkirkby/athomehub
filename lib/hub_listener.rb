@@ -110,6 +110,42 @@ protected
     (Dir.glob("/dev/tty.usbserial-*") | Dir.glob("/dev/ttyusb*")).first
   end
 
+  # Handles a Look-at-Me message
+  def handleLAM(values)
+    lam = LookAtMe.new
+    # parse and validate the fields
+    lam.serialNumber = sprintf "%08x",values[0].hex
+    lam.commitDate = Time.at(values[1].to_i)
+    lam.commitID = values[2]
+    if lam.commitID.length != 40 then
+      @logger.warn "Unexpected commit ID length #{lam.commitID.length} in '#{lam.commitID}'"
+    end
+    if values[3] == '0' then
+      lam.modified = false
+    else
+      if values[3] != '1' then
+        @logger.warn "Unexpected LAM modified field '#{values[3]}'"
+      end
+      lam.modified = true
+    end
+    # save this message in the db
+    lam.save
+    # should we respond with a config message?
+    if not lam.is_hub? and lam.serialNumber != '00000000' then
+      config = DeviceConfig.find_by_serialNumber(lam.serialNumber)
+      if config then
+        config_msg = config.serialize_for_device
+        @logger.info "Sending config #{config_msg}"
+        @hub.write(config_msg)
+      else
+        @logger.warn "No config found for SN #{lam.serialNumber}"
+      end
+    end
+  end
+
+  def handleError(msg)
+  end
+
   # Handles a complete message received from the hub. Logging is via @logger.
   def handle(msg)
     # Split the message into whitespace-separated tokens. The first token
@@ -120,36 +156,9 @@ protected
     @starting = false
     # HUB and LAM messages have the same format
     if msgType == 'HUB' or msgType == 'LAM' then
-      lam = LookAtMe.new
-      # parse and validate the fields
-      lam.serialNumber = sprintf "%08x",values[0].hex
-      lam.commitDate = Time.at(values[1].to_i)
-      lam.commitID = values[2]
-      if lam.commitID.length != 40 then
-        @logger.warn "Unexpected commit ID length #{lam.commitID.length} in '#{lam.commitID}'"
-      end
-      if values[3] == '0' then
-        lam.modified = false
-      else
-        if values[3] != '1' then
-          @logger.warn "Unexpected LAM modified field '#{values[3]}'"
-        end
-        lam.modified = true
-      end
-      # save this message in the db
-      lam.save
-      # should we respond with a config message?
-      if not lam.is_hub? and lam.serialNumber != '00000000' then
-        config = DeviceConfig.find_by_serialNumber(lam.serialNumber)
-        if config then
-          puts "Found config with network ID #{config.networkID}"
-          config_msg = config.serialize_for_device
-          puts config_msg
-          @hub.write(config_msg)
-        else
-          puts "No config found for SN #{lam.serialNumber}"
-        end
-      end
+      handleLAM values
+    elsif msgType == 'ERROR' then
+      handleError msg
     else
       @logger.warn "Skipping unexpected hub message \"#{msg}\""
     end
