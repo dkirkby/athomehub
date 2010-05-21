@@ -71,7 +71,7 @@ class HubListener
       recent = LookAtMe.find(:all,:conditions=>["created_at > ?",(delay+5).seconds.ago])
       foundHub = false
       recent.each do |lam|
-        if (lam.serialNumber.hex & 0x80000000) == 0x80000000 then
+        if lam.is_hub? then
           msg = "hub s/n #{lam.serialNumber}: commit #{lam.commitID} at #{lam.commitDate}"
           msg += " (modified)" if lam.modified
           puts msg
