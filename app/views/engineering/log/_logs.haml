@@ -5,6 +5,6 @@
 		%th Message
 	-@logs.each do |l|
 		%tr
-			%td=l.created_at
+			%td=l.created_at.localtime
 			%td=l.code
 			%td=l.message

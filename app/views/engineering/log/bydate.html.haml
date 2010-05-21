@@ -3,6 +3,6 @@
 -if flash[:notice]
 	#error_msg= flash[:notice]
 
-%p Displaying #{@logs.length} LAMs received during the #{@ival}s from #{@begin_at} to #{@end_at}.
+%p Displaying #{@logs.length} LAMs received during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
 
 =render :partial => "logs"
