@@ -143,6 +143,28 @@ protected
     end
   end
 
+  # Handles a Data message
+  def handleData(values)
+    # do we have the expected number of values?
+    if values.length != 8 then
+      DeviceLog.create({:code=>-1,:value=>values.length})
+      return
+    end
+    networkID,seqno,status,*sampleValues = values
+    networkID = networkID.hex
+    seqno = seqno.hex
+    # did we drop any packets since the last one seen?
+    if @sequences[networkID] then
+      dropped = (seqno-@sequences[networkID])%256 - 1
+      if dropped > 0 then
+        DeviceLog.create({:code=>-2,:value=>dropped,:networkID=>networkID})
+        @logger.warn "Device #{networkID} dropped #{dropped} packets"
+      end
+    end
+    @sequences[networkID] = seqno
+    #Samples.create(...)
+  end
+
   # Handles a complete message received from the hub. Logging is via @logger.
   def handle(msg)
     # Split the message into whitespace-separated tokens. The first token
@@ -154,6 +176,8 @@ protected
     # HUB and LAM messages have the same format
     if msgType == 'HUB' or msgType == 'LAM' then
       handleLAM values
+    elsif msgType == 'DATA' then
+      handleData values
     elsif msgType == 'LOG' then
       log = DeviceLog.create({:code=>values[0],:value=>values[1]})
       @logger.info log.message
@@ -170,6 +194,9 @@ protected
     @hub = SerialPort.new(self.port,115200)
     @hub.read_timeout = -1 # don't wait for input
     partialMessage = ""
+    # The message handler will track the sequence numbers from each device
+    # in this array
+    @sequences = [ ]
     begin
       while true do
         @hub.readlines.each do |message|
