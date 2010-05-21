@@ -21,7 +21,19 @@ class DeviceConfig < ActiveRecord::Base
   end
 
   def serialize_for_device
-    "hello world\n"
+    # pack the bits describing this device's enabled capabilities
+    capabilities = 0
+    capabilities |= (1<<0) if temperatureFeedback
+    capabilities |= (1<<1) if lightingFeedback
+    # convert our decimal temperatures to 100xdegF
+    minTempFixed = (100*minTemperature).round
+    maxTempFixed = (100*maxTemperature).round
+    # pack our fields in a little-endian structure
+    packed = [networkID,capabilities,minTempFixed,maxTempFixed].pack("CCvv")
+    # serialize to hex digits
+    serialized = packed.unpack("C*").map! { |c| sprintf "%02x",c }.join
+    # add the command header and terminating newline
+    "C #{serialNumber} #{serialized}\n"
   end
 
 end
