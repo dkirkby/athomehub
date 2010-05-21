@@ -1,0 +1,10 @@
+%table
+	%tr
+		%th Timestamp
+		%th Code
+		%th Message
+	-@logs.each do |l|
+		%tr
+			%td=l.created_at
+			%td=l.code
+			%td=l.message
