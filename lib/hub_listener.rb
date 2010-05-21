@@ -143,9 +143,6 @@ protected
     end
   end
 
-  def handleError(msg)
-  end
-
   # Handles a complete message received from the hub. Logging is via @logger.
   def handle(msg)
     # Split the message into whitespace-separated tokens. The first token
@@ -157,8 +154,9 @@ protected
     # HUB and LAM messages have the same format
     if msgType == 'HUB' or msgType == 'LAM' then
       handleLAM values
-    elsif msgType == 'ERROR' then
-      handleError msg
+    elsif msgType == 'LOG' then
+      log = DeviceLog.create({:code=>values[0],:value=>values[1]})
+      @logger.info log.message
     else
       @logger.warn "Skipping unexpected hub message \"#{msg}\""
     end
