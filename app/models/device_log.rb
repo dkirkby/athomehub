@@ -3,6 +3,9 @@ class DeviceLog < ActiveRecord::Base
   before_validation :set_severity
   
   @@messages = {
+    -6=>[:warn,"Device received invalid config"],
+    -5=>[:info,"Device received updated config"],
+    -4=>[:info,"Device received initial config"],
     -3=>[:warn,"Device retransmitted %d times"],
     -2=>[:warn,"Device dropped %d packets"],
     -1=>[:error,"Device data with unexpected length %d"],

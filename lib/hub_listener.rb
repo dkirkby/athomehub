@@ -152,25 +152,38 @@ protected
     end
     # parse the message
     networkID,seqno,status,*sampleValues = values
-    seqno = seqno.hex
     networkID = networkID.hex
+    seqno = seqno.hex
     status = status.to_i
     sampleValues.map! { |v| v.to_i }
     # did we drop any packets since the last one seen?
     if @sequences[networkID] then
       dropped = (seqno-@sequences[networkID])%256 - 1
       if dropped > 0 then
-        DeviceLog.create({:code=>-2,:value=>dropped,:networkID=>networkID})
-        @logger.warn "Device #{networkID} dropped #{dropped} packets"
+        log = DeviceLog.create({:code=>-2,:value=>dropped,:networkID=>networkID})
+        @logger.warn log.message
       end
     end
     @sequences[networkID] = seqno
     # did we have to retransmit the last data message?
     retransmits = (status & 0x0f)
     if retransmits > 0 then
-      DeviceLog.create({:code=>-3,:value=>retransmits,:networkID=>networkID})
+      log = DeviceLog.create({:code=>-3,:value=>retransmits,:networkID=>networkID})
+      @logger.warn log.message
     end
-    # were there 
+    # did the device receive config data?
+    if (status & 0x10) != 0 then
+      log = DeviceLog.create({:code=>-4,:networkID=>networkID})
+      @logger.info log.message
+    end
+    if (status & 0x20) != 0 then
+      log = DeviceLog.create({:code=>-5,:networkID=>networkID})
+      @logger.info log.message
+    end
+    if (status & 0x40) != 0 then
+      log = DeviceLog.create({:code=>-6,:networkID=>networkID})
+      @logger.warn log.message
+    end
     #Samples.create(...)
   end
 
