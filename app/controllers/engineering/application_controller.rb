@@ -17,12 +17,12 @@ protected
   
   # Validates inputs params['ival'] and optional params['end'] and uses
   # them to set @ival to the number of seconds in the requested interval,
-  # and @begin_at and @end_at to DateTime objects that span the interval.
+  # and @begin_at and @end_at to Time objects that span the interval.
   def valid_ival
-    @end_at = DateTime.now()
+    @end_at = Time.now.utc
     if params.has_key? 'end' then
       begin
-        @end_at = DateTime.parse(params['end'])
+        @end_at = Time.parse(params['end']).utc
       rescue ArgumentError
         flash.now[:notice] = "Invalid parameter end=\'#{params['end']}\'. Using now (#{@end}) instead."
       end
