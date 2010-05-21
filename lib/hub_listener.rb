@@ -151,11 +151,11 @@ protected
       return
     end
     # parse the message
-    networkID,seqno,status,*sampleValues = values
+    networkID,seqno,status,*sampleData = values
     networkID = networkID.hex
     seqno = seqno.hex
     status = status.to_i
-    sampleValues.map! { |v| v.to_i }
+    sampleData.map! { |v| v.to_i }
     # did we drop any packets since the last one seen?
     if @sequences[networkID] then
       dropped = (seqno-@sequences[networkID])%256 - 1
@@ -184,7 +184,15 @@ protected
       log = DeviceLog.create({:code=>-6,:networkID=>networkID})
       @logger.warn log.message
     end
-    #Samples.create(...)
+    # Finally, write the sample values we received
+    Sample.create({
+      :networkID=>networkID,
+      :lighting=>sampleData[0],
+      :artificial=>sampleData[1],
+      :lighting2=>sampleData[2],
+      :artificial2=>sampleData[3],
+      :temperature=>sampleData[4]
+    })
   end
 
   # Handles a complete message received from the hub. Logging is via @logger.
