@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100520154435) do
+ActiveRecord::Schema.define(:version => 20100521184629) do
 
   create_table "device_configs", :force => true do |t|
     t.string   "location"
@@ -21,6 +21,13 @@ ActiveRecord::Schema.define(:version => 20100520154435) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "serialNumber"
+  end
+
+  create_table "device_logs", :force => true do |t|
+    t.integer  "code"
+    t.integer  "value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "look_at_mes", :force => true do |t|
