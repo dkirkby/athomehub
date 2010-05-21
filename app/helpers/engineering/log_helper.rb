@@ -1,0 +1,2 @@
+module Engineering::LogHelper
+end
