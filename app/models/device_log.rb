@@ -3,6 +3,9 @@ class DeviceLog < ActiveRecord::Base
   before_validation :set_severity
   
   @@messages = {
+    -3=>[:warn,"Device retransmitted %d times"],
+    -2=>[:warn,"Device dropped %d packets"],
+    -1=>[:error,"Device data with unexpected length %d"],
     0=> [:info,"Hub started normally"],
   	1=> [:fatal,"Hub is unable to initialize wireless link"],
   	2=> [:error,"Unexpected hub data received in pipeline P%d"],
