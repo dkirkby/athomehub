@@ -3,6 +3,6 @@
 -if flash[:notice]
 	#error_msg= flash[:notice]
 
-%p Displaying the most recent #{@n} of #{@count} device log messages.
+%p Displaying the most recent #{@n} of #{@count} device log messages with severity at least #{@level}.
 
 =render :partial => "logs"

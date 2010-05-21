@@ -12,6 +12,15 @@ class DeviceLog < ActiveRecord::Base
   	6=> [:error,"Hub serial input buffer overflowed (max %d bytes)"]
   }
 
+  @@levels = { :debug=> 0, :info=> 1, :warn=>2, :error=>3, :fatal=>4, :unknown=>9 }
+
+  # Returns the numeric severity level corresponding to a level name, or nil
+  # if the name is not recognize
+  def self.severity_level(name)
+    key = name.downcase.to_sym
+    @@levels[key] if @@levels.has_key? key
+  end
+
   # Returns a descriptive severity string
   def severity_string
     if @@messages.has_key? code then
@@ -33,8 +42,6 @@ class DeviceLog < ActiveRecord::Base
   end
   
 protected
-
-  @@levels = { :debug=> 0, :info=> 1, :warn=>2, :error=>3, :fatal=>4, :unknown=>9 }
 
   # Sets the severity field from the code. We do this, despite the redundancy,
   # to allow efficient queries for serious errors.
