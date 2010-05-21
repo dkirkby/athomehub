@@ -20,4 +20,8 @@ class DeviceConfig < ActiveRecord::Base
     errors.add_to_base("min temperature must be < max temperature") unless minTemperature < maxTemperature
   end
 
+  def serialize_for_device
+    "hello world\n"
+  end
+
 end

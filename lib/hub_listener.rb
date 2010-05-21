@@ -138,6 +138,20 @@ protected
       end
       # save this message in the db
       lam.save
+      # should we respond with a config message?
+      if not lam.is_hub? and lam.serialNumber != '00000000' then
+        config = DeviceConfig.find_by_serialNumber(lam.serialNumber)
+        if config then
+          puts "Found config with network ID #{config.networkID}"
+          config_msg = config.serialize_for_device
+          puts config_msg
+          @hub.write(config_msg)
+        else
+          puts "No config found for SN #{lam.serialNumber}"
+        end
+      end
+    else
+      @logger.warn "Skipping unexpected hub message \"#{msg}\""
     end
   end
   
@@ -146,12 +160,12 @@ protected
   # signal to request a clean shutdown. Logging message go to Rails.logger.
   def listen
     # Open a serial connection to the hub device
-    hub = SerialPort.new(self.port,115200)
-    hub.read_timeout = -1 # don't wait for input
+    @hub = SerialPort.new(self.port,115200)
+    @hub.read_timeout = -1 # don't wait for input
     partialMessage = ""
     begin
       while true do
-        hub.readlines.each do |message|
+        @hub.readlines.each do |message|
           # add any earlier partial message
           message = partialMessage + message
           # need to make sure we have a complete message since readlines will sometimes
