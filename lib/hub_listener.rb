@@ -150,9 +150,12 @@ protected
       DeviceLog.create({:code=>-1,:value=>values.length})
       return
     end
+    # parse the message
     networkID,seqno,status,*sampleValues = values
-    networkID = networkID.hex
     seqno = seqno.hex
+    networkID = networkID.hex
+    status = status.to_i
+    sampleValues.map! { |v| v.to_i }
     # did we drop any packets since the last one seen?
     if @sequences[networkID] then
       dropped = (seqno-@sequences[networkID])%256 - 1
@@ -162,6 +165,12 @@ protected
       end
     end
     @sequences[networkID] = seqno
+    # did we have to retransmit the last data message?
+    retransmits = (status & 0x0f)
+    if retransmits > 0 then
+      DeviceLog.create({:code=>-3,:value=>retransmits,:networkID=>networkID})
+    end
+    # were there 
     #Samples.create(...)
   end
 

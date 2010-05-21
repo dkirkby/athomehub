@@ -3,10 +3,12 @@
 		%th Timestamp
 		%th Code
 		%th Severity
+		%th Network ID
 		%th Message
 	-@logs.each do |l|
 		%tr
 			%td=l.created_at.localtime
 			%td=l.code
 			%td="#{l.severity_string} (#{l.severity})"
+			%td=l.networkID
 			%td=l.message
