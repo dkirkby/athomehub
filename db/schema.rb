@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100521233840) do
+ActiveRecord::Schema.define(:version => 20100522222640) do
 
   create_table "device_configs", :force => true do |t|
     t.string   "location"
@@ -48,6 +48,12 @@ ActiveRecord::Schema.define(:version => 20100521233840) do
     t.integer  "lighting2"
     t.integer  "artificial2"
     t.integer  "networkID"
+  end
+
+  create_table "users", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end
