@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100522222640) do
+ActiveRecord::Schema.define(:version => 20100522231344) do
 
   create_table "device_configs", :force => true do |t|
     t.string   "location"
@@ -37,6 +37,15 @@ ActiveRecord::Schema.define(:version => 20100522222640) do
     t.string   "commitID"
     t.boolean  "modified"
     t.datetime "created_at"
+  end
+
+  create_table "notes", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "view"
+    t.datetime "view_at"
+    t.text     "body"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "samples", :force => true do |t|
