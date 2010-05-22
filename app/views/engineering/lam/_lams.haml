@@ -1,13 +1,15 @@
 %table
 	%tr
 		%th Timestamp
+		%th Time Ago
 		%th Serial #
 		%th Commit Date
 		%th Commit ID
 		%th Modified?
 	-@lams.each do |l|
 		%tr
-			%td=l.created_at
+			%td=l.created_at.localtime
+			%td=time_ago_in_words l.created_at, true
 			%td=format_serialNumber(l)
 			%td=l.commitDate
 			%td=link_to_commitID(l)
