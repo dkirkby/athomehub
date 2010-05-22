@@ -5,6 +5,7 @@ class AthomeController < ApplicationController
   def index
     @samples = Sample.find(:all,:group=>'networkID',
       :conditions=>'networkID IS NOT NULL',:readonly=>true)
+    @note = Note.new
   end
   
   # Defines a replacement Sample class for demonstrating and testing
@@ -53,6 +54,7 @@ class AthomeController < ApplicationController
       DemoSample.new({:location=>"Master Bathroom",
         :temperature=>7241,:lighting=>74,:artificial=>43,:power=>1328,:cost=>0.731})
     ]
+    @note = Note.new
     render :action=>"index"
   end
   

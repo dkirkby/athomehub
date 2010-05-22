@@ -23,3 +23,10 @@
 		%li home
 		%li=link_to "help"
 		%li=link_to "settings"
+	#note
+		-form_for(@note,:url=>{:action=>"create_note"}) do |f|
+			=f.error_messages
+			=f.text_area :body
+			%p
+				=f.submit 'Create'
+		
