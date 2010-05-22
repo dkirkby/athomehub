@@ -8,9 +8,9 @@
 		%th Message
 	-@logs.each do |l|
 		%tr
-			%td=l.created_at.localtime
-			%td=time_ago_in_words l.created_at, true
-			%td=l.code
-			%td="#{l.severity_string} (#{l.severity})"
-			%td=l.networkID
-			%td=l.message
+			%td&=l.created_at.localtime
+			%td&=time_ago_in_words l.created_at, true
+			%td&=l.code
+			%td&="#{l.severity_string} (#{l.severity})"
+			%td&=l.networkID
+			%td&=l.message

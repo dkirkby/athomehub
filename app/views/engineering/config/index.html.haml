@@ -18,14 +18,14 @@ Displaying #{@configs.length} device configurations.
 
 	-@configs.each do |c|
 		%tr
-			%td="#{time_ago_in_words c.updated_at} ago"
-			%td=c.location
-			%td=c.networkID
-			%td=format_serialNumber c.serialNumber
-			%td=c.lightingFeedback
-			%td=c.temperatureFeedback
-			%td=c.minTemperature
-			%td=c.maxTemperature
+			%td&="#{time_ago_in_words c.updated_at} ago"
+			%td&=c.location
+			%td&=c.networkID
+			%td&=format_serialNumber c.serialNumber
+			%td&=c.lightingFeedback
+			%td&=c.temperatureFeedback
+			%td&=c.minTemperature
+			%td&=c.maxTemperature
 			%td=link_to 'Edit', :action=>:edit, :id => c
 			%td=link_to 'Delete', {:action=>:destroy, :id=>c}, options=:confirm => 'Are you sure?'
 

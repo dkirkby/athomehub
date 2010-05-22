@@ -8,9 +8,9 @@
 		%th Modified?
 	-@lams.each do |l|
 		%tr
-			%td=l.created_at.localtime
-			%td=time_ago_in_words l.created_at, true
-			%td=format_serialNumber l.serialNumber
-			%td=l.commitDate
+			%td&=l.created_at.localtime
+			%td&=time_ago_in_words l.created_at, true
+			%td&=format_serialNumber l.serialNumber
+			%td&=l.commitDate
 			%td=link_to_commitID(l)
-			%td=l.modified
+			%td&=l.modified
