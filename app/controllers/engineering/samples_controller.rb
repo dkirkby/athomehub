@@ -14,6 +14,11 @@ class Engineering::SamplesController < Engineering::ApplicationController
       :order=>'created_at DESC',:readonly=>true)
   end
   
+  def last
+    @samples = Sample.find(:all,:group=>'networkID',
+      :conditions=>'networkID IS NOT NULL',:readonly=>true)
+  end
+  
 protected
   
 end

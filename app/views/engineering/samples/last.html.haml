@@ -1,0 +1,8 @@
+%h1 Engineering::Sample#last
+
+-if flash[:notice]
+	#error_msg= flash[:notice]
+
+%p Displaying most recent samples from #{@samples.length} distinct devices.
+
+=render :partial => "samples"
