@@ -9,5 +9,8 @@ class Sample < ActiveRecord::Base
   def location
     self.config.location
   end
+  
+  def cost
+  end
 
 end

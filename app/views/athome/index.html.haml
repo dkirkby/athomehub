@@ -4,15 +4,19 @@
 	#body
 		%table
 			%tr
-				%th
+				%th.location
 				%th Temp
 				%th Light
 				%th Power
 				%th Cost
 			-@samples.each do |s|
 				%tr
-					%td&= s.location
-					%td&= sprintf "%.1fF",1e-2*s.temperature
-					%td&= sprintf "%d (%.0f%%)",s.lighting,1e2*s.artificial/s.lighting
-					%td&= sprintf "%.1fW",1e-1*s.power
-					%td&= sprintf "$%4.2f",s.cost
+					%td.location&= s.location
+					%td= sprintf "%.1f&deg;F",1e-2*s.temperature
+					%td= sprintf "%d (%.0f%%)",s.lighting,1e2*s.artificial/s.lighting
+					%td= s.power ? (sprintf "%.1fW",1e-1*s.power) : "&mdash;"
+					%td= s.cost ? (sprintf "$%4.2f",s.cost) : "&mdash;"
+	%ul#navigation
+		%li home
+		%li=link_to "help"
+		%li=link_to "settings"
