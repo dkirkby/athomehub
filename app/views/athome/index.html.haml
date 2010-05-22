@@ -26,7 +26,7 @@
 	#note
 		-form_for(@note,:url=>{:action=>"create_note"}) do |f|
 			=f.error_messages
-			=f.text_area :body
+			=f.text_area :body,:rows=>4
 			%p
-				=f.submit 'Create'
+				=f.submit 'save'
 		
