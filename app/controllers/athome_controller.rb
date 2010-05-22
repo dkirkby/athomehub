@@ -1,28 +1,3 @@
-# Define a replacement Sample class
-class DemoSample
-  def initialize(fields)
-    @fields = fields
-  end
-  def temperature
-    return @fields[:temperature]
-  end
-  def lighting
-    return @fields[:lighting]
-  end
-  def artificial
-    return @fields[:artificial]
-  end
-  def power
-    return @fields[:power]
-  end
-  def cost
-    return @fields[:cost]
-  end
-  def location
-    return @fields[:location]
-  end
-end
-
 class AthomeController < ApplicationController
 
   def index
@@ -30,6 +5,31 @@ class AthomeController < ApplicationController
       :conditions=>'networkID IS NOT NULL',:readonly=>true)
   end
   
+  # Defines a replacement Sample class for demonstrating and testing
+  class DemoSample
+    def initialize(fields)
+      @fields = fields
+    end
+    def temperature
+      return @fields[:temperature]
+    end
+    def lighting
+      return @fields[:lighting]
+    end
+    def artificial
+      return @fields[:artificial]
+    end
+    def power
+      return @fields[:power]
+    end
+    def cost
+      return @fields[:cost]
+    end
+    def location
+      return @fields[:location]
+    end
+  end
+
   # Returns fake data for demonstration and UI prototyping
   def demo
     # Declare some sample data
