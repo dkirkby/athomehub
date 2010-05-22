@@ -3,23 +3,6 @@
 -if flash[:notice]
 	#error_msg= flash[:notice]
 
-%p Displaying most recent #{@n} of #{@count} samples
+%p Displaying the most recent #{@n} of #{@count} samples.
 
-%table
-	%tr
-		%th Timestamp
-		%th Sequence #
-		%th Lighting (HI)
-		%th Artificial (HI)
-		%th Lighting (LO)
-		%th Artificial (LO)
-		%th Temperature (x100F)
-	-@samples.reverse_each do |s|
-		%tr
-			%td=s.created_at
-			%td=s.seqno
-			%td=s.lighting
-			%td=s.artificial
-			%td=s.lighting2
-			%td=s.artificial2
-			%td=s.temperature
+=render :partial => "samples"

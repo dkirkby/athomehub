@@ -1,0 +1,18 @@
+%table
+	%tr
+		%th Timestamp
+		%th Network ID
+		%th Lighting (HI)
+		%th Artificial (HI)
+		%th Lighting (LO)
+		%th Artificial (LO)
+		%th Temperature (x100F)
+	-@samples.reverse_each do |s|
+		%tr
+			%td=s.created_at
+			%td=s.networkID
+			%td=s.lighting
+			%td=s.artificial
+			%td=s.lighting2
+			%td=s.artificial2
+			%td=s.temperature
