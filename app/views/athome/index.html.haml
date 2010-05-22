@@ -1,2 +1,16 @@
 #content
-	Welcome to your uci@home hub
+	#header
+		Welcome to your hub@home
+	#body
+		%table
+			%tr
+				%th
+				%th Temp
+				%th Light
+				%th Power
+				%th Cost
+			-@samples.each do |s|
+				%tr
+					%td
+					%td&= sprintf "%.1fF",s.temperature
+					%td&= sprintf "%d / %d",s.lighting,s.artificial
