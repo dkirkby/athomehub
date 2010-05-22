@@ -3,8 +3,8 @@
 		Welcome to your hub@home
 	#body
 		#datetime
-			%span#date&= @at.localtime.strftime("%A %d %B")
-			%span#time&= @at.localtime.strftime("%I:%M%p")
+			%span#date= format_date @at
+			%span#time= format_time @at
 		%table
 			%tr
 				%th.location
