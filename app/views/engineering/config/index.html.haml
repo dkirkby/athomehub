@@ -7,23 +7,25 @@ Displaying #{@configs.length} device configurations.
 
 %table
 	%tr
+		%th Last Updated
 		%th Location
 		%th Network ID
+		%th Serial Number
 		%th Lighting Feedback?
 		%th Temperature Feedback?
 		%th Min Temperature (F)
 		%th Max Temperature (F)
-		%th Serial Number
 
 	-@configs.each do |c|
 		%tr
-			%td=h c.location
-			%td=h c.networkID
-			%td=h c.lightingFeedback
-			%td=h c.temperatureFeedback
-			%td=h c.minTemperature
-			%td=h c.maxTemperature
-			%td=h c.serialNumber
+			%td="#{time_ago_in_words c.updated_at} ago"
+			%td=c.location
+			%td=c.networkID
+			%td=format_serialNumber c.serialNumber
+			%td=c.lightingFeedback
+			%td=c.temperatureFeedback
+			%td=c.minTemperature
+			%td=c.maxTemperature
 			%td=link_to 'Edit', :action=>:edit, :id => c
 			%td=link_to 'Delete', {:action=>:destroy, :id=>c}, options=:confirm => 'Are you sure?'
 
