@@ -1,5 +1,7 @@
 class AthomeController < ApplicationController
 
+  before_filter :valid_at
+
   def index
     @samples = Sample.find(:all,:group=>'networkID',
       :conditions=>'networkID IS NOT NULL',:readonly=>true)
@@ -52,6 +54,25 @@ class AthomeController < ApplicationController
         :temperature=>7241,:lighting=>74,:artificial=>43,:power=>1328,:cost=>0.731})
     ]
     render :action=>"index"
+  end
+  
+protected
+
+  # Validates input params['at'] and sets @at. Value represents timestamp
+  # of when an action is run. If provided on input, the action will replay
+  # a historical view. Otherwise @at is set to a value that can be used
+  # for later replay of a current view.
+  def valid_at
+    # defaults to now
+    @at = Time.now.utc
+    # has a value been provided?
+    if params.has_key? 'at' then
+      begin
+        @at = Time.parse(params['at']).utc
+      rescue ArgumentError
+        flash.now[:notice] = "Invalid parameter at=\'#{params['end']}\'. Using now (#{@at}) instead."
+      end
+    end
   end
 
 end

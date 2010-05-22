@@ -22,13 +22,26 @@ body
     font-size: 36px
     margin-bottom: 12px
   #body
+    position: relative
     border= "8px" "solid" !contrast
     -webkit-border-radius= !radius
     -moz-border-radius= !radius
     background-color= !shade2
     font-size: 18px
+    #datetime
+      line-height: 18px
+      height: 22px
+      background-color= !contrast
+    #date
+      position: absolute
+      left: 8px
+    #time
+      position: absolute
+      right: 8px
     table
       width: 100%
+      th
+        border-bottom= 1px dotted !shade1
       .location
         text-align: right
   ul#navigation
