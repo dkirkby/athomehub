@@ -11,6 +11,8 @@
 				%th Cost
 			-@samples.each do |s|
 				%tr
-					%td&= s.config.location
+					%td&= s.location
 					%td&= sprintf "%.1fF",1e-2*s.temperature
 					%td&= sprintf "%d (%.0f%%)",s.lighting,1e2*s.artificial/s.lighting
+					%td&= sprintf "%.1fW",1e-1*s.power
+					%td&= sprintf "$%4.2f",s.cost
