@@ -7,7 +7,7 @@ class Sample < ActiveRecord::Base
     :readonly => true
 
   def location
-    self.config.location
+    config.location if config
   end
   
   def cost
