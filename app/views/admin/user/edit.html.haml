@@ -1,0 +1,9 @@
+%h1 Update Device Configuration
+
+-form_for(:user,:url=>{:action=>"update",:id=>@user}) do |@form|
+	= @form.error_messages
+	=render :partial => "form"
+	%p
+		= @form.submit 'Update'
+
+= link_to 'Back', :action => :index

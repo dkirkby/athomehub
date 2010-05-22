@@ -1,1 +1,22 @@
 %h1 Admin::User#index
+
+-if flash[:notice]
+	#error_msg= flash[:notice]
+
+Displaying #{@users.length} users.
+
+%table
+	%tr
+		%th Last Updated
+		%th Name
+
+	-@users.each do |u|
+		%tr
+			%td&="#{time_ago_in_words u.updated_at} ago"
+			%td&=u.name
+			%td=link_to 'Edit', :action=>:edit, :id => u
+			%td=link_to 'Delete', {:action=>:destroy, :id=>u}, options=:confirm => 'Are you sure?'
+
+%br
+
+=link_to 'Add New User', :action=>:new
