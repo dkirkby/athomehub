@@ -1,5 +1,6 @@
+/* see my hub@home theme1 at kuler.com */
 !contrast = #2C71B2
-!shade1 = #0A3B11
+!shade1 = #DED336
 !shade2 = #5D7A1E
 !shade3 = #959C2A
 !shade4 = #DED068
@@ -21,6 +22,7 @@ body
   #header
     font-size: 36px
     margin-bottom: 12px
+    color= !shade1
   #body
     position: relative
     border= "8px" "solid" !contrast
@@ -52,13 +54,14 @@ body
     li
       display: inline
       list-style-type: none
-      padding: 0 10px
+      padding: 0 14px
     a:link,a:visited
-      color= !shade2
+      color= !shade1
     a:hover,a:active
       color= !contrast
   #note
     font-size: 16px
+    font-style: italic
     color= !shade2
     background-color= !shade3
     textarea
@@ -66,6 +69,7 @@ body
       background-color: inherit
       color: inherit
       font-size: inherit
+      font-style: inherit
       width: 90%
     a:link,a:visited
       color: inherit
