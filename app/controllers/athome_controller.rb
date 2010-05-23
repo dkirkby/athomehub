@@ -9,6 +9,8 @@ class AthomeController < ApplicationController
   end
   
   def create_note
+    # remember this note taker as the current user
+    session[:user_id] = params['user_id'] if params.has_key? 'user_id'
     render :text=>params.inspect
   end
   
@@ -66,7 +68,7 @@ protected
 
   # Prepares an empty new note
   def new_note
-    Note.new({:body=>"Click to enter a new note..."})
+    Note.new({:body=>"Click to enter a new note...",:user_id=>session[:user_id]})
   end
 
   # Validates input params['at'] and sets @at. Value represents timestamp

@@ -29,10 +29,9 @@
 			=f.text_area :body,:rows=>4
 		#note-save
 		-if @note.user then
-			Save note as
-			=link_to_remote @note.user.name,:url=>{:action=>"create_note",:user_id=>@note.user.id},:update=>"note-response"
+			=link_to_remote "Save note as #{@note.user.name}",:url=>{:action=>"create_note",:user_id=>@note.user.id},:update=>"note-response"
 			&nbsp;
-			=link_to "(change)"
+			=link_to "(that's not me)"
 		-else
 			Save note as...
 			-User.all.each do |user|
