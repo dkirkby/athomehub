@@ -5,8 +5,7 @@ class AthomeController < ApplicationController
   def index
     @samples = Sample.find(:all,:group=>'networkID',
       :conditions=>'networkID IS NOT NULL',:readonly=>true)
-    @note = Note.new
-    #@note.user = User.find(3)
+    @note = new_note
   end
   
   def create_note
@@ -59,11 +58,16 @@ class AthomeController < ApplicationController
       DemoSample.new({:location=>"Master Bathroom",
         :temperature=>7241,:lighting=>74,:artificial=>43,:power=>1328,:cost=>0.731})
     ]
-    @note = Note.new
+    @note = new_note
     render :action=>"index"
   end
   
 protected
+
+  # Prepares an empty new note
+  def new_note
+    Note.new({:body=>"Click to enter a new note..."})
+  end
 
   # Validates input params['at'] and sets @at. Value represents timestamp
   # of when an action is run. If provided on input, the action will replay
