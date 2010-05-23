@@ -31,7 +31,7 @@
 			=f.text_area :body,:rows=>4
 		-if @note.user then
 			#save-for-user
-				=link_to_remote "Save note as #{@note.user.name}",:url=>{:action=>"create_note",:user_id=>@note.user.id},:update=>"note-response",:submit=>"note"
+				=link_to_remote "Save note as #{@note.user.name}",:url=>{:action=>"create_note",:user_id=>@note.user.id},:submit=>"note",:complete=>"$('note_body').setValue('Note saved. Click here to enter another one...');"
 				&nbsp;
 				=link_to_function "(that's not me)" do |page|
 					=page.hide("save-for-user")
@@ -40,6 +40,4 @@
 			Save note as...
 			-User.all.each do |user|
 				&nbsp;
-				=link_to_remote user.name,:url=>{:action=>"create_note",:user_id=>user.id},:update=>"note-response",:submit=>"note"
-		#note-response
-			Response goes here...
+				=link_to_remote user.name,:url=>{:action=>"create_note",:user_id=>user.id},:submit=>"note",:complete=>"$('note_body').setValue('Note saved. Click here to enter another one...');"

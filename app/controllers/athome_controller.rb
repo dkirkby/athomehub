@@ -9,9 +9,17 @@ class AthomeController < ApplicationController
   end
   
   def create_note
-    # remember this note taker as the current user
-    session[:user_id] = params['user_id'] if params.has_key? 'user_id'
-    render :text=>params.inspect
+    @note = Note.new(params[:note])
+    if params.has_key? 'user_id' then
+      @note.user_id = params['user_id']
+      # remember this note taker as the current user
+      session[:user_id] = params['user_id']
+    end
+    if @note.save then
+      render :text=>'ok'
+    else
+      render :text=>'error'
+    end
   end
   
   # Defines a replacement Sample class for demonstrating and testing
