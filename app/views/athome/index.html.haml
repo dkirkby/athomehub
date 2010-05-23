@@ -28,11 +28,10 @@
 		-form_for(@note,:url=>{:action=>"create_note"}) do |f|
 			=f.error_messages
 			=f.text_area :body,:rows=>4
-	#notesave
 		-if @note.user then
-			=link_to "Save as #{@note.user.name}"
+			=link_to "Save note as #{@note.user.name}"
 			=link_to "(change user)"
 		-else
-			Save as...
+			Save note as...
 			-User.all.each do |user|
 				=link_to user.name
