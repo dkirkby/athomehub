@@ -68,7 +68,12 @@ protected
 
   # Prepares an empty new note
   def new_note
-    Note.new({:body=>"Click to enter a new note...",:user_id=>session[:user_id]})
+    Note.new({
+      :body=>"Click to enter a new note...",
+      :view=>action_name,
+      :view_at=>@at,
+      :user_id=>session[:user_id]
+    })
   end
 
   # Validates input params['at'] and sets @at. Value represents timestamp

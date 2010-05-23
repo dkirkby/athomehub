@@ -26,10 +26,12 @@
 	#note
 		-form_for(@note,:url=>{:action=>"create_note"}) do |f|
 			=f.error_messages
+			=f.hidden_field :view
+			=f.hidden_field :view_at
 			=f.text_area :body,:rows=>4
 		#note-save
 		-if @note.user then
-			=link_to_remote "Save note as #{@note.user.name}",:url=>{:action=>"create_note",:user_id=>@note.user.id},:update=>"note-response"
+			=link_to_remote "Save note as #{@note.user.name}",:url=>{:action=>"create_note",:user_id=>@note.user.id},:update=>"note-response",:submit=>"note"
 			&nbsp;
 			=link_to "(that's not me)"
 		-else
