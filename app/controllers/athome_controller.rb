@@ -6,6 +6,11 @@ class AthomeController < ApplicationController
     @samples = Sample.find(:all,:group=>'networkID',
       :conditions=>'networkID IS NOT NULL',:readonly=>true)
     @note = Note.new
+    #@note.user = User.find(3)
+  end
+  
+  def create_note
+    render :text=>params.inspect
   end
   
   # Defines a replacement Sample class for demonstrating and testing

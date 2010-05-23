@@ -7,12 +7,14 @@ Displaying #{@users.length} users.
 
 %table
 	%tr
+		%th
 		%th Last Updated
 		%th Name
 		%th Notes
 
 	-@users.each do |u|
 		%tr
+			%td&=u.id
 			%td&="#{time_ago_in_words u.updated_at} ago"
 			%td&=u.name
 			%td&=u.notes.size
