@@ -29,15 +29,18 @@
 			=f.hidden_field :view
 			=f.hidden_field :view_at
 			=f.text_area :body,:rows=>4
-		-if @note.user then
-			#save-for-user
-				=link_to_remote "Save note as #{@note.user.name}",:url=>{:action=>"create_note",:user_id=>@note.user.id},:submit=>"note",:complete=>"$('note_body').setValue('Note saved. Click here to enter another one...');"
-				&nbsp;
-				=link_to_function "(that's not me)" do |page|
-					=page.hide("save-for-user")
-					=page.show("save-for-unknown")
 		#save-for-unknown(style="display:none")
 			Save note as...
 			-User.all.each do |user|
 				&nbsp;
-				=link_to_remote user.name,:url=>{:action=>"create_note",:user_id=>user.id},:submit=>"note",:complete=>"$('note_body').setValue('Note saved. Click here to enter another one...');"
+				=note_for_user_link user.name,user
+		-if @note.user then
+			#save-for-user
+				=note_for_user_link "Save note as #{@note.user.name}",@note.user
+				&nbsp;
+				=link_to_function "(that's not me)" do |page|
+					=page.hide("save-for-user")
+					=page.show("save-for-unknown")
+		-else
+			%script
+				$('save-for-unknown').show()
