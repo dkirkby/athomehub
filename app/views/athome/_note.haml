@@ -1,21 +1,26 @@
-#note-form
-	-form_for(@note,:url=>{:action=>"create_note"}) do |f|
-		=f.error_messages
-		=f.hidden_field :view
-		=f.hidden_field :view_at
-		=f.text_area :body,:rows=>4
-	#save-for-unknown(style="display:none")
-		Save note as...
-		-User.all.each do |user|
-			&nbsp;
-			=note_for_user_link user.name,user
-	-if @note.user then
-		#save-for-user
-			=note_for_user_link "Save note as #{@note.user.name}",@note.user
-			&nbsp;
-			=link_to_function "(that's not me)" do |page|
-				=page.hide("save-for-user")
-				=page.show("save-for-unknown")
-	-else
-		%script
-			$('save-for-unknown').show()
+-if @replay
+	&= "#{@note.user.name} wrote..."
+	#note-replay
+		&= @note.body
+-else
+	#note-form
+		-form_for(@note,:url=>{:action=>"create_note"}) do |f|
+			=f.error_messages
+			=f.hidden_field :view
+			=f.hidden_field :view_at
+			=f.text_area :body,:rows=>4
+		#save-for-unknown(style="display:none")
+			Save note as...
+			-User.all.each do |user|
+				&nbsp;
+				=note_for_user_link user.name,user
+		-if @note.user then
+			#save-for-user
+				=note_for_user_link "Save note as #{@note.user.name}",@note.user
+				&nbsp;
+				=link_to_function "(that's not me)" do |page|
+					=page.hide("save-for-user")
+					=page.show("save-for-unknown")
+		-else
+			%script
+				$('save-for-unknown').show()

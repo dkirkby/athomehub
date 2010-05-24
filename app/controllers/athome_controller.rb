@@ -75,14 +75,19 @@ class AthomeController < ApplicationController
   
 protected
 
-  # Prepares an empty new note
+  # Prepares an empty new note or retrieves note-id if specified
   def new_note
-    Note.new({
-      :body=>"Click to enter a new note...",
-      :view=>action_name,
-      :view_at=>@at,
-      :user_id=>session[:user_id]
-    })
+    if params.has_key? 'note_id' then
+      @replay = true
+      Note.find(params['note_id'])
+    else
+      Note.new({
+        :body=>"Click to enter a new note...",
+        :view=>action_name,
+        :view_at=>@at,
+        :user_id=>session[:user_id]
+      })
+    end
   end
 
   # Validates input params['at'] and sets @at. Value represents timestamp

@@ -3,6 +3,7 @@
 		%th ID
 		%th When
 		%th Who
+		%th Where
 		%th What
 
 	-@notes.each do |n|
@@ -10,5 +11,6 @@
 			%td&=n.id
 			%td&="#{time_ago_in_words n.created_at} ago"
 			%td&=n.user.name if n.user
+			%td&=n.view
 			%td&=truncate n.body
 			%td=link_to 'Show', :action=>:show, :id => n

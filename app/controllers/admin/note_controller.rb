@@ -14,4 +14,10 @@ class Admin::NoteController < Admin::ApplicationController
       :order=>'created_at DESC',:readonly=>true)
   end
 
+  def show
+    @note = Note.find(params[:id])
+    redirect_to :controller=>"/athome",:action=>@note.view,
+      :at=>@note.view_at,:note_id=>params[:id]
+  end
+
 end
