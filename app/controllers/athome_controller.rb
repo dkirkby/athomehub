@@ -16,9 +16,10 @@ class AthomeController < ApplicationController
       session[:user_id] = params['user_id']
     end
     if @note.save then
-      render :text=>'ok'
+      @note = new_note
+      render :partial=>"note"
     else
-      render :text=>'error'
+      render :text=>"Unable to save your note!"
     end
   end
   
