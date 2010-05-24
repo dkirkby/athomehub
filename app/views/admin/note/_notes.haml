@@ -14,5 +14,5 @@
 			%td&=n.user.name if n.user
 			%td&=n.view
 			%td&=n.view_at
-			%td&=truncate n.body
+			%td&=n.body.inspect
 			%td=link_to 'Show', :action=>:show, :id => n

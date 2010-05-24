@@ -1,7 +1,7 @@
 -if @replay
 	&= "#{@note.user.name} wrote..."
-	#note-replay
-		&= @note.body
+	#replay<
+		=find_and_preserve(@note.body)
 -else
 	#note-form
 		-form_for(@note,:url=>{:action=>"create_note"}) do |f|
