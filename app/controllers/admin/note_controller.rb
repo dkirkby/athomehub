@@ -17,7 +17,7 @@ class Admin::NoteController < Admin::ApplicationController
   def show
     @note = Note.find(params[:id])
     redirect_to :controller=>"/athome",:action=>@note.view,
-      :at=>@note.view_at,:note_id=>params[:id]
+      :at=>@note.view_at.utc,:note_id=>params[:id]
   end
 
 end

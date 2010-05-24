@@ -4,7 +4,8 @@ class AthomeController < ApplicationController
 
   def index
     @samples = Sample.find(:all,:group=>'networkID',
-      :conditions=>'networkID IS NOT NULL',:readonly=>true)
+      :conditions=>['networkID IS NOT NULL and created_at < ?',@at],
+      :readonly=>true)
     @note = new_note
   end
   
@@ -84,7 +85,7 @@ protected
       Note.new({
         :body=>"Click to enter a new note...",
         :view=>action_name,
-        :view_at=>@at,
+        :view_at=>@at.localtime,
         :user_id=>session[:user_id]
       })
     end
