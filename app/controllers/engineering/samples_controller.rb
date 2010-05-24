@@ -6,6 +6,10 @@ class Engineering::SamplesController < Engineering::ApplicationController
   def recent
     @count = Sample.count
     @samples = Sample.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
+    respond_to do |format|
+      format.html
+      format.text { render :text=> dump_by_device }
+    end
   end
 
   def bydate
