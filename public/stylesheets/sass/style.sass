@@ -10,15 +10,19 @@
 body
   margin: 0
   padding: 0
+  color= !shade4
   background-color= !shade3
   font-family: Arial, Verdana, Helvetica, sans-serif
+  text-align: center
+  a:link,a:visited
+    color= !shade1
+  a:hover,a:active
+    color= !contrast
 
 #content
   margin: 12px auto 0 auto
   padding: 36px 0
   width: 600px
-  text-align: center
-  color= !shade4
   #header
     font-size: 36px
     margin-bottom: 12px
@@ -55,10 +59,6 @@ body
       display: inline
       list-style-type: none
       padding: 0 14px
-    a:link,a:visited
-      color= !shade1
-    a:hover,a:active
-      color= !contrast
   #note
     font-size: 16px
     font-style: italic
