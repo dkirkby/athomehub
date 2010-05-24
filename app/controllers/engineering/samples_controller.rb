@@ -29,7 +29,6 @@ protected
     # initialize the data dump we will return
     dump = [ ]
     # loop over @samples, building separate arrays for each device
-    begin_at = Time.now
     by_device = { }
     @samples.each do |s|
       # create a new empty array when we first see a device
@@ -38,16 +37,13 @@ protected
       end
       # append this sample
       by_device[s.networkID] << s
-      # update the earliest sample time seen
-      begin_at = s.created_at if s.created_at < begin_at
     end
-    # dump the data by device
+    # dump the data by device with timestamps in localtime seconds since epoch
+    offset = Time.now.utc_offset
     by_device.each do |id,data|
       dump << "# Network ID #{id} has #{data.length} samples"
       data.each do |s|
-        # convert timestamp to hours since first sample
-        offset = (s.created_at.to_i - begin_at.to_i)/3600.0
-        dump << sprintf("%10.5f %6d %6d %6d %6d %7.2f",offset,
+        dump << sprintf("%d %6d %6d %6d %6d %7.2f",s.created_at.to_i+offset,
           s.lighting,s.artificial,s.lighting2,s.artificial2,1e-2*s.temperature)
       end
       # insert two blank lines between devices
