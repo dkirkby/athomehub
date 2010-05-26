@@ -5,8 +5,8 @@
 		%meta(http-equiv="content-type" content="text/html;charset=UTF-8")
 		%title="uci@home"
 		=stylesheet_link_tag 'style'
-		=javascript_include_tag 'jquery','application'
+		=javascript_include_tag 'jquery','application','athome'
 	%body
 		=yield
 	#back
-		=link_to_if request.env["HTTP_REFERER"],"Back",:back
+		=link_to request.env["HTTP_REFERER"],"Back",:back if request.env["HTTP_REFERER"]
