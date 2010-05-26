@@ -11,17 +11,15 @@ class AthomeController < ApplicationController
   
   def create_note
     @note = Note.new(params[:note])
-    if params.has_key? 'user_id' then
-      @note.user_id = params['user_id']
-      # remember this note taker as the current user
-      session[:user_id] = params['user_id']
-    end
-    if @note.save then
-      @note = new_note
-      render :partial=>"note"
+    # remember this note taker as the current user
+    session[:user_id] = @note.user_id
+    if @note.save
+      flash[:notice] = 'Note saved.'
     else
-      render :text=>"Unable to save your note!"
+      flash[:notice] = 'Unable to save note!'
     end
+    # re-run the previous action
+    redirect_to :back
   end
   
   # Defines a replacement Sample class for demonstrating and testing

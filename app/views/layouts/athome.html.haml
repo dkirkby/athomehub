@@ -9,4 +9,4 @@
 	%body
 		=yield
 	#back
-		=link_to request.env["HTTP_REFERER"],"Back",:back if request.env["HTTP_REFERER"]
+		=link_to("Back",:back) if request.env["HTTP_REFERER"]
