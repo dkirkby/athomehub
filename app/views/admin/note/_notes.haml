@@ -13,6 +13,6 @@
 			%td&="#{time_ago_in_words n.created_at} ago"
 			%td&=n.user.name if n.user
 			%td&=n.view
-			%td&=n.view_at
+			%td&=n.view_at.localtime if n.view_at
 			%td&=truncate n.body
 			%td=link_to 'Show', :action=>:show, :id => n
