@@ -14,12 +14,14 @@ class AthomeController < ApplicationController
     # remember this note taker as the current user
     session[:user_id] = @note.user_id
     if @note.save
-      flash[:notice] = 'Note saved.'
+      flash[:notice] = 'Note saved'
     else
       flash[:notice] = 'Unable to save note!'
     end
-    # re-run the previous action
-    redirect_to :back
+    respond_to do |format|
+      format.html { redirect_to :back }
+      format.text { render :text=>flash[:notice] }
+    end
   end
   
   # Defines a replacement Sample class for demonstrating and testing
