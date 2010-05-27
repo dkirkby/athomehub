@@ -20,7 +20,10 @@ class AthomeController < ApplicationController
     end
     respond_to do |format|
       format.html { redirect_to :back }
-      format.text { render :text=>flash[:notice] }
+      format.text do
+        render :text=>flash[:notice]
+        flash.discard
+      end
     end
   end
   

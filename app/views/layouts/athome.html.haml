@@ -8,5 +8,5 @@
 		=javascript_include_tag 'jquery','application','athome'
 	%body
 		=yield
-	#back
-		=link_to("Back",:back) if request.env["HTTP_REFERER"]
+		-if flash[:notice]
+			#flash&= flash[:notice]

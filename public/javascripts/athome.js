@@ -22,20 +22,27 @@ function updateNoteForm() {
       return false;
     });
   }
-  // replace the submit button with a link to an Ajax action
+  // replace the submit button with a link
+  $('#note_save').html("<a href='#'>Save</a>");
+  $('#note_save a').click(function() {
+    f.submit();
+    return false;
+  });  
+  // redefine the submit action to use Ajax
   f.submit(function(){
     $.post($(this).attr('action')+'.txt',$(this).serialize(),function(data) {
       // if the request is successful...
-      $('#note_save').html(data).delay(1000).fadeOut('fast',function() {
-        $('#note_body').val("Click again to enter another note...");
-        $('#note_save').html("<a href='#'>Save</a>").fadeIn();
-        $('#note_save a').click(function() {
-          f.submit();
-          return false;
-        })
+      // momentarily replace the submit link with create_note response
+      $('#note_save a').hide();
+      $('#note_save').append("<span>"+data+"</span>");
+      $('#note_save span').delay(1500).fadeOut('fast',function() {
+        $('#note_save span').remove();
+        $('#note_save a').show();
+        // update the message in the note textarea
+        $('#note_body').hide()
+          .val("Click again to enter another note...").fadeIn('fast');
       });
     },"text");
     return false; // don't actually submit this form
   });
-  
 }
