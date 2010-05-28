@@ -27,7 +27,21 @@ function updateNoteForm() {
   $('#note_save a').click(function() {
     f.submit();
     return false;
-  });  
+  });
+  // hide the text below the note textarea until the textarea is selected
+  $('#note_by').hide();
+  $('#note_save').hide();
+  $('#note_body').removeClass('active');
+  $('#note_body').focus(function(){
+    $('#note_body').addClass('active');
+    $('#note_by').show();
+    $('#note_save').show();
+  });
+  // select the textarea text if it still shows the initial prompt
+  var initialPrompt = $('#note_body')[0].defaultValue;
+  $('#note_body').click(function() {
+    if(this.value == initialPrompt) this.select();
+  });
   // redefine the submit action to use Ajax
   f.submit(function(){
     $.post($(this).attr('action')+'.txt',$(this).serialize(),function(data) {
@@ -39,8 +53,11 @@ function updateNoteForm() {
         $('#note_save span').remove();
         $('#note_save a').show();
         // update the message in the note textarea
-        $('#note_body').hide()
-          .val("Click again to enter another note...").fadeIn('fast');
+        $('#note_body').removeClass('active').val(initialPrompt);
+        // hide the text below the note textarea
+        $('#note_by').hide();
+        $('#note_save').hide();
+        $('#note_body').removeClass('active');
       });
     },"text");
     return false; // don't actually submit this form
