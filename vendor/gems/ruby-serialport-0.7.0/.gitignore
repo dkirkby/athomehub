@@ -1,0 +1,6 @@
+# ignore the files created by rake gem:build
+ext/Makefile
+ext/*.log
+ext/*.o
+ext/serialport.bundle
+lib/serialport.bundle

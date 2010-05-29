@@ -1,0 +1,84 @@
+--- !ruby/object:Gem::Specification 
+name: ruby-serialport
+version: !ruby/object:Gem::Version 
+  version: 0.7.0
+platform: ruby
+authors: 
+- "Guillaume Pierronnet, Alan Stern, Daniel E. Shipton, Jonas B\xC3\xA4hr"
+autorequire: 
+bindir: bin
+cert_chain: []
+
+date: 2009-01-10 00:00:00 -08:00
+default_executable: 
+dependencies: 
+- !ruby/object:Gem::Dependency 
+  name: echoe
+  type: :development
+  version_requirement: 
+  version_requirements: !ruby/object:Gem::Requirement 
+    requirements: 
+    - - ">="
+      - !ruby/object:Gem::Version 
+        version: "0"
+    version: 
+description: Ruby/SerialPort is a Ruby library that provides a class for using RS-232 serial ports.
+email: daniel.shipton.oss@gmail.com
+executables: []
+
+extensions: 
+- ext/extconf.rb
+extra_rdoc_files: 
+- ext/serialport.c
+- lib/serialport.rb
+- README
+files: 
+- ChangeLog
+- ext/extconf.rb
+- ext/serialport.c
+- ext/serialport.h
+- ext/impl/posix_serialport.c
+- ext/impl/win_serialport.c
+- lib/serialport.rb
+- LICENSE
+- Manifest
+- Rakefile
+- README
+- examples/miniterm.rb
+- ruby-serialport.gemspec
+has_rdoc: true
+homepage: http://ruby-serialport.rubyforge.org
+licenses: []
+
+post_install_message: 
+rdoc_options: 
+- --line-numbers
+- --inline-source
+- --title
+- Ruby-serialport
+- --main
+- README
+require_paths: 
+- lib
+- ext
+required_ruby_version: !ruby/object:Gem::Requirement 
+  requirements: 
+  - - ">="
+    - !ruby/object:Gem::Version 
+      version: "0"
+  version: 
+required_rubygems_version: !ruby/object:Gem::Requirement 
+  requirements: 
+  - - ">="
+    - !ruby/object:Gem::Version 
+      version: "0"
+  version: 
+requirements: []
+
+rubyforge_project: ruby-serialport
+rubygems_version: 1.3.5
+signing_key: 
+specification_version: 2
+summary: Ruby/SerialPort is a Ruby library that provides a class for using RS-232 serial ports.
+test_files: []
+
