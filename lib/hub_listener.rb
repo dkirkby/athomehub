@@ -106,7 +106,7 @@ protected
 
   # Returns the name of the serial port device that we think a hub is connected to.
   def port
-    (Dir.glob("/dev/tty.usbserial-*") | Dir.glob("/dev/ttyusb*")).first
+    (Dir.glob("/dev/tty.usbserial-*") | Dir.glob("/dev/ttyUSB*")).first
   end
 
   # Handles a Look-at-Me message
