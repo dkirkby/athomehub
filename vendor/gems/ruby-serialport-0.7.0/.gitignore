@@ -2,5 +2,5 @@
 ext/Makefile
 ext/*.log
 ext/*.o
-ext/serialport.bundle
-lib/serialport.bundle
+ext/serialport.*
+lib/serialport.*
