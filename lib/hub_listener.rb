@@ -1,5 +1,4 @@
 require 'singleton'
-require 'serialport'
 
 class HubListener
   
@@ -221,6 +220,7 @@ protected
   # signal to request a clean shutdown. Logging message go to Rails.logger.
   def listen
     # Open a serial connection to the hub device
+    require 'serialport'
     @hub = SerialPort.new(self.port,115200)
     @hub.read_timeout = -1 # don't wait for input
     partialMessage = ""
