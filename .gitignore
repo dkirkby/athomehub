@@ -1,4 +1,9 @@
 log/*.log
 tmp/**/*
 db/*.sqlite3
+
+# stylesheets are generated on the fly using haml/sass
 public/stylesheets/*.css
+
+# copy and edit config/database-template.yml
+config/database.yml
