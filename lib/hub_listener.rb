@@ -38,15 +38,20 @@ class HubListener
   end
   
   # Starts a new hub listener.
-  def start(debug)
+  def start(options)
     raise "hub listener already running as PID #{@pid}" if @pid
     raise "no hub serial port found" unless self.port
     @starting = true
-    if debug then
+    if options[:debug] then
       # run interactively with logging to stdout
       @logger = Logger.new(STDOUT)
       @logger.info "Running interactively. Use ^C to stop."
       self.listen { |msg| self.handle msg }
+    elsif options[:raw] then
+      # run interactively and simply print all serial traffic to stdout
+      @logger = Logger.new(STDOUT)
+      @logger.info "Tracing raw serial messages. Use ^C to stop."
+      self.listen { |msg| puts msg }
     else
       # run in a background process with logging to Rails.logger
       listener = spawn({:nice=>1, :method=> debug ? :yield : :fork}) do
