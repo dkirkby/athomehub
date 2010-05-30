@@ -38,7 +38,7 @@ class HubListener
   end
   
   # Starts a new hub listener.
-  def start(options)
+  def start(options={})
     raise "hub listener already running as PID #{@pid}" if @pid
     raise "no hub serial port found" unless self.port
     @starting = true
