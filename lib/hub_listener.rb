@@ -54,7 +54,7 @@ class HubListener
       self.listen { |msg| puts msg }
     else
       # run in a background process with logging to Rails.logger
-      listener = spawn({:nice=>1, :method=> debug ? :yield : :fork}) do
+      listener = spawn({:nice=>1, :method=> :fork}) do
         @logger = Rails.logger
         self.listen { |msg| self.handle(msg) }
       end
