@@ -227,11 +227,16 @@ protected
     # Open a serial connection to the hub device
     require 'serialport'
     @hub = SerialPort.new(self.port,115200)
-    @hub.read_timeout = -1 # don't wait for input
-    partialMessage = ""
+    # don't wait for input
+    @hub.read_timeout = -1
+    # force a reboot by pulling DTR low momentarily
+    @hub.dtr= 0
+    sleep 0.1
+    @hub.dtr= 1
     # The message handler will track the sequence numbers from each device
     # in this array
     @sequences = [ ]
+    partialMessage = ""
     begin
       while true do
         @hub.readlines.each do |message|
