@@ -230,9 +230,9 @@ protected
     # don't wait for input
     @hub.read_timeout = -1
     # force a reboot by pulling DTR low momentarily
-    #@hub.dtr= 0
-    #sleep 0.1
-    #@hub.dtr= 1
+    @hub.dtr= 0
+    sleep 0.1
+    @hub.dtr= 1
     # The message handler will track the sequence numbers from each device
     # in this array
     @sequences = [ ]

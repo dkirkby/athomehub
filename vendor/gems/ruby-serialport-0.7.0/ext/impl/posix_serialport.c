@@ -631,13 +631,13 @@ static VALUE set_signal_impl(obj, val, sig)
 static VALUE sp_set_rts_impl(self, val)
    VALUE self, val;
 {
-   return set_signal(self, val, TIOCM_RTS);
+   return set_signal_impl(self, val, TIOCM_RTS);
 }
 
 static VALUE sp_set_dtr_impl(self, val)
    VALUE self, val;
 {
-   return set_signal(self, val, TIOCM_DTR);
+   return set_signal_impl(self, val, TIOCM_DTR);
 }
 
 static VALUE sp_get_rts_impl(self)
