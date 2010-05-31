@@ -1,7 +1,7 @@
 class AthomeController < ApplicationController
 
   before_filter :valid_at
-  before_filter :valid_ival,:only=>:detail
+  before_filter :valid_window,:only=>:detail
 
   def index
     @samples = Sample.find(:all,:group=>'networkID',
@@ -11,10 +11,7 @@ class AthomeController < ApplicationController
   end
   
   def detail
-    @samples = Sample.find(:all,
-      :conditions=>['networkID = ? and created_at > ? and created_at <= ?',
-        params[:id],@begin_at,@end_at],
-      :order=>'created_at DESC',:readonly=>true)
+    @samples = Sample.find(:all,:limit=>10,:readonly=>true)
     @note = new_note
   end
   
@@ -88,6 +85,8 @@ class AthomeController < ApplicationController
   
 protected
 
+  @@decimalInteger = Regexp.compile("^(0|-?[1-9][0-9]*)$")
+
   # Prepares an empty new note or retrieves note-id if specified
   def new_note
     if params.has_key? 'note_id' then
@@ -118,6 +117,31 @@ protected
         flash.now[:notice] = "Invalid parameter at=\'#{params['end']}\'. Using now (#{@at}) instead."
       end
     end
+  end
+  
+  def valid_window
+    # set window parameter defaults
+    @index = 0
+    @zoom = 3
+    # do we have an index value to use?
+    if params.has_key? 'index' then
+      # is it a decimal integer?
+      if !!(params['index'] =~ @@decimalInteger) then
+        @index = params['index'].to_i
+      else
+        flash.now[:notice] = "Invalid parameter index=\'#{params['index']}\'. Using index=\'#{@index}\' instead."
+      end
+    end
+    # do we have a zoom value to use?
+    if params.has_key? 'zoom' then
+      # is it a decimal integer?
+      if !!(params['zoom'] =~ @@decimalInteger) then 
+        @zoom = params['zoom'].to_i
+      else
+        flash.now[:notice] = "Invalid parameter zoom=\'#{params['zoom']}\'. Using zoom=\'#{@zoom}\' instead."
+      end
+    end
+    @end_at = @at
   end
 
 end

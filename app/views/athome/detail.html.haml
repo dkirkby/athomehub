@@ -1,7 +1,13 @@
 #content
 	#header
-		&="Details for #{@begin_at.localtime} to #{@end_at.localtime}..."
+		&="Details for..."
 	#body
+		&="@end_at= #{@at}"
+		%br
+		&="@index= #{@index}"
+		%br
+		&="@zoom= #{@zoom}"
+		%br
 		#datetime
 			%span#date= format_date @at
 			%span#time= format_time @at
