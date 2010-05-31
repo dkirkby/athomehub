@@ -181,18 +181,27 @@ protected
       end
     end
     # check for a commit parameter that requests a newer/older index
-    if params['commit'] == 'Newer' then
+    case params['commit']
+    when 'Newer' then
       if @index == 0 then
         flash.now[:notice] = "Already displaying newest data. Request ignored."
       else
         @index -= 1
       end
-    elsif params['commit'] == 'Older' then
+    when 'Older'
       if @index == -1 then
         flash.now[:notice] = "Already displaying oldest data. Request ignored."
       else
         @index += 1
       end
+    when 'Newest'
+      @index = 0
+    when 'Oldest'
+      @index = -1
+    when 'Update'
+      # no adjustment to index requested
+    else
+      flash.now[:notice] = "Ignoring invalid parameter commit=\`#{params['commit']}\`."
     end
     # do we have a zoom value to use?
     if params.has_key? 'zoom' then

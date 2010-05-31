@@ -31,9 +31,11 @@
 			-form_tag '/athome/detail' do
 				=hidden_field_tag 'id',@config.networkID
 				=hidden_field_tag 'index',@index
+				=submit_tag 'Oldest',:disabled=>(@index==-1)
 				=submit_tag 'Older',:disabled=>(@index==-1)
 				=select_tag 'zoom',options_for_select(@zoomLevels,@zoomLevels[@zoom])
 				=submit_tag 'Newer',:disabled=>(@index==0)
+				=submit_tag 'Newest',:disabled=>(@index==0)
 				%br
 				=submit_tag 'Update'
 	%ul#navigation
