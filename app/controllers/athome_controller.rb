@@ -171,6 +171,23 @@ protected
       ['4 weeks',    2419200, 6],
       ['16 weeks',   9676800, 7]
     ]
+    # do we have a zoom value to use?
+    if params.has_key? 'zoom' then
+      # is it a decimal integer?
+      if !!(params['zoom'] =~ @@decimalInteger) then 
+        @zoom = params['zoom'].to_i
+        # clip an out of range zoom that is otherwise a valid integer
+        if @zoom < 0 then
+          @zoom = 0
+          flash.now[:notice] = "Using minimum allowed zoom=#{@zoom}."
+        elsif @zoom >= @zoomLevels.length then
+          @zoom = @zoomLevels.length-1
+          flash.now[:notice] = "Using maximum allowed zoom=#{@zoom}."
+        end
+      else
+        flash.now[:notice] = "Invalid parameter zoom=\'#{params['zoom']}\'. Using zoom=\'#{@zoom}\' instead."
+      end
+    end
     # do we have an index value to use?
     if params.has_key? 'index' then
       # is it a decimal integer?
@@ -198,29 +215,47 @@ protected
       @index = 0
     when 'Oldest'
       @index = -1
-    when 'Update'
+    when nil,'Update'
       # no adjustment to index requested
     else
       flash.now[:notice] = "Ignoring invalid parameter commit=\`#{params['commit']}\`."
     end
-    # do we have a zoom value to use?
-    if params.has_key? 'zoom' then
-      # is it a decimal integer?
-      if !!(params['zoom'] =~ @@decimalInteger) then 
-        @zoom = params['zoom'].to_i
-        # clip an out of range zoom that is otherwise a valid integer
-        if @zoom < 0 then
-          @zoom = 0
-          flash.now[:notice] = "Using minimum allowed zoom=#{@zoom}."
-        elsif @zoom >= @zoomLevels.length then
-          @zoom = @zoomLevels.length-1
-          flash.now[:notice] = "Using maximum allowed zoom=#{@zoom}."
-        end
-      else
-        flash.now[:notice] = "Invalid parameter zoom=\'#{params['zoom']}\'. Using zoom=\'#{@zoom}\' instead."
+    # calculate the half-window size in seconds
+    interval = 0.5*@zoomLevels[@zoom][1]
+    # calculate the local timezone offset in seconds
+    tz_offset = @at.localtime.utc_offset
+    # calculate the timestamp (secs since epoch) corresponding to the window
+    # midpoint with index=0
+    midpoint_now = interval*((@at.to_i + tz_offset)/interval).floor - tz_offset
+    # determine the valid index range
+    oldest_sample = Sample.find(:first,:order=>'id ASC',
+      :conditions=>['networkID = ?',@config.networkID],:readonly=>true)
+    if oldest_sample then
+      @max_index = ((midpoint_now - oldest_sample.created_at.to_i)/interval).ceil
+      # check for an out of range index
+      if @index > @max_index then
+        flash.now[:notice] = "Requested index=#{@index} is out of range. Using index=#{@max_index}."
+        @index = @max_index
+      elsif @index < -@max_index-1 then
+        flash.now[:notice] = "Requested index=#{@index} is out of range. Using index=#{-@max_index-1}."
+        @index = -@max_index-1
       end
+      # calculate midpoint of the indexed window
+      if @index >= 0 then
+        midpoint = midpoint_now - @index*interval
+      else
+        midpoint = midpoint_now - (@max_index+@index+1)*interval
+      end
+      # flag if the requested index is the oldest/newest allowed
+      @newest = true if @index == 0 || @index == -@max_index-1
+      @oldest = true if @index == -1 || @index == @max_index
+    else
+      @index = 0
+      flash.now[:notice] = 'No samples have been recorded for this device.'
     end
-    @end_at = @at
+    # calculate the timestamp range corresponding to the selected window
+    @end_at = Time.at(midpoint+interval)
+    @begin_at = Time.at(midpoint-interval)
   end
 
 end

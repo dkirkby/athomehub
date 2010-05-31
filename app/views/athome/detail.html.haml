@@ -2,12 +2,6 @@
 	#header
 		&= @config ? @config.location : "Invalid Device ID"
 	#body
-		&="@end_at= #{@at}"
-		%br
-		&="@index= #{@index}"
-		%br
-		&="@zoom= #{@zoom}"
-		%br
 		#datetime
 			%span#date= format_date @at
 			%span#time= format_time @at
@@ -28,16 +22,20 @@
 					%td= s.power ? (sprintf "%.1fW",1e-1*s.power) : "&mdash;"
 					%td= s.cost ? (sprintf "$%4.2f",s.cost) : "&mdash;"
 		#footer
+			="#{@begin_at.localtime} &mdash; #{@end_at.localtime}"
+			%br
 			-form_tag '/athome/detail' do
 				=hidden_field_tag 'id',@config.networkID
 				=hidden_field_tag 'index',@index
-				=submit_tag 'Oldest',:disabled=>(@index==-1)
-				=submit_tag 'Older',:disabled=>(@index==-1)
+				=submit_tag 'Oldest',:disabled=>@oldest
+				=submit_tag 'Older',:disabled=>@oldest
 				=select_tag 'zoom',options_for_select(@zoomLevels,@zoomLevels[@zoom])
-				=submit_tag 'Newer',:disabled=>(@index==0)
-				=submit_tag 'Newest',:disabled=>(@index==0)
+				=submit_tag 'Newer',:disabled=>@newest
+				=submit_tag 'Newest',:disabled=>@newest
 				%br
 				=submit_tag 'Update'
+			%br
+				="id=#{@config.networkID}, index=#{@index}, zoom=#{@zoom}"
 	%ul#navigation
 		%li home
 		%li=link_to "help"
