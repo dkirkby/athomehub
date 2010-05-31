@@ -28,8 +28,14 @@
 					%td= s.power ? (sprintf "%.1fW",1e-1*s.power) : "&mdash;"
 					%td= s.cost ? (sprintf "$%4.2f",s.cost) : "&mdash;"
 		#footer
-			%select(name='zoom')
-				=options_for_select(@zoomLevels,@zoomLevels[@zoom])
+			-form_tag '/athome/detail' do
+				=hidden_field_tag 'id',@config.networkID
+				=hidden_field_tag 'index',@index
+				=submit_tag 'Older'
+				=select_tag 'zoom',options_for_select(@zoomLevels,@zoomLevels[@zoom])
+				=submit_tag 'Newer'
+				%br
+				=submit_tag 'Update'
 	%ul#navigation
 		%li home
 		%li=link_to "help"

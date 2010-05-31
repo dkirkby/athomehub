@@ -162,14 +162,14 @@ protected
     @index = 0
     @zoom = 3
     @zoomLevels = [
-      ['2 minutes',  120],
-      ['10 minutes', 600],
-      ['1 hour',     3600],
-      ['6 hours',    21600],
-      ['1 day',      86400],
-      ['1 week',     604800],
-      ['4 weeks',    2419200],
-      ['16 weeks',   9676800]
+      ['2 minutes',      120, 0],
+      ['10 minutes',     600, 1],
+      ['1 hour',        3600, 2],
+      ['6 hours',      21600, 3],
+      ['1 day',        86400, 4],
+      ['1 week',      604800, 5],
+      ['4 weeks',    2419200, 6],
+      ['16 weeks',   9676800, 7]
     ]
     # do we have an index value to use?
     if params.has_key? 'index' then
