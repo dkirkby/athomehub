@@ -155,13 +155,22 @@ protected
     end
   end
   
-  @minZoom = 1
-  @maxZoom = 6
+  
   
   def valid_window
     # set window parameter defaults
     @index = 0
     @zoom = 3
+    @zoomLevels = [
+      ['2 minutes',  120],
+      ['10 minutes', 600],
+      ['1 hour',     3600],
+      ['6 hours',    21600],
+      ['1 day',      86400],
+      ['1 week',     604800],
+      ['4 weeks',    2419200],
+      ['16 weeks',   9676800]
+    ]
     # do we have an index value to use?
     if params.has_key? 'index' then
       # is it a decimal integer?
@@ -177,12 +186,12 @@ protected
       if !!(params['zoom'] =~ @@decimalInteger) then 
         @zoom = params['zoom'].to_i
         # clip an out of range zoom that is otherwise a valid integer
-        if @zoom < @minZoom then
-          flash.now[:notice] = "Using minimum allowed zoom=#{@minZoom}."
-          @zoom = @minZoom
-        elsif @zoom > @maxZoom then
-          flash.now[:notice] = "Using maximum allowed zoom=#{@maxZoom}."
-          @zoom = @maxZoom
+        if @zoom < 0 then
+          @zoom = 0
+          flash.now[:notice] = "Using minimum allowed zoom=#{@zoom}."
+        elsif @zoom >= @zoomLevels.length then
+          @zoom = @zoomLevels.length-1
+          flash.now[:notice] = "Using maximum allowed zoom=#{@zoom}."
         end
       else
         flash.now[:notice] = "Invalid parameter zoom=\'#{params['zoom']}\'. Using zoom=\'#{@zoom}\' instead."

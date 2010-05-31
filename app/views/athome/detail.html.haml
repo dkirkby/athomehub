@@ -27,6 +27,9 @@
 					%td= sprintf "%d (%.0f%%)",s.lighting,1e2*s.artificial/s.lighting
 					%td= s.power ? (sprintf "%.1fW",1e-1*s.power) : "&mdash;"
 					%td= s.cost ? (sprintf "$%4.2f",s.cost) : "&mdash;"
+		#footer
+			%select(name='zoom')
+				=options_for_select(@zoomLevels,@zoomLevels[@zoom])
 	%ul#navigation
 		%li home
 		%li=link_to "help"
