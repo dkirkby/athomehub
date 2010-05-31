@@ -1,11 +1,20 @@
 class AthomeController < ApplicationController
 
   before_filter :valid_at
+  before_filter :valid_ival,:only=>:detail
 
   def index
     @samples = Sample.find(:all,:group=>'networkID',
       :conditions=>['networkID IS NOT NULL and created_at < ?',@at],
       :readonly=>true)
+    @note = new_note
+  end
+  
+  def detail
+    @samples = Sample.find(:all,
+      :conditions=>['networkID = ? and created_at > ? and created_at <= ?',
+        params[:id],@begin_at,@end_at],
+      :order=>'created_at DESC',:readonly=>true)
     @note = new_note
   end
   

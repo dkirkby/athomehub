@@ -1,0 +1,29 @@
+#content
+	#header
+		&="Details for #{@begin_at.localtime} to #{@end_at.localtime}..."
+	#body
+		#datetime
+			%span#date= format_date @at
+			%span#time= format_time @at
+		%table
+			%tr
+				%th.location
+				%th When 
+				%th Temp
+				%th Light
+				%th Power
+				%th Cost
+			-@samples.each do |s|
+				%tr
+					%td.location&= s.location
+					%td&=s.created_at.localtime
+					%td= sprintf "%.1f&deg;F",1e-2*s.temperature
+					%td= sprintf "%d (%.0f%%)",s.lighting,1e2*s.artificial/s.lighting
+					%td= s.power ? (sprintf "%.1fW",1e-1*s.power) : "&mdash;"
+					%td= s.cost ? (sprintf "$%4.2f",s.cost) : "&mdash;"
+	%ul#navigation
+		%li home
+		%li=link_to "help"
+		%li=link_to "settings"
+	#note
+		=render :partial=>"note"
