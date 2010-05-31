@@ -1,6 +1,6 @@
 #content
 	#header
-		&="Details for..."
+		&= @config ? @config.location : "Invalid Device ID"
 	#body
 		&="@end_at= #{@at}"
 		%br
