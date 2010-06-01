@@ -154,22 +154,22 @@ protected
       end
     end
   end
-  
-  
-  
+
   def valid_window
     # set window parameter defaults
     @index = 0
     @zoom = 3
+    # define the zoom levels: (formats are for DateTime.strftime)
+    # label, seconds, label format, tick format, # ticks, index
     @zoomLevels = [
-      ['2 minutes',      120, 0],
-      ['10 minutes',     600, 1],
-      ['1 hour',        3600, 2],
-      ['6 hours',      21600, 3],
-      ['1 day',        86400, 4],
-      ['1 week',      604800, 5],
-      ['4 weeks',    2419200, 6],
-      ['16 weeks',   9676800, 7]
+      ['2 minutes',      120, "%l%P %a %e %B", ":%M:%S", 5, 0],
+      ['10 minutes',     600, "%l%P %a %e %B", ":%M", 6, 1],
+      ['1 hour',        3600, "%l%P %a %e %B", ":%M", 7, 2],
+      ['6 hours',      21600, "%a %e %B", "%l:%M%P", 7, 3],
+      ['1 day',        86400, "%a %e %B", "%l:%M%P", 5, 4],
+      ['1 week',      604800, "%a %e %B", "%l:%M%P", 8, 5],
+      ['4 weeks',    2419200, "%a %e %B", "%l:%M%P", 5, 6],
+      ['16 weeks',   9676800, "%a %e %B", "%l:%M%P", 5, 7]
     ]
     # do we have a zoom value to use?
     if params.has_key? 'zoom' then
@@ -256,6 +256,15 @@ protected
     # calculate the timestamp range corresponding to the selected window
     @end_at = Time.at(midpoint+interval)
     @begin_at = Time.at(midpoint-interval)
+    # calculate display labels for this window
+    label_format,tick_format,num_ticks = @zoomLevels[@zoom][2..4]
+    @label = @end_at.localtime.to_datetime.strftime label_format
+    @tick_labels = [ ]
+    delta = 2*interval/(num_ticks-1)
+    num_ticks.times do |tick|
+      tick_at = @begin_at + tick*delta
+      @tick_labels << tick_at.localtime.to_datetime.strftime(tick_format)
+    end
   end
 
 end

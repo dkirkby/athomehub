@@ -22,14 +22,16 @@
 					%td= s.power ? (sprintf "%.1fW",1e-1*s.power) : "&mdash;"
 					%td= s.cost ? (sprintf "$%4.2f",s.cost) : "&mdash;"
 		#footer
-			="#{@begin_at.localtime} &mdash; #{@end_at.localtime}"
-			%br
+			#ticks
+				-@tick_labels.each do |label|
+					%span&=label
+			&=@label
 			-form_tag '/athome/detail' do
 				=hidden_field_tag 'id',@config.networkID
 				=hidden_field_tag 'index',@index
 				=submit_tag 'Oldest',:disabled=>@oldest
 				=submit_tag 'Older',:disabled=>@oldest
-				=select_tag 'zoom',options_for_select(@zoomLevels,@zoomLevels[@zoom])
+				=select_tag 'zoom',options_for_select(@zoomLevels,@zoomLevels[@zoom].last)
 				=submit_tag 'Newer',:disabled=>@newest
 				=submit_tag 'Newest',:disabled=>@newest
 				%br

@@ -12,11 +12,9 @@ module ApplicationHelper
   
   # Formats the provided UTC Time object and returns a sanitized time string.
   def format_time(timestamp)
-    formatted = h timestamp.localtime.strftime("%I:%M%p")
-    # drop a leading zero on the hour
-    formatted.slice! /^0/
-    # replace AM/PM with am/pm
-    formatted.downcase
+    # convert to a DateTime since it provides some strftime goodies
+    # like %l and %P that we want
+    formatted = h timestamp.localtime.to_datetime.strftime("%l:%M%P")
   end
 
 end
