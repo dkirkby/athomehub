@@ -6,6 +6,7 @@
 		%title="uci@home"
 		=stylesheet_link_tag 'style'
 		=javascript_include_tag 'jquery','application','athome'
+		=yield :head
 	%body
 		=yield
 		-if flash[:notice]
