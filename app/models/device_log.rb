@@ -3,6 +3,7 @@ class DeviceLog < ActiveRecord::Base
   before_validation :set_severity
   
   @@messages = {
+    -7=>[:error,"Device data has invalid value at position %d"],
     -6=>[:warn,"Device received invalid config"],
     -5=>[:info,"Device received updated config"],
     -4=>[:info,"Device received initial config"],

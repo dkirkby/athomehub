@@ -103,6 +103,8 @@ class HubListener
   
 protected
   
+  @@hexPattern = Regexp.compile("^[0-9a-fA-F]+$")
+  
   # Cleans up any old PID file and removes any record of a running process
   def cleanup
     File.delete(@pidFile) if File.exists? @pidFile
@@ -150,16 +152,21 @@ protected
   # Handles a Data message
   def handleData(values)
     # do we have the expected number of values?
-    if values.length != 8 then
-      DeviceLog.create({:code=>-1,:value=>values.length})
+    if values.length != 11 then
+      log = DeviceLog.create({:code=>-1,:value=>values.length})
+      @logger.error log.message
       return
     end
     # parse the message
-    networkID,seqno,status,*sampleData = values
-    networkID = networkID.hex
-    seqno = seqno.hex
-    status = status.to_i
-    sampleData.map! { |v| v.to_i }
+    index = 0
+    networkID,seqno,status,*sampleData = values.map do |v|
+      if !(v =~ @@hexPattern) then
+        log = DeviceLog.create({:code=>-7,:value=>index})
+        @logger.error log.message
+      end
+      index += 1
+      v.hex
+    end
     # did we drop any packets since the last one seen?
     if @sequences[networkID] then
       dropped = (seqno-@sequences[networkID])%256 - 1
