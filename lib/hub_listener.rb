@@ -196,13 +196,17 @@ protected
       @logger.warn log.message
     end
     # Finally, write the sample values we received
+    # (the "2" suffix indicates a lo-gain channel)
     Sample.create({
       :networkID=>networkID,
-      :lighting=>sampleData[0],
-      :artificial=>sampleData[1],
-      :lighting2=>sampleData[2],
-      :artificial2=>sampleData[3],
-      :temperature=>sampleData[4]
+      :acPhase=>sampleData[0],
+      :power2=>sampleData[1],
+      :power=>sampleData[2],
+      :lighting2=>sampleData[3],
+      :lighting=>sampleData[4],
+      :artificial2=>sampleData[5],
+      :artificial=>sampleData[6],
+      :temperature=>sampleData[7]
     })
   end
 
