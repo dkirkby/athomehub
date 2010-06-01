@@ -162,14 +162,14 @@ protected
     # define the zoom levels: (formats are for DateTime.strftime)
     # label, seconds, label format, tick format, # ticks, index
     @zoomLevels = [
-      ['2 minutes',      120, "%l%P %a %e %B", ":%M:%S", 5, 0],
-      ['10 minutes',     600, "%l%P %a %e %B", ":%M", 6, 1],
-      ['1 hour',        3600, "%l%P %a %e %B", ":%M", 7, 2],
-      ['6 hours',      21600, "%a %e %B", "%l:%M%P", 7, 3],
-      ['1 day',        86400, "%a %e %B", "%l:%M%P", 5, 4],
-      ['1 week',      604800, "%a %e %B", "%l:%M%P", 8, 5],
-      ['4 weeks',    2419200, "%a %e %B", "%l:%M%P", 5, 6],
-      ['16 weeks',   9676800, "%a %e %B", "%l:%M%P", 5, 7]
+      ['2 minutes',      120, "%l:%M%P %a %e %B", ":%M:%S", 5, 0],
+      ['10 minutes',     600, "%l:%M%P %a %e %B", "%l:%M", 11, 1],
+      ['1 hour',        3600, "%l:%M%P %a %e %B", "%l:%M", 7, 2],
+      ['6 hours',      21600, "%l%P %a %e %B", "%l%P", 7, 3],
+      ['1 day',        86400, "%l%P %a %e %B", "%l%P", 5, 4],
+      ['1 week',      604800, "%a %e %B %Y", "%l%P-%a", 15, 5],
+      ['4 weeks',    2419200, "%e %B %Y", "%d-%b", 5, 6],
+      ['16 weeks',   9676800, "%e %B %Y", "%d-%b", 5, 7]
     ]
     # do we have a zoom value to use?
     if params.has_key? 'zoom' then
@@ -254,11 +254,12 @@ protected
       flash.now[:notice] = 'No samples have been recorded for this device.'
     end
     # calculate the timestamp range corresponding to the selected window
+    @mid_at = Time.at(midpoint)
     @end_at = Time.at(midpoint+interval)
     @begin_at = Time.at(midpoint-interval)
     # calculate display labels for this window
     label_format,tick_format,num_ticks = @zoomLevels[@zoom][2..4]
-    @label = @end_at.localtime.to_datetime.strftime label_format
+    @label = @mid_at.localtime.to_datetime.strftime label_format
     @tick_labels = [ ]
     delta = 2*interval/(num_ticks-1)
     num_ticks.times do |tick|
