@@ -1,3 +1,4 @@
+Tue Jun  1 12:03:05 PDT 2010 david@dk.local Implement javascript graphing with flot
 Sun May 30 11:26:12 PDT 2010 david@dk.local Debug deployment on hub systems
 Sat May 29 08:26:08 PDT 2010 david@dk.local Migrate from prototype to jQuery
 Mon May 24 15:25:08 PDT 2010 david@dk.local Engineering action dumps data in format suitable for gnuplot
