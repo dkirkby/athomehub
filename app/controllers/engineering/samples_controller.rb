@@ -47,8 +47,11 @@ protected
     by_device.each do |id,data|
       dump << "# Network ID #{id} has #{data.length} samples"
       data.each do |s|
-        dump << sprintf("%d %6d %6d %6d %6d %7.2f",s.created_at.to_i+offset,
-          s.lighting,s.artificial,s.lighting2,s.artificial2,1e-2*s.temperature)
+        dump << sprintf("%d %6d %6d %6d %6d %3d %6d %6d %7.2f",
+          s.created_at.to_i+offset,
+          s.lighting,s.artificial,s.lighting2,s.artificial2,
+          s.acPhase,s.power,s.power2,
+          1e-2*s.temperature)
       end
       # insert two blank lines between devices
       dump << "" << ""

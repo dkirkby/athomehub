@@ -1,20 +1,24 @@
 %table
 	%tr
 		%th Timestamp
-		%th Time Ago
-		%th Network ID
-		%th Lighting (HI)
-		%th Artificial (HI)
-		%th Lighting (LO)
-		%th Artificial (LO)
-		%th Temperature (x100F)
+		%th ID
+		%th Light(HI)
+		%th 120Hz(HI)
+		%th Light(LO)
+		%th 120Hz(LO)
+		%th Phase
+		%th Power(HI)
+		%th Power(LO)
+		%th Temp (&deg;F)
 	-@samples.each do |s|
 		%tr
-			%td&=s.created_at.localtime
-			%td&=time_ago_in_words s.created_at, true
+			%td&=s.created_at.localtime.strftime "%d %b %H:%M:%S"
 			%td&=s.networkID
 			%td&=s.lighting
 			%td&=s.artificial
 			%td&=s.lighting2
 			%td&=s.artificial2
+			%td&=s.acPhase
+			%td&=s.power
+			%td&=s.power2
 			%td&=sprintf "%.2f",1e-2*s.temperature
