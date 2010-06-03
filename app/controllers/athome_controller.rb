@@ -64,21 +64,21 @@ class AthomeController < ApplicationController
     # Declare some sample data
     @samples = [
       DemoSample.new({:location=>"Kitchen",
-        :temperature=>7241,:lighting=>74,:artificial=>43,:power=>1328,:cost=>0.731}),
+        :temperature=>7441,:lighting=>74,:artificial=>43,:power=>  52,:cost=>1.731}),
       DemoSample.new({:location=>"Family Room",
-        :temperature=>7241,:lighting=>74,:artificial=>43,:power=>1328,:cost=>0.731}),
+        :temperature=>7361,:lighting=>74,:artificial=>43,:power=>1856,:cost=>4.121}),
       DemoSample.new({:location=>"Dylan's Room",
-        :temperature=>7241,:lighting=>74,:artificial=>43,:power=>1328,:cost=>0.731}),
+        :temperature=>7811,:lighting=>74,:artificial=>43,:power=> 642,:cost=>0.171}),
       DemoSample.new({:location=>"Downstairs Bathroom",
-        :temperature=>7241,:lighting=>74,:artificial=>43,:power=>1328,:cost=>0.731}),
+        :temperature=>7291,:lighting=>74,:artificial=>43,:power=>  13,:cost=>0.060}),
       DemoSample.new({:location=>"Kids Bathroom",
-        :temperature=>7241,:lighting=>74,:artificial=>43,:power=>1328,:cost=>0.731}),
+        :temperature=>7751,:lighting=>74,:artificial=>43,:power=>   0,:cost=>1.840}),
       DemoSample.new({:location=>"Helen's Room",
-        :temperature=>7241,:lighting=>74,:artificial=>43,:power=>1328,:cost=>0.731}),
+        :temperature=>8141,:lighting=>74,:artificial=>43,:power=> 874,:cost=>0.693}),
       DemoSample.new({:location=>"Master Bedroom",
-        :temperature=>7241,:lighting=>74,:artificial=>43,:power=>1328,:cost=>0.731}),
+        :temperature=>8021,:lighting=>74,:artificial=>43,:power=>  38,:cost=>1.875}),
       DemoSample.new({:location=>"Master Bathroom",
-        :temperature=>7241,:lighting=>74,:artificial=>43,:power=>1328,:cost=>0.731})
+        :temperature=>7871,:lighting=>74,:artificial=>43,:power=>   0,:cost=>0.876})
     ]
     @note = new_note
     render :action=>"index"
