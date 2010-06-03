@@ -13,6 +13,8 @@ Displaying #{@configs.length} device configurations.
 		%th Serial Number
 		%th Lighting Feedback?
 		%th Temperature Feedback?
+		%th Lighting Dumps?
+		%th Power Dumps?
 		%th Min Temperature (F)
 		%th Max Temperature (F)
 
@@ -24,6 +26,8 @@ Displaying #{@configs.length} device configurations.
 			%td&=format_serialNumber c.serialNumber
 			%td&=c.lightingFeedback
 			%td&=c.temperatureFeedback
+			%td&=c.lightingDump
+			%td&=c.powerDump
 			%td&=c.minTemperature
 			%td&=c.maxTemperature
 			%td=link_to 'Edit', :action=>:edit, :id => c

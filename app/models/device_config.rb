@@ -25,6 +25,8 @@ class DeviceConfig < ActiveRecord::Base
     capabilities = 0
     capabilities |= (1<<0) if temperatureFeedback
     capabilities |= (1<<1) if lightingFeedback
+    capabilities |= (1<<2) if lightingDump
+    capabilities |= (1<<3) if powerDump
     # convert our decimal temperatures to 100xdegF
     minTempFixed = (100*minTemperature).round
     maxTempFixed = (100*maxTemperature).round
