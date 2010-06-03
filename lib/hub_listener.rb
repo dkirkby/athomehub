@@ -233,14 +233,14 @@ protected
         @logger.error log.message
         @dumps[networkID].save
       end
-      log = DeviceLog.create({:code=>-10,:networkID=>networkID})
+      source = values[3].hex
+      log = DeviceLog.create({:code=>-10,:networkID=>networkID,:value=>source})
       @logger.info log.message
-      puts values.inspect
       # create a new dump for this device
       @dumps[networkID] = BufferDump.new({
         :networkID=>networkID,
         :header=>values[2],
-        :source=>values[3].hex,
+        :source=>source,
         :micros=>values[4].hex
       })
       # add the first 8 samples
