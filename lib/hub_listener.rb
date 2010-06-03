@@ -234,8 +234,18 @@ protected
       end
       log = DeviceLog.create({:code=>-10,:networkID=>networkID})
       @logger.info log.message
+      puts values.inspect
+      # create a new dump for this device
+      @dumps[networkID] = BufferDump.new({
+        :header=>values[2],
+        :type=>values[3].hex,
+        :micros=>values[4].hex
+      })
+      # add the first 8 samples
+      @dumps[networkID].init_samples 512,values[5..12]
     elsif sequenceNumber <= 21 then
-      # extract...
+      # add the next 24 samples
+      @dumps[networkID].add_samples 8+24*(sequenceNumber-1),values[2..25]
     else
       # we should never see a sequence number > 21
       log = DeviceLog.create({:code=>-11,:networkID=>networkID,
