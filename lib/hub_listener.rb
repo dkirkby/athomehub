@@ -240,7 +240,7 @@ protected
       @dumps[networkID] = BufferDump.new({
         :networkID=>networkID,
         :header=>values[2],
-        :type=>values[3].hex,
+        :source=>values[3].hex,
         :micros=>values[4].hex
       })
       # add the first 8 samples
@@ -251,7 +251,7 @@ protected
         log = DeviceLog.create({:code=>-12,:networkID=>networkID,
           :value=>sequenceNumber})
         @logger.info warn log.message
-        # create a new dump with unknown type now
+        # create a new dump with unknown source
         @dumps[networkID] = BufferDump.new
       end
       # add the next 24 samples

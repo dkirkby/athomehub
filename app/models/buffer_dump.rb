@@ -21,7 +21,6 @@ class BufferDump < ActiveRecord::Base
   def add_samples(base,values)
     values.each_with_index do |v,k|
       @samples[base+k]= v.hex
-      puts "#{base+k} -> #{v}"
     end
   end
 

@@ -1,0 +1,11 @@
+%h1 Engineering::Dump#samples
+
+%table
+	%tr
+		%th Timestamp
+		%th ADC Value
+	-@samples.each do |row|
+		%tr
+			%td&= row[0]
+			%td&= row[1]
+	

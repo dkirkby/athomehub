@@ -3,18 +3,16 @@
 		%th Timestamp
 		%th Time Ago
 		%th ID
-		%th Type
+		%th Source
 		%th Micros
 		%th Header
+		%th Samples
 	-@dumps.each do |d|
 		%tr
 			%td&=d.created_at.localtime
 			%td&=time_ago_in_words d.created_at, true
 			%td&=d.networkID
-			%td&=d.type
+			%td&=d.source
 			%td&=d.micros
 			%td&=d.header
-			%td&=d.samples[0]
-			%td&=d.samples[1]
-			%td&=d.samples[2]
-			%td &hellip;
+			%td= link_to "#{d.samples[0]} #{d.samples[1]} #{d.samples[2]} &hellip",:action=>"samples",:format=>:html,:id=>d
