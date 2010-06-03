@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100603210234) do
+ActiveRecord::Schema.define(:version => 20100603215350) do
 
   create_table "buffer_dumps", :force => true do |t|
     t.datetime "created_at"
@@ -30,6 +30,8 @@ ActiveRecord::Schema.define(:version => 20100603210234) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "serialNumber"
+    t.boolean  "lightingDump"
+    t.boolean  "powerDump"
   end
 
   create_table "device_logs", :force => true do |t|
