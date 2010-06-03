@@ -124,7 +124,8 @@ protected
     lam.commitDate = Time.at(values[1].to_i)
     lam.commitID = values[2]
     if lam.commitID.length != 40 then
-      @logger.warn "Unexpected commit ID length #{lam.commitID.length} in '#{lam.commitID}'"
+      @logger.warn
+        "Unexpected commit ID length #{lam.commitID.length} in '#{lam.commitID}'"
     end
     if values[3] == '0' then
       lam.modified = false
@@ -210,6 +211,39 @@ protected
     })
   end
 
+  # Handles a buffer dump message
+  def handleDump(values)
+    # check that all fields are pure hex
+    index = 0
+    values.each do |v|
+      if !(v =~ @@hexPattern) then
+        log = DeviceLog.create({:code=>-8,:value=>index})
+        @logger.error log.message
+        return
+      end
+      index += 1
+    end
+    # extract the packet header
+    networkID,sequenceNumber = values[0].hex,values[1].hex
+    # should we start assembling a new dump?
+    if sequenceNumber == 0 then
+      # give up on a previous partially assembled dump?
+      if @dumps[networkID] then
+        log = DeviceLog.create({:code=>-9,:networkID=>networkID})
+        @logger.error log.message
+      end
+      log = DeviceLog.create({:code=>-10,:networkID=>networkID})
+      @logger.info log.message
+    elsif sequenceNumber <= 21 then
+      # extract...
+    else
+      # we should never see a sequence number > 21
+      log = DeviceLog.create({:code=>-11,:networkID=>networkID,
+          :value=>sequenceNumber})
+      @logger.error log.message
+    end
+  end
+
   # Handles a complete message received from the hub. Logging is via @logger.
   def handle(msg)
     # Split the message into whitespace-separated tokens. The first token
@@ -223,6 +257,8 @@ protected
       handleLAM values
     elsif msgType == 'DATA' then
       handleData values
+    elsif msgType == 'DUMP' then
+      handleDump values
     elsif msgType == 'LOG' then
       log = DeviceLog.create({:code=>values[0],:value=>values[1]})
       @logger.info log.message
@@ -247,14 +283,16 @@ protected
     # The message handler will track the sequence numbers from each device
     # in this array
     @sequences = [ ]
+    # The message handler will assemble buffer dumps in this array
+    @dumps = [ ]
     partialMessage = ""
     begin
       while true do
         @hub.readlines.each do |message|
           # add any earlier partial message
           message = partialMessage + message
-          # need to make sure we have a complete message since readlines will sometimes
-          # split a line at a buffering boundary
+          # need to make sure we have a complete message since
+          # readlines will sometimes split a line at a buffering boundary
           if message[-1..-1] != "\n" then
             partialMessage = message
             next
