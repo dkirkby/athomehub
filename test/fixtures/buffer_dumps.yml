@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  created_at: 2010-06-03 12:44:54
+  networkID: 1
+  header: MyString
+  type: 1
+  micros: 1
+  samples: MyText
+
+two:
+  created_at: 2010-06-03 12:44:54
+  networkID: 1
+  header: MyString
+  type: 1
+  micros: 1
+  samples: MyText

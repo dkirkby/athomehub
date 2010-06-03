@@ -9,7 +9,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100601233434) do
+ActiveRecord::Schema.define(:version => 20100603194454) do
+
+  create_table "buffer_dumps", :force => true do |t|
+    t.datetime "created_at"
+    t.integer  "networkID"
+    t.string   "header"
+    t.integer  "type"
+    t.integer  "micros"
+    t.text     "samples"
+  end
 
   create_table "device_configs", :force => true do |t|
     t.string   "location"
