@@ -5,6 +5,13 @@ class BufferDump < ActiveRecord::Base
     :foreign_key => "networkID",
     :primary_key => "networkID",
     :readonly => true
+    
+  before_save :save_samples
+  serialize :samples, Array
+  
+  def save_samples
+    self[:samples] = @samples if @samples
+  end
 
   def init_samples(size,values)
     @samples = Array.new(size)

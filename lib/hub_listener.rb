@@ -231,6 +231,7 @@ protected
       if @dumps[networkID] then
         log = DeviceLog.create({:code=>-9,:networkID=>networkID})
         @logger.error log.message
+        @dumps[networkID].save
       end
       log = DeviceLog.create({:code=>-10,:networkID=>networkID})
       @logger.info log.message
@@ -254,6 +255,11 @@ protected
       end
       # add the next 24 samples
       @dumps[networkID].add_samples 8+24*(sequenceNumber-1),values[2..25]
+      # save this dump now?
+      if sequenceNumber == 21 then
+        @dumps[networkID].save
+        @dumps[networkID] = nil
+      end
     else
       # we should never see a sequence number > 21
       log = DeviceLog.create({:code=>-11,:networkID=>networkID,
