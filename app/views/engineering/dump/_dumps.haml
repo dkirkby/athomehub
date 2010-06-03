@@ -12,7 +12,7 @@
 			%td&=d.created_at.localtime
 			%td&=time_ago_in_words d.created_at, true
 			%td&=d.networkID
-			%td&=d.source
+			%td&=source_label d
 			%td&=d.micros
 			%td&=d.header
-			%td= link_to "#{d.samples[0]} #{d.samples[1]} #{d.samples[2]} &hellip",:action=>"samples",:format=>:html,:id=>d
+			%td= link_to "#{d.samples[0]},#{d.samples[1]},#{d.samples[2]}, &hellip",:action=>"samples",:format=>:html,:id=>d
