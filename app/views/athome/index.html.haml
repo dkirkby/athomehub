@@ -7,16 +7,21 @@
 			%span#time= format_time @at
 		%table
 			%tr
-				%th.location
-				%th Temp
-				%th Light
-				%th Power
-				%th Cost
+				%th
+				%th.vcol Temp
+				%th.vcol Light
+				%th.vcol Power
+				%th.vcol Cost
 			-@samples.each do |s|
 				%tr
-					%td.location&= s.location
-					%td= sprintf "%.1f&deg;F",1e-2*s.temperature
-					%td= sprintf "%d (%.0f%%)",s.lighting,1e2*s.artificial/s.lighting
+					%td&= s.location
+					%td.temp
+						%span&= sprintf "%.1f",1e-2*s.temperature
+						%span>="&deg;F"
+					%td.light
+						%span&= s.lighting
+						%span><= "/"
+						%span&= s.artificial
 					%td= s.power ? (sprintf "%.1fW",1e-1*s.power) : "&mdash;"
 					%td= s.cost ? (sprintf "$%4.2f",s.cost) : "&mdash;"
 	%ul#navigation
