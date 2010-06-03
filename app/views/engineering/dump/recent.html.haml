@@ -1,0 +1,8 @@
+%h1 Engineering::Dump#recent
+
+-if flash[:notice]
+	#error_msg= flash[:notice]
+
+%p Displaying the most recent #{@n} of #{@count} buffer dumps.
+
+=render :partial => "dumps"

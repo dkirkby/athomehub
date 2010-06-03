@@ -238,6 +238,7 @@ protected
       puts values.inspect
       # create a new dump for this device
       @dumps[networkID] = BufferDump.new({
+        :networkID=>networkID,
         :header=>values[2],
         :type=>values[3].hex,
         :micros=>values[4].hex

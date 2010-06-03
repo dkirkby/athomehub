@@ -1,0 +1,20 @@
+%table
+	%tr
+		%th Timestamp
+		%th Time Ago
+		%th ID
+		%th Type
+		%th Micros
+		%th Header
+	-@dumps.each do |d|
+		%tr
+			%td&=d.created_at.localtime
+			%td&=time_ago_in_words d.created_at, true
+			%td&=d.networkID
+			%td&=d.type
+			%td&=d.micros
+			%td&=d.header
+			%td&=d.samples[0]
+			%td&=d.samples[1]
+			%td&=d.samples[2]
+			%td &hellip;
