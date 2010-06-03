@@ -244,6 +244,14 @@ protected
       # add the first 8 samples
       @dumps[networkID].init_samples 512,values[5..12]
     elsif sequenceNumber <= 21 then
+      # has this dump already been started?
+      if not @dumps[networkID] then
+        log = DeviceLog.create({:code=>-12,:networkID=>networkID,
+          :value=>sequenceNumber})
+        @logger.info warn log.message
+        # create a new dump with unknown type now
+        @dumps[networkID] = BufferDump.new
+      end
       # add the next 24 samples
       @dumps[networkID].add_samples 8+24*(sequenceNumber-1),values[2..25]
     else

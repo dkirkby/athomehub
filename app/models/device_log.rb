@@ -3,6 +3,7 @@ class DeviceLog < ActiveRecord::Base
   before_validation :set_severity
   
   @@messages = {
+    -12=>[:warn,"Device buffer dump missing initial packet at sequence number %d"],
     -11=>[:error,"Device buffer dump has illegal sequence number %d"],
     -10=>[:info,"Receiving new device buffer dump"],
     -9=>[:warn,"Discarding partial device buffer dump"],
