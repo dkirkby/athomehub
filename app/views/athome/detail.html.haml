@@ -9,20 +9,18 @@
 			%span#time= format_time @at
 		%table
 			%tr
-				%th.location
+				%th N
 				%th When 
 				%th Temp
 				%th Light
 				%th Power
-				%th Cost
-			-@samples.each do |s|
+			-@binned.each do |b|
 				%tr
-					%td.location&= s.location
-					%td&=s.created_at.localtime
-					%td= sprintf "%.1f&deg;F",1e-2*s.temperature
-					%td= sprintf "%d (%.0f%%)",s.lighting,1e2*s.artificial/s.lighting
-					%td= s.power ? (sprintf "%.1fW",1e-1*s.power) : "&mdash;"
-					%td= s.cost ? (sprintf "$%4.2f",s.cost) : "&mdash;"
+					%td=b[:nsamples]
+					%td=b[:when].localtime
+					%td=sprintf "%.3f",b[:temperature]
+					%td=sprintf "%.1f",b[:lighting]
+					%td=sprintf "%.2f",b[:power]
 		#footer
 			#ticks
 				-@tick_labels.each do |label|
