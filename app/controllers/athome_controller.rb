@@ -12,7 +12,9 @@ class AthomeController < ApplicationController
   end
   
   def detail
-    @samples = Sample.find(:all,:limit=>10,:readonly=>true)
+    @samples = Sample.find(:all,
+      :conditions=>['networkID = ? and created_at > ? and created_at <= ?',
+      @config.networkID,@begin_at,@end_at],:readonly=>true)
     @note = new_note
   end
   
@@ -118,6 +120,7 @@ protected
         flash.now[:notice] = "Invalid parameter at=\'#{params['end']}\'. Using now (#{@at}) instead."
       end
     end
+    puts "@at = #{@at}"
   end
   
   # Validates input params['id'] and sets @config. Value represents the
@@ -253,10 +256,10 @@ protected
       @index = 0
       flash.now[:notice] = 'No samples have been recorded for this device.'
     end
-    # calculate the timestamp range corresponding to the selected window
-    @mid_at = Time.at(midpoint)
-    @end_at = Time.at(midpoint+interval)
-    @begin_at = Time.at(midpoint-interval)
+    # calculate the UTC timestamp range corresponding to the selected window
+    @mid_at = Time.at(midpoint).utc
+    @end_at = Time.at(midpoint+interval).utc
+    @begin_at = Time.at(midpoint-interval).utc
     # calculate display labels for this window
     label_format,tick_format,num_ticks = @zoomLevels[@zoom][2..4]
     @label = @mid_at.localtime.to_datetime.strftime label_format
