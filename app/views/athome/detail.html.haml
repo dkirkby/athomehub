@@ -9,15 +9,13 @@
 			%span#time= format_time @at
 		%table#detail.graph-me
 			%tr
-				%th N
 				%th When 
 				%th Temp
 				%th Light
 				%th Power
 			-@binned.each do |b|
 				%tr
-					%td=b[:nsamples]
-					%td=b[:when].localtime
+					%td=b[:when]
 					%td=sprintf "%.3f",b[:temperature]
 					%td=sprintf "%.1f",b[:lighting]
 					%td=sprintf "%.2f",b[:power]

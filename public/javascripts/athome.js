@@ -11,8 +11,28 @@ function displayGraphs() {
     // create an empty placeholder for the graph
     var graphID = this.id + '-graph';
     $(this).after("<div id='" + graphID + "' class='graph'>GRAPH GOES HERE</div>");
-    // plot into this graph
-    plot = $.plot($("#" + graphID), [ [[0, 0], [1, 1]] ], { yaxis: { max: 1 } });
+    // prepare the plot data
+    var ncols = $(this).find('th').length;
+    var rowData = $(this).find('tr');
+    var nrows = rowData.length;
+    var plotData = new Array(ncols-1);
+    var col;
+    for(col = 0; col < ncols; col++) {
+      plotData[col] = new Array(nrows-1);
+    }
+    var when;
+    rowData.each(function(row){
+      if(row == 0) return;
+      data = $(this).find('td');
+      when = 1e3*Number(data.html());
+      for(col = 1; col < ncols; col++) {
+        plotData[col][row] = [when,Number($(data[col]).html())];
+      }
+    });
+    // prepare the plot options
+    var plotOptions = { xaxis: { mode: 'time' } };
+    // plot into this placeholder
+    plot = $.plot($("#" + graphID),plotData,plotOptions);
   });
 }
 

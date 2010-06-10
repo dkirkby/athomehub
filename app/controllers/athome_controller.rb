@@ -31,8 +31,7 @@ class AthomeController < ApplicationController
         power += s.power
       end
       @binned << {
-        :nsamples=>nsamples,
-        :when=> Time.at(midpt).utc,
+        :when=> midpt + @tz_offset,
         :lighting=> lighting/nsamples,
         :temperature=> temperature/(100*nsamples),
         :power=> power/(10*nsamples)
@@ -249,10 +248,10 @@ protected
     # calculate the half-window size in seconds
     interval = 0.5*@zoomLevels[@zoom][1]
     # calculate the local timezone offset in seconds
-    tz_offset = @at.localtime.utc_offset
+    @tz_offset = @at.localtime.utc_offset
     # calculate the timestamp (secs since epoch) corresponding to the window
     # midpoint with index=0
-    midpoint_now = interval*((@at.to_i + tz_offset)/interval).floor - tz_offset
+    midpoint_now = interval*((@at.to_i + @tz_offset)/interval).floor - @tz_offset
     # determine the valid index range
     oldest_sample = Sample.find(:first,:order=>'id ASC',
       :conditions=>['networkID = ?',@config.networkID],:readonly=>true)
