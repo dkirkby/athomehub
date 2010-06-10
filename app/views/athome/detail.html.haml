@@ -7,7 +7,7 @@
 		#datetime
 			%span#date= format_date @at
 			%span#time= format_time @at
-		%table
+		%table#detail.graph-me
 			%tr
 				%th N
 				%th When 
@@ -37,7 +37,7 @@
 				%br
 				=submit_tag 'Update'
 			%br
-				="id=#{@config.networkID}, index=#{@index}, zoom=#{@zoom}"
+			="id=#{@config.networkID}, index=#{@index}, zoom=#{@zoom}"
 	%ul#navigation
 		%li home
 		%li=link_to "help"

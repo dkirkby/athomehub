@@ -2,7 +2,19 @@
 
 $(document).ready(function(){
   updateNoteForm();
+  displayGraphs();
 });
+
+// Replaces any tables of class 'graph-me' with a graph
+function displayGraphs() {
+  $('table.graph-me').each(function() {
+    // create an empty placeholder for the graph
+    var graphID = this.id + '-graph';
+    $(this).after("<div id='" + graphID + "' class='graph'>GRAPH GOES HERE</div>");
+    // plot into this graph
+    plot = $.plot($("#" + graphID), [ [[0, 0], [1, 1]] ], { yaxis: { max: 1 } });
+  });
+}
 
 // Updates the note form found on all athome views to enable javascript behaviors
 function updateNoteForm() {
