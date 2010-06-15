@@ -26,9 +26,9 @@ class AthomeController < ApplicationController
       @samples.each do |s|
         next unless (s.created_at.to_f - midpt).abs < binsize/2
         nsamples += 1
-        temperature += s.temperature
-        lighting += s.lighting2
-        power += s.power
+        temperature += (s.temperature or 0)
+        lighting += (s.lighting2 or 0)
+        power += (s.power or 0)
       end
       @binned << {
         :when=> midpt + @tz_offset,
