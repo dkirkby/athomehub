@@ -25,6 +25,8 @@
 					%span&=label
 			&=@label
 			-form_tag '/athome/detail' do
+				=hidden_field_tag 'begin_at',@begin_at.to_i+@tz_offset
+				=hidden_field_tag 'end_at',@end_at.to_i+@tz_offset
 				=hidden_field_tag 'id',@config.networkID
 				=hidden_field_tag 'index',@index
 				=submit_tag 'Oldest',:disabled=>@oldest

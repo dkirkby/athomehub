@@ -30,7 +30,9 @@ function displayGraphs() {
       }
     });
     // prepare the plot options
-    var plotOptions = { xaxis: { mode: 'time' } };
+    var beginAt = 1e3*$('#begin_at').val();
+    var endAt = 1e3*$('#end_at').val();
+    var plotOptions = { xaxis: { mode: 'time', min: beginAt, max: endAt } };
     // plot into this placeholder
     plot = $.plot($("#" + graphID),plotData,plotOptions);
   });
