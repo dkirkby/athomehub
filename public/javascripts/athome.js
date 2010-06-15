@@ -8,33 +8,40 @@ $(document).ready(function(){
 // Replaces any tables of class 'graph-me' with a graph
 function displayGraphs() {
   $('table.graph-me').each(function() {
-    // create an empty placeholder for the graph
-    var graphID = this.id + '-graph';
-    $(this).after("<div id='" + graphID + "' class='graph'>GRAPH GOES HERE</div>");
-    // prepare the plot data
-    var ncols = $(this).find('th').length;
+    // create empty placeholders for the three graphs
+    var tempID = this.id + '-temp';
+    $(this).after("<div id='" + tempID + "' class='graph'>TEMP GRAPH GOES HERE</div>");
+    var tempGraph = $('#'+tempID);
+    var lightID = this.id + '-light';
+    tempGraph.after("<div id='" + lightID + "' class='graph'>LIGHT GRAPH GOES HERE</div>");
+    var lightGraph = $('#'+lightID);
+    var powerID = this.id + '-power';
+    lightGraph.after("<div id='" + powerID + "' class='graph'>POWER GRAPH GOES HERE</div>");
+    var powerGraph = $('#'+powerID);
+    // how many rows of data do we have to graph?
     var rowData = $(this).find('tr');
-    var nrows = rowData.length;
-    var plotData = new Array(ncols-1);
-    var col;
-    for(col = 0; col < ncols; col++) {
-      plotData[col] = new Array(nrows-1);
-    }
-    var when;
-    rowData.each(function(row){
-      if(row == 0) return;
-      data = $(this).find('td');
-      when = 1e3*Number(data.html());
-      for(col = 1; col < ncols; col++) {
-        plotData[col][row] = [when,Number($(data[col]).html())];
-      }
-    });
-    // prepare the plot options
+    var nrows = rowData.length - 1; // do not count the header row
+    // prepare the plot data for each graph
+    var tempData = new Array(nrows);
+    var lightData = new Array(nrows);
+    var powerData = new Array(nrows);
     var beginAt = 1e3*$('#begin_at').val();
     var endAt = 1e3*$('#end_at').val();
+    var when,data;
+    rowData.each(function(row){
+      if(row == 0) return; // skip the header row
+      data = $(this).find('td');
+      when = beginAt + 1e3*Number($(data[1]).html());
+      tempData[row-1] = [when,Number($(data[2]).html())];
+      lightData[row-1] = [when,Number($(data[3]).html())];
+      powerData[row-1] = [when,Number($(data[4]).html())];
+    });
+    // prepare the plot options
     var plotOptions = { xaxis: { mode: 'time', min: beginAt, max: endAt } };
-    // plot into this placeholder
-    plot = $.plot($("#" + graphID),plotData,plotOptions);
+    // plot into each placeholder
+    var tempPlot = $.plot(tempGraph,[{data:tempData}],plotOptions);
+    var lightPlot = $.plot(lightGraph,[{data:lightData}],plotOptions);
+    var powerPlot = $.plot(powerGraph,[{data:powerData}],plotOptions);
   });
 }
 

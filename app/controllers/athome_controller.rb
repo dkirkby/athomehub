@@ -20,6 +20,7 @@ class AthomeController < ApplicationController
     @binned = [ ]
     nbins = 12
     binsize = (@end_at.to_f - @begin_at.to_f)/nbins
+    offset_origin = @begin_at.to_f
     nbins.times do |k|
       midpt = @begin_at.to_f + (k+0.5)*binsize
       nsamples,temperature,lighting,power = 0,0.0,0.0,0.0
@@ -31,7 +32,8 @@ class AthomeController < ApplicationController
         power += (s.power or 0)
       end
       @binned << {
-        :when=> midpt + @tz_offset,
+        :when=> Time.at(midpt).localtime,
+        :offset=> midpt - offset_origin,
         :lighting=> lighting/nsamples,
         :temperature=> temperature/(100*nsamples),
         :power=> power/(10*nsamples)
