@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  networkID: 1
+  binCode: 1
+  temperature: 1.5
+  lighting: 1.5
+  artificial: 1.5
+  power: 1.5
+
+two:
+  networkID: 1
+  binCode: 1
+  temperature: 1.5
+  lighting: 1.5
+  artificial: 1.5
+  power: 1.5
