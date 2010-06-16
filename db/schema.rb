@@ -9,7 +9,18 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100603215350) do
+ActiveRecord::Schema.define(:version => 20100616145202) do
+
+  create_table "binned_samples", :force => true do |t|
+    t.integer  "networkID"
+    t.integer  "binCode"
+    t.float    "temperature"
+    t.float    "lighting"
+    t.float    "artificial"
+    t.float    "power"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "buffer_dumps", :force => true do |t|
     t.datetime "created_at"
