@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100619215005) do
+ActiveRecord::Schema.define(:version => 20100620160804) do
 
   create_table "binned_samples", :force => true do |t|
     t.integer "networkID"
@@ -51,6 +51,12 @@ ActiveRecord::Schema.define(:version => 20100619215005) do
     t.datetime "created_at"
     t.integer  "severity"
     t.integer  "networkID"
+  end
+
+  create_table "hub_samples", :force => true do |t|
+    t.datetime "created_at"
+    t.float    "temperature"
+    t.float    "humidity"
   end
 
   create_table "look_at_mes", :force => true do |t|
