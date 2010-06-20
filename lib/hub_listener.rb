@@ -150,6 +150,25 @@ protected
     end
   end
 
+  # Handles a hub sensor reading message
+  def handleHubSensorReadings(values)
+    if values.length != 2 then
+      log = DeviceLog.create({:code=>-13,:value=>values.length})
+      @logger.error log.message
+      return
+    end
+    # try to parse the two values as floats
+    begin
+      sample = HubSample.new
+      sample.temperature = Float(values[0])
+      sample.humidity = Float(values[1])
+      sample.save
+    rescue ArgumentError
+      log = DeviceLog.create({:code=>-14})
+      @logger.error log.message
+    end
+  end
+
   # Handles a Data message
   def handleData(values)
     # do we have the expected number of values?
@@ -287,6 +306,8 @@ protected
     elsif msgType == 'LOG' then
       log = DeviceLog.create({:code=>values[0],:value=>values[1]})
       @logger.info log.message
+    elsif msgType == 'SENS' then
+      handleHubSensorReadings values
     else
       @logger.warn "Skipping unexpected hub message \"#{msg}\""
     end

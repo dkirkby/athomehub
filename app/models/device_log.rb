@@ -3,6 +3,8 @@ class DeviceLog < ActiveRecord::Base
   before_validation :set_severity
   
   @@messages = {
+    -14=>[:error,"Hub sensor readings have badly formatted values"],
+    -13=>[:error,"Hub sensor readings with unexpected length %d"],
     -12=>[:warn,"Device buffer dump missing initial packet at sequence number %d"],
     -11=>[:error,"Device buffer dump has illegal sequence number %d"],
     -10=>[:info,"Receiving new device buffer dump from source %d"],
