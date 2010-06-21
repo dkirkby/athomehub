@@ -1,0 +1,12 @@
+%table
+	%tr
+		%th Timestamp
+		%th Time Ago
+		%th Temperature (F)
+		%th Relative Humidity (%)
+	-@readings.each do |r|
+		%tr
+			%td&=r.created_at.localtime
+			%td&=time_ago_in_words r.created_at, true
+			%td&=r.temperature
+			%td&=r.humidity
