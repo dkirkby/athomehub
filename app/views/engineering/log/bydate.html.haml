@@ -3,6 +3,6 @@
 -if flash[:notice]
 	#error_msg= flash[:notice]
 
-%p Displaying #{@logs.length} LAMs received during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime} with severity at least #{@level}.
+%p Displaying #{@logs.length} device log messages received during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime} with severity at least #{@level}.
 
 =render :partial => "logs"

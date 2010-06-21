@@ -9,6 +9,9 @@ class Engineering::HubsenseController < Engineering::ApplicationController
   end
 
   def bydate
+    @readings = HubSample.find(:all,
+      :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at],
+      :order=>'created_at DESC',:readonly=>true)
   end
   
 end
