@@ -6,8 +6,9 @@
 
 %table
 	%tr
+		%th Offset (&micro;s)
 		%th ADC Value
-	-@dump.samples.each do |adc|
+	-@dump.samples.each_index do |k|
 		%tr
-			%td&= adc
-	
+			%td&= 200*k
+			%td&= @dump.samples[k]
