@@ -1,11 +1,13 @@
 %h1 Engineering::Dump#samples
 
+%h2= "Source: #{source_label @dump}"
+
+%h2= "Timestamp: #{@dump.micros} &micro;s"
+
 %table
 	%tr
-		%th Timestamp
 		%th ADC Value
-	-@samples.each do |row|
+	-@dump.samples.each do |adc|
 		%tr
-			%td&= row[0]
-			%td&= row[1]
+			%td&= adc
 	
