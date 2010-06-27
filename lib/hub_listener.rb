@@ -276,7 +276,7 @@ protected
       # add the next 24 samples
       @dumps[networkID].add_samples 10+24*(sequenceNumber-1),values[2..25]
       # save this dump now?
-      if sequenceNumber == 11 then
+      if sequenceNumber == 10 then
         @dumps[networkID].save
         @dumps[networkID] = nil
       end
