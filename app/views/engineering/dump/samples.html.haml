@@ -7,6 +7,9 @@
 
 %h2= "Timestamp: #{@dump.micros} &micro;s"
 
+=link_to "Data",:action=>"samples",:format=>:text,:id=>@dump
+=link_to "Recent",:action=>"recent"
+
 :javascript
 	plotData = #{@data.to_json};
 	plotOptions = { series: { points: { show: true }}};
