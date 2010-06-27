@@ -1,4 +1,4 @@
-class Engineering::ConfigController < ApplicationController
+class Engineering::ConfigController < Engineering::ApplicationController
 
   def index
     @configs = DeviceConfig.all
