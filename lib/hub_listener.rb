@@ -263,8 +263,8 @@ protected
         :micros=>values[4].hex
       })
       # add the first 8 samples
-      @dumps[networkID].init_samples 512,values[5..12]
-    elsif sequenceNumber <= 21 then
+      @dumps[networkID].init_samples 250,values[5..14]
+    elsif sequenceNumber <= 10 then
       # has this dump already been started?
       if not @dumps[networkID] then
         log = DeviceLog.create({:code=>-12,:networkID=>networkID,
@@ -274,14 +274,14 @@ protected
         @dumps[networkID] = BufferDump.new
       end
       # add the next 24 samples
-      @dumps[networkID].add_samples 8+24*(sequenceNumber-1),values[2..25]
+      @dumps[networkID].add_samples 10+24*(sequenceNumber-1),values[2..25]
       # save this dump now?
-      if sequenceNumber == 21 then
+      if sequenceNumber == 11 then
         @dumps[networkID].save
         @dumps[networkID] = nil
       end
     else
-      # we should never see a sequence number > 21
+      # we should never see a sequence number > 11
       log = DeviceLog.create({:code=>-11,:networkID=>networkID,
           :value=>sequenceNumber})
       @logger.error log.message
