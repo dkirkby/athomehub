@@ -8,7 +8,7 @@
 	%tr
 		%th Offset (&micro;s)
 		%th ADC Value
-	-@dump.samples.each_index do |k|
+	-@data.each do |row|
 		%tr
-			%td&= 200*k
-			%td&= @dump.samples[k]
+			%td&= row[0]
+			%td&= row[1]

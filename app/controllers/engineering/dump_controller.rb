@@ -15,9 +15,12 @@ class Engineering::DumpController < Engineering::ApplicationController
   end
   
   def samples
-    # Samples are actually timestamp,ADC pairs. Unwrap into a 2-column array here.
-    # We also reconstruct the high-order bits of the 8-bit timestamp counter.
     @dump= BufferDump.find(params['id'])
+    # fill a 2 x 250 table of (time,adc) values
+    @data = Array.new 250
+    @dump.samples.each_index do |k|
+      @data[k] = [ 200*k, @dump.samples[k] ]
+    end
     respond_to do |format|
       format.html
       format.text { render :text=> dump_raw_samples }
@@ -29,8 +32,8 @@ protected
   def dump_raw_samples
     # Dumps raw sample data suitable for gnuplot and offline analysis
     dump = [ "# #{@dump.micros}" ]
-    @dump.samples.each_index do |k|
-      dump << "#{200*k} #{@dump.samples[k]}"
+    @data.each do |row|
+      dump << "#{row[0]} #{row[1]}"
     end
     dump.join "\n"
   end
