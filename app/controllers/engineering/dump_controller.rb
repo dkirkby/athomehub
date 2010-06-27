@@ -20,8 +20,19 @@ class Engineering::DumpController < Engineering::ApplicationController
     @dump= BufferDump.find(params['id'])
     respond_to do |format|
       format.html
-      format.text { render :text=> @samples.inspect }
+      format.text { render :text=> dump_raw_samples }
     end
+  end
+  
+protected
+
+  def dump_raw_samples
+    # Dumps raw sample data suitable for gnuplot and offline analysis
+    dump = [ "# #{@dump.micros}" ]
+    @dump.samples.each_index do |k|
+      dump << "#{200*k} #{@dump.samples[k]}"
+    end
+    dump.join "\n"
   end
 
 end
