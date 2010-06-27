@@ -7,9 +7,11 @@
 
 %h2= "Timestamp: #{@dump.micros} &micro;s"
 
-%script= "plotData = #{@data.to_json};"
+:javascript
+	plotData = #{@data.to_json};
+	plotOptions = { series: { points: { show: true }}};
 
-%table
+%table#dump
 	%tr
 		%th Offset (&micro;s)
 		%th ADC Value
