@@ -12,10 +12,14 @@ $(document).ready(function(){
   });
   
   /* display any analysis plots on this page */
+  var analysisPlotOptions = {
+    xaxis: { mode:"time" },
+    series:{ points:{ show:true,radius:2,fill:false } }
+  };
   $('.analysis-plot').each(function(index) {
     var plotID = this.id + '-plot';
     $(this).after('<div id="' + plotID + '" class="eng-plot"></div>');
-    $.plot($("#" + plotID),analysisPlots[this.id],plotOptions);
+    $.plot($("#" + plotID),analysisPlots[this.id],analysisPlotOptions);
   });
 
 });
