@@ -35,11 +35,17 @@ class Engineering::DumpController < Engineering::ApplicationController
       # the model displays a 60Hz function with the fitted RMS and phase
       amplitude = Math.sqrt(2)*@results[:currentRMS]
       tzero = @results[:currentPhase]
+      offset = @results[:relativePhase]
       mean = @dump.samples.sum/@dump.samples.length
-      @model = Array.new 250
+      @model = [ ]
       250.times do |k|
         t = 200*k # microseconds
-        @model[k] = [t, mean + amplitude*Math.sin(@@omega*(t-tzero))]
+        # insert a fiducial spike before the next point?
+        if (t-offset).modulo(@@micros_per_120Hz) < 200 then
+          tmark = t-100
+          @model << [tmark,mean+amplitude] << [tmark,mean-amplitude]
+        end
+        @model << [t, mean + amplitude*Math.sin(@@omega*(t-tzero))]
       end
     when 4
       # phaseAnalysis
