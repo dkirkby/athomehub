@@ -7,15 +7,17 @@
 
 %p Found #{@dumps.length} dumps for network ID #{@config.networkID} during this interval.
 
-%h2 Voltage Phase Analysis
-
 :javascript
 	analysisPlots = #{@analysisPlots.to_json}
 
-%h3#fidArea.analysis-plot Fiducial Pulse Area
+%h2#fidArea.analysis-plot Fiducial Pulse Area
 
-Area should remain roughly constant over time and not depend on the type of load. Large changes would indicate a problem with the AC voltage fiducial circuit or the AC voltage itself.
+%p Area is measured by overlaying 6 consecutive fiducial pulses and assuming a 60 Hz period. Units are 33 ADC-&micro;s and the maximum possible value, corresponding to a signal that is always high, is 255,750.
 
-%h2 Low-Gain Current Analysis
+%p Area should remain roughly constant over time and not depend on the type of load. Large changes would indicate a problem with the AC voltage fiducial circuit or the AC voltage itself.
 
-%h2 High-Gain Current Analysis
+%h2#relPhase.analysis-plot Current-Voltage Relative Phase
+
+%p Relative phase is the delay in &micro;s between the zero crossing of the 60 Hz component of the measured current and the previous fiducial pulse centroid, modulo a 120 Hz cycle.
+
+%p Relative phase should be stable for a stable load and should match between the HI and LO gain channels for any given load. All purely resistive loads should have the same relative phase, but this is not zero because of the phase delays within the circuit (mostly due to the current amplifier feedback impedance).

@@ -11,6 +11,8 @@ class Engineering::AnalysisController < Engineering::ApplicationController
     # fill arrays of analysis results
     tPh,tLo,tHi = [ ],[ ],[ ]
     fidArea = [ ]
+    nClippedHi,currentComplexityHi,currentRMSHi,relativePhaseHi = [ ],[ ],[ ],[ ]
+    nClippedLo,currentComplexityLo,currentRMSLo,relativePhaseLo = [ ],[ ],[ ],[ ]
     tz_offset = @begin_at.localtime.utc_offset
     @dumps.each do |dump|
       # calculate a unix timestamp in the server timezone, suitable for plotting
@@ -20,8 +22,16 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       case dump.source
       when 0
         tLo << t
+        nClippedLo << params[:nClipped]
+        currentComplexityLo << params[:currentComplexity]
+        currentRMSLo << params[:currentRMS]
+        relativePhaseLo << params[:relativePhase]
       when 1
         tHi << t
+        nClippedHi << params[:nClipped]
+        currentComplexityHi << params[:currentComplexity]
+        currentRMSHi << params[:currentRMS]
+        relativePhaseHi << params[:relativePhase]
       when 4
         tPh << t
         fidArea << params[:moment0]
@@ -30,7 +40,13 @@ class Engineering::AnalysisController < Engineering::ApplicationController
     # zip up (t,y) arrays for plotting and save them in a dictionary
     # that we will pass to javascript via json
     @analysisPlots = {
-      :fidArea => [ { :data => tPh.zip(fidArea) } ]
+      :fidArea => [
+        { :data => tPh.zip(fidArea) }
+      ],
+      :relPhase => [
+        { :data => tLo.zip(relativePhaseLo), :label=> "LO" },
+        { :data => tHi.zip(relativePhaseHi), :label=> "HI" },
+      ]
     }
   end
 
