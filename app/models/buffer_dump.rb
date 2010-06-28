@@ -23,5 +23,28 @@ class BufferDump < ActiveRecord::Base
       @samples[base+k]= v.hex
     end
   end
+  
+  # Unpacks the analysis header and returns a hash of header parameters.
+  # Multi-byte values from device are little-endian.
+  def unpack_header
+    binary = "\0\0\0\0\0\0\0\0\0\0\0"
+    binary.length.times do |k|
+      binary[k] = self.header[2*k,2].hex
+    end
+    case self.source
+    when 0,1
+      # powerAnalysis
+      keys = [:nClipped,:currentComplexity,:currentRMS,:currentPhase,:relativePhase]
+      values = binary.unpack("CCevv")
+      @results = Hash[*keys.zip(values).flatten]
+    when 4
+      # phaseAnalysis
+      keys = [:moment1,:moment0,:voltagePhase,:wrapOffset]
+      values = binary.unpack("VVvC")
+    else
+      keys,values = [ ],[ ]
+    end
+    Hash[*keys.zip(values).flatten]
+  end
 
 end
