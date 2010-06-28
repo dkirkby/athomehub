@@ -31,7 +31,8 @@ class Engineering::DumpController < Engineering::ApplicationController
     if (0..1).include? @dump.source then
       # powerAnalysis
       keys = [:nClipped,:currentComplexity,:currentRMS,:currentPhase,:relativePhase]
-      @results = Hash[*keys.zip(binary.unpack("CCevv")).flatten]
+      values = binary.unpack("CCevv")
+      @results = Hash[*keys.zip(values).flatten]
       # the model displays a 60Hz function with the fitted RMS and phase
       amplitude = Math.sqrt(2)*@results[:currentRMS]
       tzero = @results[:currentPhase]
@@ -40,6 +41,8 @@ class Engineering::DumpController < Engineering::ApplicationController
         t = @model[k][0]
         @model[k][1] = mean + amplitude*Math.sin(@@omega*(t-tzero))
       end
+    else
+      @results = { }
     end
     respond_to do |format|
       format.html
