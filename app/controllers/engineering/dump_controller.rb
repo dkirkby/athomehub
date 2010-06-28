@@ -21,18 +21,12 @@ class Engineering::DumpController < Engineering::ApplicationController
     @dump.samples.each_index do |k|
       @data[k] = [ 200*k, @dump.samples[k] ]
     end
-    # unpack the analysis header (multi-byte values from device are little-endian)
-    binary = "\0\0\0\0\0\0\0\0\0\0\0"
-    binary.length.times do |k|
-      binary[k] = @dump.header[2*k,2].hex
-    end
+    # unpack the analysis header
+    @results = @dump.unpack_header
     case @dump.source
     when 0,1
-      # powerAnalysis
-      keys = [:nClipped,:currentComplexity,:currentRMS,:currentPhase,:relativePhase]
-      values = binary.unpack("CCevv")
-      @results = Hash[*keys.zip(values).flatten]
-      # the model displays a 60Hz function with the fitted RMS and phase
+      # powerAnalysis: model is 60Hz function with the fitted RMS and phase, with
+      # vertical voltage-fiducial marks superimposed.
       amplitude = Math.sqrt(2)*@results[:currentRMS]
       tzero = @results[:currentPhase]
       offset = tzero-@results[:relativePhase]
@@ -52,11 +46,8 @@ class Engineering::DumpController < Engineering::ApplicationController
         @model << [t,fit[t]]
       end
     when 4
-      # phaseAnalysis
-      keys = [:moment1,:moment0,:voltagePhase,:wrapOffset]
-      values = binary.unpack("VVvC")
-      @results = Hash[*keys.zip(values).flatten]
-      # the model has spikes at the fiducial signal centroids
+      # phaseAnalysis: model shows voltage fiducial spikes corresponding to the
+      # mean pulse centroid (modulo 120 Hz)
       @model = [ [0,0] ]
       t = @results[:voltagePhase]
       while t < 50000 do
