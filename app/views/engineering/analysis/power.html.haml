@@ -5,11 +5,15 @@
 
 %p Displaying power analysis for the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
 
-%p Found #{@dumps.length} dumps during this interval.
+%p Found #{@dumps.length} dumps for network ID #{@config.networkID} during this interval.
 
 %h2 Voltage Phase Analysis
 
-=@fidAreaData.inspect
+:javascript
+	analysisPlots = #{@analysisPlots.to_json}
+	plotOptions = { series:{ points:{ show:true,radius:2,fill:false } } };
+
+%h3#fidArea.analysis-plot Fiducial Pulse Area
 
 %h2 Low-Gain Current Analysis
 

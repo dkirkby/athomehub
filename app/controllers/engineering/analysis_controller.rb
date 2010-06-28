@@ -27,8 +27,11 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         fidArea << params[:moment0]
       end
     end
-    # zip up (t,y) arrays for plotting
-    @fidAreaData = tPh.zip fidArea
+    # zip up (t,y) arrays for plotting and save them in a dictionary
+    # that we will pass to javascript via json
+    @analysisPlots = {
+      :fidArea => [ { :data => tPh.zip(fidArea) } ]
+    }
   end
 
 end
