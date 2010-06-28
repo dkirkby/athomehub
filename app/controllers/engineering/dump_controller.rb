@@ -35,8 +35,8 @@ class Engineering::DumpController < Engineering::ApplicationController
       # the model displays a 60Hz function with the fitted RMS and phase
       amplitude = Math.sqrt(2)*@results[:currentRMS]
       tzero = @results[:currentPhase]
-      offset = @results[:relativePhase]
-      mean = @dump.samples.sum/@dump.samples.length
+      offset = tzero-@results[:relativePhase]
+      mean = @dump.samples.sum*1.0/@dump.samples.length
       fit = lambda {|t| mean + amplitude*Math.sin(@@omega*(t-tzero)) }
       @model = [ ]
       dt = 200 # microseconds
@@ -53,8 +53,8 @@ class Engineering::DumpController < Engineering::ApplicationController
       end
     when 4
       # phaseAnalysis
-      keys = [:moment1,:moment0,:voltagePhase]
-      values = binary.unpack("VVv")
+      keys = [:moment1,:moment0,:voltagePhase,:wrapOffset]
+      values = binary.unpack("VVvC")
       @results = Hash[*keys.zip(values).flatten]
       # the model has spikes at the fiducial signal centroids
       @model = [ [0,0] ]
