@@ -11,6 +11,8 @@ class ApplicationController < ActionController::Base
 
 protected
 
+  @@decimalInteger = Regexp.compile("^(0|-?[1-9][0-9]*)$")
+
   # Validates input params['n'] and uses it to set @n
   def valid_n
     @n = 10 # this is the default
@@ -57,6 +59,41 @@ protected
     end
     # compute interval start
     @begin_at = @end_at - @ival
+  end
+  
+  # Validates input params['nid'] and sets @config. Value represents the
+  # networkID of a configured device.
+  def valid_nid
+    @config = nil
+    if params.has_key? 'nid' then
+      # is it a decimal integer?
+      if !!(params['nid'] =~ @@decimalInteger) then
+        nid = params['nid'].to_i
+        # is it in range?
+        if nid < 0 || nid > 255 then
+          error_msg = "Parameter out of range (0-255): nid=#{nid}."
+        else
+          # is there a device registered with this network ID?
+          @config = DeviceConfig.find_by_networkID(nid)
+          if not @config then
+            error_msg = "No such device with nid=#{nid}."
+          end
+        end
+      else
+        error_msg = "Invalid parameter nid=\`#{params['nid']}\`."
+      end
+    else
+      error_msg = "Missing required nid parameter."
+    end
+    # try to pick a default network ID if we don't have a valid selection
+    if not @config then
+      @config = DeviceConfig.find(:first)
+      if @config then
+        flash.now[:notice] = error_msg + " Using nid=#{@config.networkID} instead."
+      else
+        flash.now[:notice] = error_msg + " Aborting with no devices configured."
+      end
+    end
   end
 
 end

@@ -1,7 +1,7 @@
 class AthomeController < ApplicationController
 
   before_filter :valid_at
-  before_filter :valid_id,:only=>:detail
+  before_filter :valid_nid,:only=>:detail
   before_filter :valid_window,:only=>:detail
 
   def index
@@ -112,8 +112,6 @@ class AthomeController < ApplicationController
   
 protected
 
-  @@decimalInteger = Regexp.compile("^(0|-?[1-9][0-9]*)$")
-
   # Prepares an empty new note or retrieves note-id if specified
   def new_note
     if params.has_key? 'note_id' then
@@ -145,41 +143,6 @@ protected
       end
     end
     puts "@at = #{@at}"
-  end
-  
-  # Validates input params['id'] and sets @config. Value represents the
-  # networkID of a configured device.
-  def valid_id
-    @config = nil
-    if params.has_key? 'id' then
-      # is it a decimal integer?
-      if !!(params['id'] =~ @@decimalInteger) then
-        id = params['id'].to_i
-        # is it in range?
-        if id < 0 || id > 255 then
-          error_msg = "Parameter out of range (0-255): id=#{id}."
-        else
-          # is there a device registered with this ID?
-          @config = DeviceConfig.find_by_networkID(id)
-          if not @config then
-            error_msg = "No such device with id=#{id}."
-          end
-        end
-      else
-        error_msg = "Invalid parameter id=\`#{params['id']}\`."
-      end
-    else
-      error_msg = "Missing required id parameter."
-    end
-    # try to pick a default ID if we don't have a valid selection
-    if not @config then
-      @config = DeviceConfig.find(:first)
-      if @config then
-        flash.now[:notice] = error_msg + " Using id=#{@config.networkID} instead."
-      else
-        flash.now[:notice] = error_msg + " Aborting with no devices configured."
-      end
-    end
   end
 
   def valid_window

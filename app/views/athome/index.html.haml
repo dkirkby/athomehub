@@ -14,7 +14,7 @@
 				%th.vcol Cost
 			-@samples.each do |s|
 				%tr
-					%td= link_to s.location, :action=>'detail', :id=>s.networkID
+					%td= link_to s.location, :action=>'detail', :nid=>s.networkID
 					%td.temp
 						%span&= sprintf "%.1f",1e-2*s.temperature
 						%span>="&deg;F"
