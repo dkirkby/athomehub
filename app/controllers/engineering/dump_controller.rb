@@ -37,15 +37,19 @@ class Engineering::DumpController < Engineering::ApplicationController
       tzero = @results[:currentPhase]
       offset = @results[:relativePhase]
       mean = @dump.samples.sum/@dump.samples.length
+      fit = lambda {|t| mean + amplitude*Math.sin(@@omega*(t-tzero)) }
       @model = [ ]
+      dt = 200 # microseconds
       250.times do |k|
-        t = 200*k # microseconds
+        t = dt*k # microseconds
         # insert a fiducial spike before the next point?
-        if (t-offset).modulo(@@micros_per_120Hz) < 200 then
-          tmark = t-100
-          @model << [tmark,mean+amplitude] << [tmark,mean-amplitude]
+        delta = (t-offset).modulo(@@micros_per_120Hz)
+        if delta < dt then
+          tmark = t-delta
+          ymark = fit[tmark]
+          @model << [tmark,ymark] << [tmark,mean+amplitude] << [tmark,mean-amplitude] << [tmark,ymark]
         end
-        @model << [t, mean + amplitude*Math.sin(@@omega*(t-tzero))]
+        @model << [t,fit[t]]
       end
     when 4
       # phaseAnalysis
@@ -56,7 +60,7 @@ class Engineering::DumpController < Engineering::ApplicationController
       @model = [ [0,0] ]
       t = @results[:voltagePhase]
       while t < 50000 do
-        @model << [t-1,0] << [t,1024] << [t+1,0]
+        @model << [t,0] << [t,1024] << [t,0]
         t += @@micros_per_120Hz
       end
       @model << [50000,0]
