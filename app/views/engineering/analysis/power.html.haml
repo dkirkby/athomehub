@@ -10,14 +10,34 @@
 :javascript
 	analysisPlots = #{@analysisPlots.to_json}
 
+%h2#relPhase.analysis-plot Current-Voltage Relative Phase
+
+%p Relative phase is the delay in &micro;s between the zero crossing of the 60 Hz component of the measured current and the previous fiducial pulse centroid, modulo a 120 Hz cycle. The possible range is 0 to 8,333 &micro;s.
+
+%p Relative phase should be stable for a stable load and should match between the HI and LO gain channels for any given load. All purely resistive loads should have the same relative phase, but this is not zero because of the phase delays within the circuit (mostly due to the current amplifier feedback impedance).
+
+%h2 RMS Current Measurement
+
+%p the RMS AC current amplitude at 60 Hz.
+
+%h3#rmsHi.analysis-plot Raw RMS Current Measurement: High-Gain Channel
+
+%p Raw RMS high-gain current measurement in ADC counts.
+
+%h3#rmsLo.analysis-plot Raw RMS Current Measurement: Low-Gain Channel
+
+%p Raw RMS low-gain current measurement in ADC counts.
+
 %h2#fidArea.analysis-plot Fiducial Pulse Area
 
 %p Area is measured by overlaying 6 consecutive fiducial pulses and assuming a 60 Hz period. Units are 33 ADC-&micro;s and the maximum possible value, corresponding to a signal that is always high, is 255,750.
 
 %p Area should remain roughly constant over time and not depend on the type of load. Large changes would indicate a problem with the AC voltage fiducial circuit or the AC voltage itself.
 
-%h2#relPhase.analysis-plot Current-Voltage Relative Phase
+%h2#complexity.analysis-plot Current Waveform Complexity Measure
 
-%p Relative phase is the delay in &micro;s between the zero crossing of the 60 Hz component of the measured current and the previous fiducial pulse centroid, modulo a 120 Hz cycle. The possible range is 0 to 8,333 &micro;s.
+%p The complexity of the measured waveform, defined as the fraction of the waveform's total variance that is not due to a pure 60 Hz component. Calculated as an integer 0-255 with the maximum value indicating a current signal with essentially no 60 Hz component.
 
-%p Relative phase should be stable for a stable load and should match between the HI and LO gain channels for any given load. All purely resistive loads should have the same relative phase, but this is not zero because of the phase delays within the circuit (mostly due to the current amplifier feedback impedance).
+%h2#nClipped.analysis-plot Current Waveform Clipping
+
+%p The number of ADC current measurements that are clipped. The possible range is 0-250.

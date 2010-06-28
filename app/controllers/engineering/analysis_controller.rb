@@ -47,18 +47,34 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       :relPhase => [
         { :data => tHi.zip(relativePhaseHi), :label=> "HI "+stats(relativePhaseHi) },
         { :data => tLo.zip(relativePhaseLo), :label=> "LO "+stats(relativePhaseLo) }
+      ],
+      :rmsHi => [
+        { :data => tHi.zip(currentRMSHi), :label => "HI "+stats(currentRMSHi,"%.3f") }
+      ],
+      :rmsLo => [
+        { :data => tLo.zip(currentRMSLo), :label => "LO "+stats(currentRMSLo,"%.3f") }
+      ],
+      :complexity => [
+        { :data => tHi.zip(currentComplexityHi), :label => "HI "+stats(currentComplexityHi) },
+        { :data => tLo.zip(currentComplexityLo), :label => "LO "+stats(currentComplexityLo) }
+      ],
+      :nClipped => [
+        { :data => tHi.zip(nClippedHi), :label => "HI "+stats(nClippedHi) },
+        { :data => tLo.zip(nClippedLo), :label => "LO "+stats(nClippedLo) }
       ]
     }
   end
   
-  def stats(values,format=nil)
-    format = "%.1f &plusmn; %.1f" unless format
+  def stats(values,floatFormat=nil)
+    # Calculates the mean and RMS of the input values and returns a formatted label
+    floatFormat = "%.1f" unless floatFormat
+    labelFormat = floatFormat + " &plusmn; " + floatFormat
     n = 1.0*values.length
     sum1 = values.sum
     sum2 = values.collect{ |x| x*x }.sum
     mean = sum1/n
     rms = Math.sqrt(sum2/n - sum1*sum1/(n*n))
-    sprintf format,mean,rms
+    sprintf labelFormat,mean,rms
   end
 
 end
