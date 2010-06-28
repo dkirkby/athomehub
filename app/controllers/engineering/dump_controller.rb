@@ -18,8 +18,10 @@ class Engineering::DumpController < Engineering::ApplicationController
     @dump= BufferDump.find(params['id'])
     # fill a 2 x 250 table of (time,adc) values
     @data = Array.new 250
+    @model = Array.new 250
     @dump.samples.each_index do |k|
       @data[k] = [ 200*k, @dump.samples[k] ]
+      @model[k] = [ 200*k, 0.0 ]
     end
     # unpack the analysis header
     binary = "\0\0\0\0\0\0\0\0\0\0\0"
@@ -30,6 +32,14 @@ class Engineering::DumpController < Engineering::ApplicationController
       # powerAnalysis
       keys = [:nClipped,:currentComplexity,:currentRMS,:currentPhase,:relativePhase]
       @results = Hash[*keys.zip(binary.unpack("CCevv")).flatten]
+      # the model displays a 60Hz function with the fitted RMS and phase
+      amplitude = Math.sqrt(2)*@results[:currentRMS]
+      tzero = @results[:currentPhase]
+      mean = @dump.samples.sum/@dump.samples.length
+      250.times do |k|
+        t = @model[k][0]
+        @model[k][1] = mean + amplitude*Math.sin(@@omega*(t-tzero))
+      end
     end
     respond_to do |format|
       format.html
@@ -38,6 +48,8 @@ class Engineering::DumpController < Engineering::ApplicationController
   end
   
 protected
+
+  @@omega = 2*Math::PI*60/1e6
 
   def dump_raw_samples
     # Dumps raw sample data suitable for gnuplot and offline analysis
