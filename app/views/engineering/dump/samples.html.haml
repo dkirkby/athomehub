@@ -7,6 +7,10 @@
 
 %h2= "Timestamp: #{@dump.micros} &micro;s"
 
+%ul
+	-@results.each do |key,value|
+		%li&="#{key} = #{value}"
+
 =link_to "Data",:action=>"samples",:format=>:text,:id=>@dump
 =link_to "Recent",:action=>"recent"
 

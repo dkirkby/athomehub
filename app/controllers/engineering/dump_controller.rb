@@ -21,6 +21,16 @@ class Engineering::DumpController < Engineering::ApplicationController
     @dump.samples.each_index do |k|
       @data[k] = [ 200*k, @dump.samples[k] ]
     end
+    # unpack the analysis header
+    binary = "\0\0\0\0\0\0\0\0\0\0\0"
+    binary.length.times do |k|
+      binary[k] = @dump.header[2*k,2].hex
+    end
+    if (0..1).include? @dump.source then
+      # powerAnalysis
+      keys = [:nClipped,:currentComplexity,:currentRMS,:currentPhase,:relativePhase]
+      @results = Hash[*keys.zip(binary.unpack("CCevv")).flatten]
+    end
     respond_to do |format|
       format.html
       format.text { render :text=> dump_raw_samples }
