@@ -15,8 +15,9 @@ class Engineering::AnalysisController < Engineering::ApplicationController
     nClippedLo,currentComplexityLo,currentRMSLo,relativePhaseLo = [ ],[ ],[ ],[ ]
     tz_offset = @begin_at.localtime.utc_offset
     @dumps.each do |dump|
-      # calculate a unix timestamp in the server timezone, suitable for plotting
-      t = dump.created_at.to_i + tz_offset
+      # calculate a unix timestamp in the server timezone, suitable for plotting.
+      # convert to milliseconds for javascript.
+      t = 1e3*(dump.created_at.to_i + tz_offset)
       # unpack this buffer analysis header
       params = dump.unpack_header
       case dump.source
@@ -41,13 +42,23 @@ class Engineering::AnalysisController < Engineering::ApplicationController
     # that we will pass to javascript via json
     @analysisPlots = {
       :fidArea => [
-        { :data => tPh.zip(fidArea) }
+        { :data => tPh.zip(fidArea), :label=> stats(fidArea) }
       ],
       :relPhase => [
-        { :data => tLo.zip(relativePhaseLo), :label=> "LO" },
-        { :data => tHi.zip(relativePhaseHi), :label=> "HI" },
+        { :data => tHi.zip(relativePhaseHi), :label=> "HI "+stats(relativePhaseHi) },
+        { :data => tLo.zip(relativePhaseLo), :label=> "LO "+stats(relativePhaseLo) }
       ]
     }
+  end
+  
+  def stats(values,format=nil)
+    format = "%.1f &plusmn; %.1f" unless format
+    n = 1.0*values.length
+    sum1 = values.sum
+    sum2 = values.collect{ |x| x*x }.sum
+    mean = sum1/n
+    rms = Math.sqrt(sum2/n - sum1*sum1/(n*n))
+    sprintf format,mean,rms
   end
 
 end
