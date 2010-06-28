@@ -10,10 +10,13 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       :order=>'id ASC',:readonly=>true)
     # fill arrays of analysis results
     tPh,tLo,tHi = [ ],[ ],[ ]
+    fidArea = [ ]
     tz_offset = @begin_at.localtime.utc_offset
     @dumps.each do |dump|
       # calculate a unix timestamp in the server timezone, suitable for plotting
       t = dump.created_at.to_i + tz_offset
+      # unpack this buffer analysis header
+      params = dump.unpack_header
       case dump.source
       when 0
         tLo << t
@@ -21,8 +24,11 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         tHi << t
       when 4
         tPh << t
+        fidArea << params[:moment0]
       end
     end
+    # zip up (t,y) arrays for plotting
+    @fidAreaData = tPh.zip fidArea
   end
 
 end
