@@ -10,11 +10,20 @@
 :javascript
 	analysisPlots = #{@analysisPlots.to_json}
 
-%h2#relPhase.analysis-plot Current-Voltage Relative Phase
+%h2 Current-Voltage Relative Phase
 
-%p Relative phase is the delay in &micro;s between the zero crossing of the 60 Hz component of the measured current and the previous fiducial pulse centroid, modulo a 120 Hz cycle. The possible range is 0 to 8,333 &micro;s.
+%h3#relPhase.analysis-plot Raw Phase Shift
+
+%p The raw phase shift is the delay in &micro;s between the zero crossing of the 60 Hz component of the measured current and the previous fiducial pulse centroid, modulo a 120 Hz cycle. The possible range is 0 to 8,333 &micro;s.
 
 %p Relative phase should be stable for a stable load and should match between the HI and LO gain channels for any given load. All purely resistive loads should have the same relative phase, but this is not zero because of the phase delays within the circuit (mostly due to the current amplifier feedback impedance).
+
+%h3#calPhase.analysis-plot Calibrated Phase Shift
+
+%p Phase shifts are adjusted to ideally be zero for a purely resistive load using this device's current calibrations:
+%ul
+	%li Hi-Gain: #{@config.fiducialShiftHi} &mu;s
+	%li Hi-Lo Delta: #{@config.fiducialHiLoDelta} &mu;s
 
 %h2 RMS Current Measurement
 
@@ -27,6 +36,13 @@
 %h3#rmsLo.analysis-plot Raw RMS Current Measurement: Low-Gain Channel
 
 %p Raw RMS low-gain current measurement in ADC counts.
+
+%h3#rmsCal.analysis-plot Calibrated RMS Current Measurements
+
+%p ADC measurements are scaled to Watts using this device's current calibrations:
+%ul
+	%li Hi-Gain: #{@config.powerGainHi} mW/ADC
+	%li Lo-Gain: #{@config.powerGainLo} mW/ADC
 
 %h2#fidArea.analysis-plot Fiducial Pulse Area
 

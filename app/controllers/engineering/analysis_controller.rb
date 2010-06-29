@@ -13,6 +13,7 @@ class Engineering::AnalysisController < Engineering::ApplicationController
     fidArea = [ ]
     nClippedHi,currentComplexityHi,currentRMSHi,relativePhaseHi = [ ],[ ],[ ],[ ]
     nClippedLo,currentComplexityLo,currentRMSLo,relativePhaseLo = [ ],[ ],[ ],[ ]
+    calRMSLo,calRMSHi,calPhaseLo,calPhaseHi = [ ],[ ],[ ],[ ]
     tz_offset = @begin_at.localtime.utc_offset
     @dumps.each do |dump|
       # calculate a unix timestamp in the server timezone, suitable for plotting.
@@ -27,12 +28,16 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         currentComplexityLo << params[:currentComplexity]
         currentRMSLo << params[:currentRMS]
         relativePhaseLo << params[:relativePhase]
+        calRMSLo << 1e-3*params[:currentRMS]*@config.powerGainLo
+        calPhaseLo << params[:relativePhase] - @config.fiducialShiftHi + @config.fiducialHiLoDelta
       when 1
         tHi << t
         nClippedHi << params[:nClipped]
         currentComplexityHi << params[:currentComplexity]
         currentRMSHi << params[:currentRMS]
         relativePhaseHi << params[:relativePhase]
+        calRMSHi << 1e-3*params[:currentRMS]*@config.powerGainHi
+        calPhaseHi << params[:relativePhase] - @config.fiducialShiftHi
       when 4
         tPh << t
         fidArea << params[:moment0]
@@ -48,11 +53,19 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         { :data => tHi.zip(relativePhaseHi), :label=> "HI "+stats(relativePhaseHi) },
         { :data => tLo.zip(relativePhaseLo), :label=> "LO "+stats(relativePhaseLo) }
       ],
+      :calPhase => [
+        { :data => tHi.zip(calPhaseHi), :label=> "HI "+stats(calPhaseHi) },
+        { :data => tLo.zip(calPhaseLo), :label=> "LO "+stats(calPhaseLo) },
+      ],
       :rmsHi => [
         { :data => tHi.zip(currentRMSHi), :label => "HI "+stats(currentRMSHi,"%.3f") }
       ],
       :rmsLo => [
         { :data => tLo.zip(currentRMSLo), :label => "LO "+stats(currentRMSLo,"%.3f") }
+      ],
+      :rmsCal => [
+        { :data => tHi.zip(calRMSHi), :label => "HI "+stats(calRMSHi) },
+        { :data => tLo.zip(calRMSLo), :label => "LO "+stats(calRMSLo) }
       ],
       :complexity => [
         { :data => tHi.zip(currentComplexityHi), :label => "HI "+stats(currentComplexityHi) },
