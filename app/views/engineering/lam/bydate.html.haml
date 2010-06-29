@@ -1,8 +1,5 @@
 %h1 Engineering::Lam#bydate
 
--if flash[:notice]
-	#error_msg= flash[:notice]
-
 %p Displaying #{@lams.length} LAMs received during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
 
 =render :partial => "lams"

@@ -1,8 +1,5 @@
 %h1 Engineering::Dump#bydate
 
--if flash[:notice]
-	#error_msg= flash[:notice]
-
 %p Displaying #{@dumps.length} buffer dumps received during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
 
 =render :partial => "dumps"
