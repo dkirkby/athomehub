@@ -5,26 +5,26 @@
 
 Displaying #{@configs.length} device configurations.
 
-%table
+%table.small-text
 	%tr
 		%th Last Updated
 		%th Location
 		%th Network ID
 		%th Serial Number
-		%th Lighting Feedback?
-		%th Temperature Feedback?
-		%th Lighting Dumps?
-		%th Power Dumps?
+		%th Light FB?
+		%th Temp FB?
+		%th Light Dumps?
+		%th Pwr Dumps?
 		%th Dump Interval (cycles)
 		%th Min Comfort (F)
 		%th Max Comfort (F)
 		%th Self Heat Offset (F/100)
 		%th Self Heat Delay (sec*10)
-		%th Fiducial Shift Hi (&mu;s)
-		%th Fiducial Hi-Lo Delta (&mu;s)
-		%th Power Gain Hi (mW/ADC)
-		%th Power Gain Lo (mW/ADC)
-		%th Max Hi Clipping
+		%th Fid Shift Hi (&mu;s)
+		%th Fid Hi-Lo Delta (&mu;s)
+		%th Pwr Gain Hi (mW/ADC)
+		%th Pwr Gain Lo (mW/ADC)
+		%th Max Hi Clip
 	-@configs.each do |c|
 		%tr
 			%td&="#{time_ago_in_words c.updated_at} ago"
