@@ -43,11 +43,13 @@ class DeviceConfig < ActiveRecord::Base
     capabilities |= (1<<1) if lightingFeedback
     capabilities |= (1<<2) if lightingDump
     capabilities |= (1<<3) if powerDump
-    # convert our decimal temperatures to 100xdegF
-    minTempFixed = (100*minTemperature).round
-    maxTempFixed = (100*maxTemperature).round
-    # pack our fields in a little-endian structure
-    packed = [networkID,capabilities,minTempFixed,maxTempFixed].pack("CCvv")
+    # pack our fields in a little-endian structure:
+    # uint8_t -> C, uint16_t -> v
+    packed = [
+      networkID,capabilities,dumpInterval,
+      comfortTempMin,comfortTempMax,selfHeatOffset,selfHeatDelay,
+      fiducialHiLoDelta,fiducialShiftHi,powerGainHi,powerGainLo,nclipCut
+    ].pack("CCCCCvCCvvvC")
     # serialize to hex digits
     serialized = packed.unpack("C*").map! { |c| sprintf "%02x",c }.join
     # add the command header and terminating newline
