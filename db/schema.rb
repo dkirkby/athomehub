@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100629011846) do
+ActiveRecord::Schema.define(:version => 20100629012316) do
 
   create_table "binned_samples", :force => true do |t|
     t.integer "networkID"
@@ -41,6 +41,15 @@ ActiveRecord::Schema.define(:version => 20100629011846) do
     t.string   "serialNumber"
     t.boolean  "lightingDump"
     t.boolean  "powerDump"
+    t.integer  "comfortTempMin"
+    t.integer  "comfortTempMax"
+    t.integer  "selfHeatOffset"
+    t.integer  "selfHeatDelay"
+    t.integer  "fiducialHiLoDelta"
+    t.integer  "fiducialShiftHi"
+    t.integer  "powerGainHi"
+    t.integer  "powerGainLo"
+    t.integer  "nClipCut"
   end
 
   create_table "device_logs", :force => true do |t|
