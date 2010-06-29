@@ -42,6 +42,7 @@ Displaying #{@configs.length} device configurations.
 			%td&=c.powerGainHi
 			%td&=c.powerGainLo
 			%td&=c.nClipCut
+			%td=link_to 'Raw', :action=>:raw, :id=> c, :format=> :text
 			%td=link_to 'Edit', :action=>:edit, :id => c
 			%td=link_to 'Delete', {:action=>:destroy, :id=>c}, options=:confirm => 'Are you sure?'
 

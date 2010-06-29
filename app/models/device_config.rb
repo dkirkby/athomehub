@@ -36,19 +36,22 @@ class DeviceConfig < ActiveRecord::Base
     errors.add_to_base("min temperature must be < max temperature") unless comfortTempMin < comfortTempMax
   end
 
+  def capabilities
+    # packs the bits describing this device's enabled capabilities
+    bits = 0
+    bits |= (1<<0) if temperatureFeedback
+    bits |= (1<<1) if lightingFeedback
+    bits |= (1<<2) if lightingDump
+    bits |= (1<<3) if powerDump
+  end
+
   def serialize_for_device
-    # pack the bits describing this device's enabled capabilities
-    capabilities = 0
-    capabilities |= (1<<0) if temperatureFeedback
-    capabilities |= (1<<1) if lightingFeedback
-    capabilities |= (1<<2) if lightingDump
-    capabilities |= (1<<3) if powerDump
     # pack our fields in a little-endian structure:
     # uint8_t -> C, uint16_t -> v
     packed = [
-      networkID,capabilities,dumpInterval,
+      networkID,capabilities(),dumpInterval,
       comfortTempMin,comfortTempMax,selfHeatOffset,selfHeatDelay,
-      fiducialHiLoDelta,fiducialShiftHi,powerGainHi,powerGainLo,nclipCut
+      fiducialHiLoDelta,fiducialShiftHi,powerGainHi,powerGainLo,nClipCut
     ].pack("CCCCCvCCvvvC")
     # serialize to hex digits
     serialized = packed.unpack("C*").map! { |c| sprintf "%02x",c }.join
@@ -58,11 +61,11 @@ class DeviceConfig < ActiveRecord::Base
 
   def lcd_format
     # displays the config in the same format as the device on its optional LCD
-    line1 = sprintf "%8s%02x%02x%02x%02x\n",serialNumber,networkID,capabilities,
+    line1 = sprintf "%8s%02X%02X%02X%02X\n",serialNumber,networkID,capabilities(),
       dumpInterval,selfHeatDelay
-    line2 = sprintf "%04x%04x%02x%02x%04x\n",powerGainLo,powerGainHi,
+    line2 = sprintf "%04X%04X%02X%02X%04X\n",powerGainLo,powerGainHi,
       comfortTempMin,comfortTempMax,selfHeatOffset
-    line3 = sprintf "%04x%04x\n",fiducialShiftHi,fiducialHiLoDelta
+    line3 = sprintf "%04X%02X%02X........\n",fiducialShiftHi,fiducialHiLoDelta,nClipCut
     line4 = "................\n"
     line1 + line2 + line3 + line4
   end

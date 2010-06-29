@@ -37,5 +37,12 @@ class Engineering::ConfigController < Engineering::ApplicationController
     @config.destroy
     redirect_to :action=>"index"
   end
+  
+  def raw
+    @config = DeviceConfig.find(params[:id])
+    respond_to do |format|
+      format.text { render :text=> @config.serialize_for_device + @config.lcd_format }
+    end
+  end
 
 end
