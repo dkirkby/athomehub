@@ -20,6 +20,11 @@ Displaying #{@configs.length} device configurations.
 		%th Max Comfort (F)
 		%th Self Heat Offset (F/100)
 		%th Self Heat Delay (sec*10)
+		%th Fiducial Shift Hi (&mu;s)
+		%th Fiducial Hi-Lo Delta (&mu;s)
+		%th Power Gain Hi (mW/ADC)
+		%th Power Gain Lo (mW/ADC)
+		%th Max Hi Clipping
 	-@configs.each do |c|
 		%tr
 			%td&="#{time_ago_in_words c.updated_at} ago"
@@ -35,6 +40,11 @@ Displaying #{@configs.length} device configurations.
 			%td&=c.comfortTempMax
 			%td&=c.selfHeatOffset
 			%td&=c.selfHeatDelay
+			%td&=c.fiducialShiftHi
+			%td&=c.fiducialHiLoDelta
+			%td&=c.powerGainHi
+			%td&=c.powerGainLo
+			%td&=c.nClipCut
 			%td=link_to 'Edit', :action=>:edit, :id => c
 			%td=link_to 'Delete', {:action=>:destroy, :id=>c}, options=:confirm => 'Are you sure?'
 
