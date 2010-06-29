@@ -4,11 +4,27 @@ class DeviceConfig < ActiveRecord::Base
   validates_uniqueness_of :networkID
   validates_uniqueness_of :location
 
-  validates_numericality_of :minTemperature,
-    :greater_than_or_equal_to=>0, :less_than=>200
-  validates_numericality_of :maxTemperature,
-    :greater_than_or_equal_to=>0, :less_than=>200
   validates_numericality_of :networkID, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>255
+  validates_numericality_of :dumpInterval, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>255
+  validates_numericality_of :comfortTempMin, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>256
+  validates_numericality_of :comfortTempMax, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>256
+  validates_numericality_of :selfHeatOffset, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>65535
+  validates_numericality_of :selfHeatDelay, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>255
+  validates_numericality_of :fiducialHiLoDelta, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>255
+  validates_numericality_of :fiducialShiftHi, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>65535
+  validates_numericality_of :powerGainHi, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>65535
+  validates_numericality_of :powerGainLo, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>65535
+  validates_numericality_of :nClipCut, :only_integer=>true,
     :greater_than_or_equal_to=>0, :less_than=>255
     
   validates_format_of :serialNumber, :with=>/^[0-9a-fA-F]{8}$/,
@@ -17,7 +33,7 @@ class DeviceConfig < ActiveRecord::Base
   validate :min_less_than_max
   
   def min_less_than_max
-    errors.add_to_base("min temperature must be < max temperature") unless minTemperature < maxTemperature
+    errors.add_to_base("min temperature must be < max temperature") unless comfortTempMin < comfortTempMax
   end
 
   def serialize_for_device
