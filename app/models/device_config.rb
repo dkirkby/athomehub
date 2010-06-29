@@ -56,4 +56,15 @@ class DeviceConfig < ActiveRecord::Base
     "C #{serialNumber} #{serialized}\n"
   end
 
+  def lcd_format
+    # displays the config in the same format as the device on its optional LCD
+    line1 = sprintf "%8s%02x%02x%02x%02x\n",serialNumber,networkID,capabilities,
+      dumpInterval,selfHeatDelay
+    line2 = sprintf "%04x%04x%02x%02x%04x\n",powerGainLo,powerGainHi,
+      comfortTempMin,comfortTempMax,selfHeatOffset
+    line3 = sprintf "%04x%04x\n",fiducialShiftHi,fiducialHiLoDelta
+    line4 = "................\n"
+    line1 + line2 + line3 + line4
+  end
+
 end
