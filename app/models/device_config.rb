@@ -5,27 +5,27 @@ class DeviceConfig < ActiveRecord::Base
   validates_uniqueness_of :location
 
   validates_numericality_of :networkID, :only_integer=>true,
-    :greater_than_or_equal_to=>0, :less_than=>255
+    :greater_than_or_equal_to=>0, :less_than=>256
   validates_numericality_of :dumpInterval, :only_integer=>true,
-    :greater_than_or_equal_to=>0, :less_than=>255
+    :greater_than_or_equal_to=>2, :less_than=>256
   validates_numericality_of :comfortTempMin, :only_integer=>true,
     :greater_than_or_equal_to=>0, :less_than=>256
   validates_numericality_of :comfortTempMax, :only_integer=>true,
     :greater_than_or_equal_to=>0, :less_than=>256
   validates_numericality_of :selfHeatOffset, :only_integer=>true,
-    :greater_than_or_equal_to=>0, :less_than=>65535
+    :greater_than_or_equal_to=>0, :less_than=>65536
   validates_numericality_of :selfHeatDelay, :only_integer=>true,
-    :greater_than_or_equal_to=>0, :less_than=>255
+    :greater_than_or_equal_to=>0, :less_than=>256
   validates_numericality_of :fiducialHiLoDelta, :only_integer=>true,
-    :greater_than_or_equal_to=>0, :less_than=>255
+    :greater_than_or_equal_to=>0, :less_than=>256
   validates_numericality_of :fiducialShiftHi, :only_integer=>true,
-    :greater_than_or_equal_to=>0, :less_than=>65535
+    :greater_than_or_equal_to=>0, :less_than=>65536
   validates_numericality_of :powerGainHi, :only_integer=>true,
-    :greater_than_or_equal_to=>0, :less_than=>65535
+    :greater_than_or_equal_to=>0, :less_than=>65536
   validates_numericality_of :powerGainLo, :only_integer=>true,
-    :greater_than_or_equal_to=>0, :less_than=>65535
+    :greater_than_or_equal_to=>0, :less_than=>65536
   validates_numericality_of :nClipCut, :only_integer=>true,
-    :greater_than_or_equal_to=>0, :less_than=>255
+    :greater_than_or_equal_to=>0, :less_than=>256
     
   validates_format_of :serialNumber, :with=>/^[0-9a-fA-F]{8}$/,
     :message=>"is invalid (expected 8 hex digits)"
