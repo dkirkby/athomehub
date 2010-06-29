@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100620160804) do
+ActiveRecord::Schema.define(:version => 20100629011846) do
 
   create_table "binned_samples", :force => true do |t|
     t.integer "networkID"
@@ -36,8 +36,6 @@ ActiveRecord::Schema.define(:version => 20100620160804) do
     t.integer  "networkID"
     t.boolean  "lightingFeedback"
     t.boolean  "temperatureFeedback"
-    t.decimal  "minTemperature",      :precision => 5, :scale => 2
-    t.decimal  "maxTemperature",      :precision => 5, :scale => 2
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "serialNumber"
