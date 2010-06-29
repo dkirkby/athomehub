@@ -7,9 +7,9 @@
 	Location (must be unique)
 	%br
 	= @form.text_field :location, :size=>40
+
+%h3 Capabilities
 %p
-	Capabilities		
-	%br
 	= @form.check_box :lightingFeedback
 	lighting feedback
 	= @form.check_box :temperatureFeedback
@@ -21,8 +21,10 @@
 	%br
 	Buffer dump interval (cycles, 0-255):
 	= @form.text_field :dumpInterval, :size=>3
+
+%h3 Temperature Configuration
 %p
-	Temperature comfort zone
+	Comfort zone
 	%br
 	Minimum (F, 0-255):
 	= @form.text_field :comfortTempMin, :size=>3
@@ -35,19 +37,21 @@
 	= @form.text_field :selfHeatOffset, :size=>5
 	Delay (secs*10, 0-255):
 	= @form.text_field :selfHeatDelay, :size=>3
+
+%h3 Power Analysis Configuration
 %p
-	Power analysis phase calibration
+	Relative phase calibration
 	%br
 	Hi-Gain Shift (&mu;s, 0-65535):
 	= @form.text_field :fiducialShiftHi, :size=>5
 	Hi-Lo Delta (&mu;s 0-255):
 	= @form.text_field :fiducialHiLoDelta, :size=>3
 %p
-	Power analysis gains
+	Current to power calibration
 	%br
 	High-gain channel (mW/ADC, 0-65535):
-	= @form.text_field :powerGainHi :size=>5
+	= @form.text_field :powerGainHi, :size=>5
 	Low-gain channel (mW/ADC, 0-65535):
-	= @form.text_field :powerGainLo :size=>5
+	= @form.text_field :powerGainLo, :size=>5
 	Max high-gain clipping (samples, 0-255):
-	= @form.text_field :nClipCut :size=>3
+	= @form.text_field :nClipCut, :size=>3
