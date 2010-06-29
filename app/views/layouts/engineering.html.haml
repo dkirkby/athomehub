@@ -8,6 +8,6 @@
 		=javascript_include_tag 'jquery','application'
 		=yield :head
 	%body
-		=yield
 		-if flash[:notice]
 			#flash&= flash[:notice]
+		=yield
