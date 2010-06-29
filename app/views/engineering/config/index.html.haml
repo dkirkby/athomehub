@@ -15,9 +15,11 @@ Displaying #{@configs.length} device configurations.
 		%th Temperature Feedback?
 		%th Lighting Dumps?
 		%th Power Dumps?
-		%th Min Temperature (F)
-		%th Max Temperature (F)
-
+		%th Dump Interval (cycles)
+		%th Min Comfort (F)
+		%th Max Comfort (F)
+		%th Self Heat Offset (F/100)
+		%th Self Heat Delay (sec*10)
 	-@configs.each do |c|
 		%tr
 			%td&="#{time_ago_in_words c.updated_at} ago"
@@ -28,8 +30,11 @@ Displaying #{@configs.length} device configurations.
 			%td&=c.temperatureFeedback
 			%td&=c.lightingDump
 			%td&=c.powerDump
-			%td&=c.minTemperature
-			%td&=c.maxTemperature
+			%td&=c.dumpInterval
+			%td&=c.comfortTempMin
+			%td&=c.comfortTempMax
+			%td&=c.selfHeatOffset
+			%td&=c.selfHeatDelay
 			%td=link_to 'Edit', :action=>:edit, :id => c
 			%td=link_to 'Delete', {:action=>:destroy, :id=>c}, options=:confirm => 'Are you sure?'
 

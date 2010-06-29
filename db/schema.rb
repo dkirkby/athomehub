@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100629012316) do
+ActiveRecord::Schema.define(:version => 20100629013820) do
 
   create_table "binned_samples", :force => true do |t|
     t.integer "networkID"
@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(:version => 20100629012316) do
     t.integer  "powerGainHi"
     t.integer  "powerGainLo"
     t.integer  "nClipCut"
+    t.integer  "dumpInterval"
   end
 
   create_table "device_logs", :force => true do |t|
