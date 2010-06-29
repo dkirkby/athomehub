@@ -18,10 +18,36 @@
 	lighting buffer dumps
 	= @form.check_box :powerDump
 	power buffer dumps
+	%br
+	Buffer dump interval (cycles, 0-255):
+	= @form.text_field :dumpInterval, :size=>3
 %p
 	Temperature comfort zone
 	%br
-	Minimum (F):
-	= @form.text_field :minTemperature, :size=>6
-	Maximum (F):
-	= @form.text_field :maxTemperature, :size=>6
+	Minimum (F, 0-255):
+	= @form.text_field :comfortTempMin, :size=>3
+	Maximum (F, 0-255):
+	= @form.text_field :comfortTempMax, :size=>3
+%p
+	Self-heating correction
+	%br
+	Offset (F/100, 0-65535):
+	= @form.text_field :selfHeatOffset, :size=>5
+	Delay (secs*10, 0-255):
+	= @form.text_field :selfHeatDelay, :size=>3
+%p
+	Power analysis phase calibration
+	%br
+	Hi-Gain Shift (&mu;s, 0-65535):
+	= @form.text_field :fiducialShiftHi, :size=>5
+	Hi-Lo Delta (&mu;s 0-255):
+	= @form.text_field :fiducialHiLoDelta, :size=>3
+%p
+	Power analysis gains
+	%br
+	High-gain channel (mW/ADC, 0-65535):
+	= @form.text_field :powerGainHi :size=>5
+	Low-gain channel (mW/ADC, 0-65535):
+	= @form.text_field :powerGainLo :size=>5
+	Max high-gain clipping (samples, 0-255):
+	= @form.text_field :nClipCut :size=>3
