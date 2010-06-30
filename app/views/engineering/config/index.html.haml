@@ -4,7 +4,7 @@ Displaying #{@configs.length} device configurations.
 
 %table.small-text
 	%tr
-		%th Last Updated
+		%th Created
 		%th Location
 		%th Network ID
 		%th Serial Number
@@ -24,7 +24,7 @@ Displaying #{@configs.length} device configurations.
 		%th Max Hi Clip
 	-@configs.each do |c|
 		%tr
-			%td&="#{time_ago_in_words c.updated_at} ago"
+			%td&="#{time_ago_in_words c.created_at} ago"
 			%td&=c.location
 			%td&=c.networkID
 			%td&=format_serialNumber c.serialNumber
