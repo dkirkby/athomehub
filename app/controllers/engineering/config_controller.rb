@@ -32,12 +32,6 @@ class Engineering::ConfigController < Engineering::ApplicationController
     end
   end
 
-  def destroy
-    @config = DeviceConfig.find(params[:id])
-    @config.destroy
-    redirect_to :action=>"index"
-  end
-  
   def raw
     @config = DeviceConfig.find(params[:id])
     respond_to do |format|
