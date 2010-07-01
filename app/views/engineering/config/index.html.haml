@@ -4,6 +4,7 @@ Displaying #{@configs.length} device configurations.
 
 %table.small-text
 	%tr
+		%th ID
 		%th Created
 		%th Location
 		%th Network ID
@@ -24,6 +25,7 @@ Displaying #{@configs.length} device configurations.
 		%th Max Hi Clip
 	-@configs.each do |c|
 		%tr
+			%td&=c.id
 			%td&="#{time_ago_in_words c.created_at} ago"
 			%td&=c.location
 			%td&=c.networkID
@@ -42,8 +44,8 @@ Displaying #{@configs.length} device configurations.
 			%td&=c.powerGainHi
 			%td&=c.powerGainLo
 			%td&=c.nClipCut
+			%td=link_to 'Update', :action=>:edit, :id => c
 			%td=link_to 'Raw', :action=>:raw, :id=> c, :format=> :text
-			%td=link_to 'Edit', :action=>:edit, :id => c
 
 %br
 

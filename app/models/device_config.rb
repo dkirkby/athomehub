@@ -1,9 +1,5 @@
 class DeviceConfig < ActiveRecord::Base
 
-  validates_uniqueness_of :serialNumber
-  validates_uniqueness_of :networkID
-  validates_uniqueness_of :location
-
   validates_numericality_of :networkID, :only_integer=>true,
     :greater_than_or_equal_to=>0, :less_than=>256
   validates_numericality_of :dumpInterval, :only_integer=>true,
@@ -27,13 +23,27 @@ class DeviceConfig < ActiveRecord::Base
   validates_numericality_of :nClipCut, :only_integer=>true,
     :greater_than_or_equal_to=>0, :less_than=>256
     
-  validates_format_of :serialNumber, :with=>/^[0-9a-fA-F]{8}$/,
-    :message=>"is invalid (expected 8 hex digits)"
+  validates_format_of :serialNumber, :with=>/^[0-9A-F]{8}$/,
+    :message=>"is invalid (expected 8 upper-case hex digits)"
     
-  validate :min_less_than_max
+  validate_on_create :min_less_than_max
+  validate_on_create :active_configs_are_unique
   
   def min_less_than_max
     errors.add_to_base("min temperature must be < max temperature") unless comfortTempMin < comfortTempMax
+  end
+  
+  def active_configs_are_unique
+    # lookup the most recent config for each serial number
+    active = DeviceConfig.find(:all,:group=>:serialNumber,:readonly=>true)
+    active.each do |config|
+      # skip any existing config with the serial number we are updating
+      next if config.serialNumber == serialNumber
+      # check for a duplicate networkID
+      errors.add_to_base("Device #{config.serialNumber} is already using network ID #{networkID}") if config.networkID == networkID
+      # check for a duplicate location
+      errors.add_to_base("Device #{config.serialNumber} is already at location \"#{location}\"") if config.location == location
+    end
   end
 
   def capabilities
