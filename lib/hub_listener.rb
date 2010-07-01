@@ -4,7 +4,7 @@ class HubListener
   
   include Singleton
   
-  @@periodicInterval = 2.seconds
+  @@periodicInterval = 5.seconds
   
   # Looks for a running listener process and sets the @pid global if one
   # is found.
@@ -141,11 +141,17 @@ protected
     lam.save
     # should we respond with a config message?
     if not lam.is_hub? and lam.serialNumber != '00000000' then
-      config = DeviceConfig.find_by_serialNumber(lam.serialNumber)
+      # find the most recent config for this device
+      config = DeviceConfig.find(:last,:readonly=>true,:order=>'id ASC',
+        :conditions=>['serialNumber = ?',lam.serialNumber])
       if config then
+        @logger.info "Found config ID #{config.id} created at #{config.created_at.localtime} for SN #{lam.serialNumber}"
         config_msg = config.serialize_for_device
-        @logger.info "Sending config #{config_msg}"
+        @logger.info "Sending config command #{config_msg.rstrip}"
         @hub.write(config_msg)
+        # remember that this device has been sent this configuration
+        @configs[lam.serialNumber] = config
+        @config_max_id = config.id if config.id > @config_max_id
       else
         @logger.warn "No config found for SN #{lam.serialNumber}"
       end
@@ -317,8 +323,15 @@ protected
   
   # Performs periodic housekeeping
   def periodicHandler
-    nextAt = Time.now + @@periodicInterval
-    puts "periodicHandler firing at #{Time.now}"
+    now = Time.now
+    nextAt = now + @@periodicInterval
+    puts "periodicHandler firing at #{now}"
+    # look for any new device configurations
+    new_configs = DeviceConfig.find(:all,:readonly=>true,:order=>'id ASC',
+      :conditions=>['id > ?',@config_max_id])
+    new_configs.each do |c|
+      puts "CONFIG #{c.id} #{c.serialNumber} #{c.networkID} #{c.created_at}"
+    end
     return nextAt
   end
   
@@ -336,13 +349,15 @@ protected
     sleep 0.1
     @hub.dtr= 1
     # The message handler will track the sequence numbers from each device
-    # in this array
-    @sequences = [ ]
-    # The message handler will assemble buffer dumps in this array
-    @dumps = [ ]
+    # in this hash
+    @sequences = { }
+    # The message handler will assemble buffer dumps in this hash
+    @dumps = { }
     # We will reconstruct message fragments in this string buffer
     partialMessage = ""
     # Initialize our periodic housekeeping
+    @configs = { }
+    @config_max_id = -1
     nextIntervalExpiresAt = periodicHandler
     begin
       while true do
