@@ -1,6 +1,5 @@
 class AthomeController < ApplicationController
 
-  before_filter :valid_at
   before_filter :valid_nid,:only=>:detail
   before_filter :valid_window,:only=>:detail
 

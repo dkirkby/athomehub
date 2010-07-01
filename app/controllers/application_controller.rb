@@ -5,6 +5,9 @@ class ApplicationController < ActionController::Base
 
   helper :all # include all helpers, all the time
   protect_from_forgery # See ActionController::RequestForgeryProtection for details
+  
+  # all contoller actions will have a valid @at timestamp (see below for details)
+  before_filter :valid_at
 
   # Scrub sensitive parameters from your log
   # filter_parameter_logging :password
