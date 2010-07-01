@@ -4,6 +4,8 @@ class HubListener
   
   include Singleton
   
+  @@periodicInterval = 2.seconds
+  
   # Looks for a running listener process and sets the @pid global if one
   # is found.
   def initialize
@@ -313,6 +315,13 @@ protected
     end
   end
   
+  # Performs periodic housekeeping
+  def periodicHandler
+    nextAt = Time.now + @@periodicInterval
+    puts "periodicHandler firing at #{Time.now}"
+    return nextAt
+  end
+  
   # Connects to a hub serial port and enters an infinite message handling loop,
   # yielding each complete message to the code block provided. Send an Interrupt
   # signal to request a clean shutdown. Logging message go to Rails.logger.
@@ -331,7 +340,10 @@ protected
     @sequences = [ ]
     # The message handler will assemble buffer dumps in this array
     @dumps = [ ]
+    # We will reconstruct message fragments in this string buffer
     partialMessage = ""
+    # Initialize our periodic housekeeping
+    nextIntervalExpiresAt = periodicHandler
     begin
       while true do
         @hub.readlines.each do |message|
@@ -348,7 +360,11 @@ protected
             yield message
           end
         end
-        sleep 0.2
+        if nextIntervalExpiresAt < Time.now then
+          nextIntervalExpiresAt = periodicHandler
+        else
+          sleep 0.2
+        end
       end
     rescue Interrupt
       @logger.info 'Hub listener exiting'
