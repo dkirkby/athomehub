@@ -83,7 +83,8 @@ protected
   end
   
   # Validates input params['nid'] and sets @config. Value represents the
-  # networkID of a configured device.
+  # networkID of a configured device. The selected @config depends on the
+  # value of @at and represents the configuration that was valid at the time.
   def valid_nid
     @config = nil
     if params.has_key? 'nid' then
@@ -95,9 +96,10 @@ protected
           error_msg = "Parameter out of range (0-255): nid=#{nid}."
         else
           # is there a device registered with this network ID?
-          @config = DeviceConfig.find_by_networkID(nid)
+          @config = DeviceConfig.find(:last,:order=>'id ASC',:readonly=>true,
+            :conditions=>['networkID=? and created_at < ?',nid,@at])
           if not @config then
-            error_msg = "No such device with nid=#{nid}."
+            error_msg = "No device registered with nid=#{nid} at @at."
           end
         end
       else
@@ -108,7 +110,8 @@ protected
     end
     # try to pick a default network ID if we don't have a valid selection
     if not @config then
-      @config = DeviceConfig.find(:first)
+      @config = DeviceConfig.find(:last,:order=>'id ASC',:readonly=>true,
+        :conditions=>['created_at < ?',@at])
       if @config then
         flash.now[:notice] = error_msg + " Using nid=#{@config.networkID} instead."
       else

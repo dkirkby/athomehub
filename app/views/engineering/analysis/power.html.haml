@@ -7,6 +7,8 @@
 
 %p Found #{@dumps.length} dumps for network ID #{@config.networkID} during this interval.
 
+%p Analysis requested at #{@at.localtime}. Using configuration ID #{@config.id} created at #{@config.created_at.localtime}.
+
 :javascript
 	analysisPlots = #{@analysisPlots.to_json}
 
