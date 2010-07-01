@@ -127,24 +127,6 @@ protected
     end
   end
 
-  # Validates input params['at'] and sets @at. Value represents timestamp
-  # of when an action is run. If provided on input, the action will replay
-  # a historical view. Otherwise @at is set to a value that can be used
-  # for later replay of a current view.
-  def valid_at
-    # defaults to now
-    @at = Time.now.utc
-    # has a value been provided?
-    if params.has_key? 'at' then
-      begin
-        @at = Time.parse(params['at']).utc
-      rescue ArgumentError
-        flash.now[:notice] = "Invalid parameter at=\'#{params['end']}\'. Using now (#{@at}) instead."
-      end
-    end
-    puts "@at = #{@at}"
-  end
-
   def valid_window
     # set window parameter defaults
     @index = 0
