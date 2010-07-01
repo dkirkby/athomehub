@@ -118,6 +118,17 @@ protected
     (Dir.glob("/dev/tty.usbserial-*") | Dir.glob("/dev/ttyUSB*")).first
   end
 
+  # Sends a device its configuration data
+  def sendConfig(config)
+    @logger.info "Sending config ID #{config.id} created at #{config.created_at.localtime} for SN #{config.serialNumber}"
+    config_msg = config.serialize_for_device
+    @logger.info "Using config command #{config_msg.rstrip}"
+    @hub.write(config_msg)
+    # remember that this device has been sent this configuration
+    @configs[config.serialNumber] = config
+    @configured[config.networkID] = true
+  end
+
   # Handles a Look-at-Me message
   def handleLAM(values)
     lam = LookAtMe.new
@@ -141,19 +152,13 @@ protected
     lam.save
     # should we respond with a config message?
     if not lam.is_hub? and lam.serialNumber != '00000000' then
-      # find the most recent config for this device
+      # find the most recent config for this serial number
       config = DeviceConfig.find(:last,:readonly=>true,:order=>'id ASC',
         :conditions=>['serialNumber = ?',lam.serialNumber])
-      if config then
-        @logger.info "Found config ID #{config.id} created at #{config.created_at.localtime} for SN #{lam.serialNumber}"
-        config_msg = config.serialize_for_device
-        @logger.info "Sending config command #{config_msg.rstrip}"
-        @hub.write(config_msg)
-        # remember that this device has been sent this configuration
-        @configs[lam.serialNumber] = config
-        @config_max_id = config.id if config.id > @config_max_id
-      else
+      if not config then
         @logger.warn "No config found for SN #{lam.serialNumber}"
+      else
+        sendConfig config
       end
     end
   end
@@ -204,6 +209,19 @@ protected
       end
     end
     @sequences[networkID] = seqno
+    # have we ever configured this device?
+    if not @configured.has_key? networkID then
+      log = DeviceLog.create({:code=>-15,:value=>networkID,:networkID=>networkID})
+      @logger.warn log.message
+      # find the most recent config for this network ID
+      config = DeviceConfig.find(:last,:readonly=>true,:order=>'id ASC',
+        :conditions=>['networkID = ?',networkID])
+      if not config then
+        @logger.warn "No config found for network ID #{networkID}"
+      else
+        sendConfig config
+      end
+    end
     # did we have to retransmit the last data message?
     retransmits = (status & 0x0f)
     if retransmits > 0 then
@@ -330,7 +348,12 @@ protected
     new_configs = DeviceConfig.find(:all,:readonly=>true,:order=>'id ASC',
       :conditions=>['id > ?',@config_max_id])
     new_configs.each do |c|
-      puts "CONFIG #{c.id} #{c.serialNumber} #{c.networkID} #{c.created_at}"
+      # update our high water mark so that we only process this config update once
+      @config_max_id = c.id
+      # ignore updates for devices that we are not already talking to
+      next unless @configs.has_key? c.serialNumber
+      # send the updated config to the device
+      @logger.info "Config for SN #{c.serialNumber} was updated at #{c.created_at}"
     end
     return nextAt
   end
@@ -355,9 +378,11 @@ protected
     @dumps = { }
     # We will reconstruct message fragments in this string buffer
     partialMessage = ""
-    # Initialize our periodic housekeeping
+    # Track the configuration status of devices
     @configs = { }
+    @configured = { }
     @config_max_id = -1
+    # Initialize our periodic housekeeping
     nextIntervalExpiresAt = periodicHandler
     begin
       while true do
