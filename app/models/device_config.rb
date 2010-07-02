@@ -53,6 +53,17 @@ class DeviceConfig < ActiveRecord::Base
     bits |= (1<<1) if lightingFeedback
     bits |= (1<<2) if lightingDump
     bits |= (1<<3) if powerDump
+    bits |= (1<<4) if audioDiagnostics
+    bits |= (1<<5) if powerEdgeAudio
+    bits |= (1<<6) if powerLevelAudio
+    bits |= (1<<7) if greenGlow
+    bits |= (1<<8) if amberGlow
+    bits |= (1<<9) if redGlow
+    bits |= (1<<10) if greenFlash
+    bits |= (1<<11) if amberFlash
+    bits |= (1<<12) if redFlash
+    bits |= (1<<13) if blueFlash
+    return bits
   end
 
   def serialize_for_device
@@ -62,7 +73,7 @@ class DeviceConfig < ActiveRecord::Base
       networkID,capabilities(),dumpInterval,
       comfortTempMin,comfortTempMax,selfHeatOffset,selfHeatDelay,
       fiducialHiLoDelta,fiducialShiftHi,powerGainHi,powerGainLo,nClipCut
-    ].pack("CCCCCvCCvvvC")
+    ].pack("CvCCCvCCvvvC")
     # serialize to hex digits
     serialized = packed.unpack("C*").map! { |c| sprintf "%02x",c }.join
     # add the command header and terminating newline
@@ -71,11 +82,12 @@ class DeviceConfig < ActiveRecord::Base
 
   def lcd_format
     # displays the config in the same format as the device on its optional LCD
-    line1 = sprintf "%8s%02X%02X%02X%02X\n",serialNumber,networkID,capabilities(),
-      dumpInterval,selfHeatDelay
+    line1 = sprintf "%8s%02X%04X%02X\n",serialNumber,networkID,capabilities(),
+      dumpInterval
     line2 = sprintf "%04X%04X%02X%02X%04X\n",powerGainLo,powerGainHi,
       comfortTempMin,comfortTempMax,selfHeatOffset
-    line3 = sprintf "%04X%02X%02X........\n",fiducialShiftHi,fiducialHiLoDelta,nClipCut
+    line3 = sprintf "%04X%02X%02X%02X......\n",fiducialShiftHi,
+      fiducialHiLoDelta,nClipCut,selfHeatDelay
     line4 = "................\n"
     line1 + line2 + line3 + line4
   end
