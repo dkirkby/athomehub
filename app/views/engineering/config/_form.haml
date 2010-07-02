@@ -18,6 +18,26 @@
 	lighting buffer dumps
 	= @form.check_box :powerDump
 	power buffer dumps
+	= @form.check_box :audioDiagnostics
+	audio diagnostic feedback
+	= @form.check_box :powerEdgeAudio
+	power edge audio feedback
+	= @form.check_box :powerLevelAudio
+	power level audio feedback
+	= @form.check_box :greenGlow
+	green glow
+	= @form.check_box :amberGlow
+	amber glow
+	= @form.check_box :redGlow
+	red glow
+	= @form.check_box :greenFlash
+	green flash
+	= @form.check_box :amberFlash
+	amber flash
+	= @form.check_box :redFlash
+	red flash
+	= @form.check_box :blueFlash
+	blue flash
 	%br
 	Buffer dump interval (cycles, 2-255):
 	= @form.text_field :dumpInterval, :size=>3
