@@ -9,8 +9,8 @@ Displaying #{@configs.length} device configurations.
 		%th Location
 		%th Network ID
 		%th Serial Number
-		%th Light FB?
 		%th Temp FB?
+		%th Light FB?
 		%th Light Dumps?
 		%th Pwr Dumps?
 		%th Audio Diag?
@@ -40,8 +40,8 @@ Displaying #{@configs.length} device configurations.
 			%td&=c.location
 			%td&=c.networkID
 			%td&=format_serialNumber c.serialNumber
-			%td=capability c.lightingFeedback
 			%td=capability c.temperatureFeedback
+			%td=capability c.lightingFeedback
 			%td=capability c.lightingDump
 			%td=capability c.powerDump
 			%td=capability c.audioDiagnostics
