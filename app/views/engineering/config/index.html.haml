@@ -13,6 +13,16 @@ Displaying #{@configs.length} device configurations.
 		%th Temp FB?
 		%th Light Dumps?
 		%th Pwr Dumps?
+		%th Audio Diag?
+		%th Pwr Edge?
+		%th Pwr Level?
+		%th Green Glow?
+		%th Amber Glow?
+		%th Red Glow?
+		%th Green Flash?
+		%th Amber Flash?
+		%th Red Flash?
+		%th Blue Flash?
 		%th Dump Interval (cycles)
 		%th Min Comfort (F)
 		%th Max Comfort (F)
@@ -34,6 +44,16 @@ Displaying #{@configs.length} device configurations.
 			%td&=c.temperatureFeedback
 			%td&=c.lightingDump
 			%td&=c.powerDump
+			%td&=c.audioDiagnostics
+			%td&=c.powerEdgeAudio
+			%td&=c.powerLevelAudio
+			%td&=c.greenGlow
+			%td&=c.amberGlow
+			%td&=c.redGlow
+			%td&=c.greenFlash
+			%td&=c.amberFlash
+			%td&=c.redFlash
+			%td&=c.blueFlash
 			%td&=c.dumpInterval
 			%td&=c.comfortTempMin
 			%td&=c.comfortTempMax
