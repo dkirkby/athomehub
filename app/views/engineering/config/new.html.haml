@@ -1,9 +1,10 @@
 %h1 New Device Configuration
 
 -form_for(:device_config,@config,:url=>{:action=>"create"}) do |@form|
-	#flash= @form.error_messages
+	-if @form.error_messages and @form.error_messages.length > 0
+		#flash= @form.error_messages
 	=render :partial => "form"
 	%p
 		= @form.submit 'Create'
 
-= link_to 'Back', :action => :index
+= link_to 'Back', :back
