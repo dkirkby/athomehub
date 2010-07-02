@@ -11,7 +11,7 @@ class Engineering::ConfigController < Engineering::ApplicationController
 
   def new
     @config = DeviceConfig.new
-    # set defaults
+    # set defaults (capability booleans are false by default)
     @config.dumpInterval = 16 # samples
     @config.comfortTempMin = 70 # degF
     @config.comfortTempMax = 80 # degF
