@@ -4,7 +4,7 @@ class HubListener
   
   include Singleton
   
-  @@periodicInterval = 5.seconds
+  @@periodicInterval = 30.seconds
   
   # Looks for a running listener process and sets the @pid global if one
   # is found.
@@ -353,8 +353,8 @@ protected
     nextAt = now + @@periodicInterval
     puts "periodicHandler firing at #{now}"
     # look for any new device configurations
-    new_configs = DeviceConfig.find(:all,:readonly=>true,:order=>'id ASC',
-      :conditions=>['id > ?',@config_max_id])
+    new_configs = DeviceConfig.find(:all,:readonly=>true,:order=>'id DESC',
+      :group=>:serialNumber,:conditions=>['id > ?',@config_max_id])
     new_configs.each do |c|
       # update our high water mark so that we only process this config update once
       @config_max_id = c.id
