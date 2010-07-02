@@ -200,6 +200,27 @@ protected
       index += 1
       v.hex
     end
+    # is this a valid network ID?
+    if networkID > 255 then
+      log = DeviceLog.create({:code=>-16,:value=>networkID})
+      @logger.warn log.message
+      return
+    end
+    # have we ever configured this device?
+    if not @configured.has_key? networkID then
+      log = DeviceLog.create({:code=>-15,:value=>networkID,:networkID=>networkID})
+      @logger.warn log.message
+      # find the most recent config for this network ID
+      config = DeviceConfig.find(:last,:readonly=>true,:order=>'id ASC',
+        :conditions=>['networkID = ?',networkID])
+      if not config then
+        log = DeviceLog.create({:code=>-17,:value=>networkID,:networkID=>networkID})
+        @logger.warn log.message
+        return
+      else
+        sendConfig config
+      end
+    end
     # did we drop any packets since the last one seen?
     if @sequences[networkID] then
       dropped = (seqno-@sequences[networkID])%256 - 1
@@ -209,19 +230,6 @@ protected
       end
     end
     @sequences[networkID] = seqno
-    # have we ever configured this device?
-    if not @configured.has_key? networkID then
-      log = DeviceLog.create({:code=>-15,:value=>networkID,:networkID=>networkID})
-      @logger.warn log.message
-      # find the most recent config for this network ID
-      config = DeviceConfig.find(:last,:readonly=>true,:order=>'id ASC',
-        :conditions=>['networkID = ?',networkID])
-      if not config then
-        @logger.warn "No config found for network ID #{networkID}"
-      else
-        sendConfig config
-      end
-    end
     # did we have to retransmit the last data message?
     retransmits = (status & 0x0f)
     if retransmits > 0 then
