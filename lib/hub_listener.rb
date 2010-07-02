@@ -353,15 +353,24 @@ protected
     nextAt = now + @@periodicInterval
     puts "periodicHandler firing at #{now}"
     # look for any new device configurations
-    new_configs = DeviceConfig.find(:all,:readonly=>true,:order=>'id DESC',
-      :group=>:serialNumber,:conditions=>['id > ?',@config_max_id])
+    new_configs = DeviceConfig.find(:all,:readonly=>true,:order=>'id ASC',
+      :conditions=>['id > ?',@config_max_id])
+    # keep track of the most recent config update for each serial number, just
+    # in case there have been multiple updates since the last time this
+    # handler ran
+    to_send = { }
     new_configs.each do |c|
       # update our high water mark so that we only process this config update once
       @config_max_id = c.id
       # ignore updates for devices that we are not already talking to
       next unless @configs.has_key? c.serialNumber
       # send the updated config to the device
-      @logger.info "Config for SN #{c.serialNumber} was updated at #{c.created_at}"
+      @logger.info "Found an updated config ID #{c.id} for SN #{c.serialNumber}"
+      to_send[c.serialNumber] = c
+    end
+    # send the config updates now
+    to_send.each do |sn,c|
+      sendConfig c
     end
     return nextAt
   end
