@@ -27,17 +27,33 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         nClippedLo << params[:nClipped]
         currentComplexityLo << params[:currentComplexity]
         currentRMSLo << params[:currentRMS]
-        relativePhaseLo << params[:relativePhase]
+        # apply the device gain calibration
         calRMSLo << 1e-3*params[:currentRMS]*@config.powerGainLo
-        calPhaseLo << params[:relativePhase] - @config.fiducialShiftHi + @config.fiducialHiLoDelta
+        # undo the device phase calibration
+        relativePhaseLo << (params[:relativePhase] + @config.fiducialShiftHi -
+          @config.fiducialHiLoDelta).modulo(@@micros_per_120Hz)
+        # shift the unsigned phase to be centered at zero
+        if params[:relativePhase] < 0.5*@@micros_per_120Hz then
+          calPhaseLo << params[:relativePhase]
+        else
+          calPhaseLo << @@micros_per_120Hz - params[:relativePhase]
+        end
       when 1
         tHi << t
         nClippedHi << params[:nClipped]
         currentComplexityHi << params[:currentComplexity]
         currentRMSHi << params[:currentRMS]
-        relativePhaseHi << params[:relativePhase]
+        # apply the device gain calibration
         calRMSHi << 1e-3*params[:currentRMS]*@config.powerGainHi
-        calPhaseHi << params[:relativePhase] - @config.fiducialShiftHi
+        # undo the device phase calibration
+        relativePhaseHi << (params[:relativePhase] +
+          @config.fiducialShiftHi).modulo(@@micros_per_120Hz)
+        # shift the unsigned phase to be centered at zero
+        if params[:relativePhase] < 0.5*@@micros_per_120Hz then
+          calPhaseHi << params[:relativePhase]
+        else
+          calPhaseHi << params[:relativePhase] - @@micros_per_120Hz
+        end
       when 4
         tPh << t
         fidArea << params[:moment0]
@@ -89,5 +105,9 @@ class Engineering::AnalysisController < Engineering::ApplicationController
     rms = Math.sqrt(sum2/n - sum1*sum1/(n*n))
     sprintf labelFormat,mean,rms
   end
+  
+protected
+
+  @@micros_per_120Hz = 1e6/120
 
 end
