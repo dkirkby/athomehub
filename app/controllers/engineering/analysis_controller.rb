@@ -80,8 +80,8 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         { :data => tLo.zip(currentRMSLo), :label => "LO "+stats(currentRMSLo,"%.3f") }
       ],
       :rmsCal => [
-        { :data => tHi.zip(calRMSHi), :label => "HI "+stats(calRMSHi) },
-        { :data => tLo.zip(calRMSLo), :label => "LO "+stats(calRMSLo) }
+        { :data => tHi.zip(calRMSHi), :label => "HI "+stats(calRMSHi,"%.3f") },
+        { :data => tLo.zip(calRMSLo), :label => "LO "+stats(calRMSLo,"%.3f") }
       ],
       :complexity => [
         { :data => tHi.zip(currentComplexityHi), :label => "HI "+stats(currentComplexityHi) },
