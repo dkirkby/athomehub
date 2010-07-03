@@ -28,7 +28,7 @@ class Engineering::DumpController < Engineering::ApplicationController
       # powerAnalysis: model is 60Hz function with the fitted RMS and phase, with
       # vertical voltage-fiducial marks superimposed.
       amplitude = Math.sqrt(2)*@results[:currentRMS]
-      tzero = @results[:currentPhase]
+      tzero = @results[:rawPhase]
       offset = tzero-@results[:relativePhase]
       mean = @dump.samples.sum*1.0/@dump.samples.length
       fit = lambda {|t| mean + amplitude*Math.sin(@@omega*(t-tzero)) }

@@ -34,7 +34,7 @@ class BufferDump < ActiveRecord::Base
     case self.source
     when 0,1
       # powerAnalysis
-      keys = [:nClipped,:currentComplexity,:currentRMS,:currentPhase,:relativePhase]
+      keys = [:nClipped,:currentComplexity,:currentRMS,:rawPhase,:relativePhase]
       values = binary.unpack("CCevv")
       @results = Hash[*keys.zip(values).flatten]
     when 4
