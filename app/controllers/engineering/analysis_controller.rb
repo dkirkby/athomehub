@@ -95,15 +95,21 @@ class Engineering::AnalysisController < Engineering::ApplicationController
   end
   
   def stats(values,floatFormat=nil)
-    # Calculates the mean and RMS of the input values and returns a formatted label
+    # Calculates statistics of the input values and returns a formatted label
     floatFormat = "%.1f" unless floatFormat
-    labelFormat = floatFormat + " &plusmn; " + floatFormat
+    labelFormat = floatFormat + " [" + floatFormat + "] &plusmn; " + floatFormat
+    # calculate the mean and RMS using all values
     n = 1.0*values.length
     sum1 = values.sum
     sum2 = values.collect{ |x| x*x }.sum
     mean = sum1/n
     rms = Math.sqrt(sum2/n - sum1*sum1/(n*n))
-    sprintf labelFormat,mean,rms
+    # calculated a truncated mean using the central 80% of values
+    ndrop = values.length/10
+    nkeep = values.length - 2*ndrop
+    trunc_mean = values.sort[ndrop,nkeep].sum/(1.0*nkeep)
+    # return a formattted string
+    sprintf labelFormat,mean,trunc_mean,rms
   end
   
 protected
