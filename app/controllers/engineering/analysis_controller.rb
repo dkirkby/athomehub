@@ -36,7 +36,7 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         if params[:relativePhase] < 0.5*@@micros_per_120Hz then
           calPhaseLo << params[:relativePhase]
         else
-          calPhaseLo << @@micros_per_120Hz - params[:relativePhase]
+          calPhaseLo << params[:relativePhase] - @@micros_per_120Hz
         end
       when 1
         tHi << t
