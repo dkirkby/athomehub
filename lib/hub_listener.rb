@@ -133,7 +133,7 @@ protected
   def handleLAM(values)
     lam = LookAtMe.new
     # parse and validate the fields
-    lam.serialNumber = sprintf "%08x",values[0].hex
+    lam.serialNumber = sprintf "%08X",values[0].hex
     lam.commitDate = Time.at(values[1].to_i)
     lam.commitID = values[2]
     if lam.commitID.length != 40 then
