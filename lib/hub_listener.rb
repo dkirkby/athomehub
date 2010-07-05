@@ -413,7 +413,7 @@ protected
             partialMessage = message
             next
           else
-            message.rstrip!
+            message.rstrip! if message
             partialMessage = ""
             yield message
           end

@@ -45,6 +45,9 @@ class Engineering::DumpController < Engineering::ApplicationController
         end
         @model << [t,fit[t]]
       end
+    when 2,3
+      # lightingAnalysis:
+      @model = [ ]
     when 4
       # phaseAnalysis: model shows voltage fiducial spikes corresponding to the
       # mean pulse centroid (modulo 120 Hz)

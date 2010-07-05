@@ -36,7 +36,10 @@ class BufferDump < ActiveRecord::Base
       # powerAnalysis
       keys = [:nClipped,:currentComplexity,:currentRMS,:rawPhase,:relativePhase]
       values = binary.unpack("CCevv")
-      @results = Hash[*keys.zip(values).flatten]
+    when 2,3
+      # lightingAnalysis
+      keys = [:alpha00,:beta0,:beta1,:beta2]
+      values = binary.unpack("vvvv")
     when 4
       # phaseAnalysis
       keys = [:moment1,:moment0,:voltagePhase,:wrapOffset]
