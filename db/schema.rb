@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100702224218) do
+ActiveRecord::Schema.define(:version => 20100705234214) do
 
   create_table "binned_samples", :force => true do |t|
     t.integer "networkID"
@@ -60,6 +60,14 @@ ActiveRecord::Schema.define(:version => 20100702224218) do
     t.boolean  "amberFlash"
     t.boolean  "redFlash"
     t.boolean  "blueFlash"
+    t.boolean  "lightAudio"
+    t.integer  "powerAudioControl"
+    t.integer  "lightFidHiLoDelta"
+    t.integer  "lightFidShiftHi"
+    t.integer  "lightGainHi"
+    t.integer  "lightGainHiLoRatio"
+    t.integer  "darkThreshold"
+    t.integer  "artificialThreshold"
   end
 
   create_table "device_logs", :force => true do |t|
