@@ -38,6 +38,8 @@
 	red flash
 	= @form.check_box :blueFlash
 	blue flash
+	= @form.check_box :lightAudio
+	audio lighting feedback
 	%br
 	Buffer dump interval (cycles, 2-255):
 	= @form.text_field :dumpInterval, :size=>3
@@ -67,7 +69,7 @@
 	Hi-Lo Delta (&mu;s 0-255):
 	= @form.text_field :fiducialHiLoDelta, :size=>3
 %p
-	Current to power calibration
+	ADC to power calibration
 	%br
 	High-gain channel (mW/ADC, 0-65535):
 	= @form.text_field :powerGainHi, :size=>5
@@ -75,3 +77,29 @@
 	= @form.text_field :powerGainLo, :size=>5
 	Max high-gain clipping (samples, 0-255):
 	= @form.text_field :nClipCut, :size=>3
+%p
+	Power audio feedback control register:
+	= @form.text_field :powerAudioControl
+	
+%h3 Lighting Analysis Configuration
+%p
+	Relative phase calibration
+	%br
+	Hi-Gain Shift (&mu;s, 0-65535):
+	= @form.text_field :lightFidShiftHi, :size=>5
+	Hi-Lo Delta (&mu;s 0-255):
+	= @form.text_field :lightFidHiLoDelta, :size=>3
+%p
+	ADC to lighting level calibration
+	%br
+	High-gain channel (arb./ADC, 0-255):
+	= @form.text_field :lightGainHi, :size=>3
+	High/low gain ratio (value << 4)/(1<<15), 0-65535):
+	= @form.text_field :lightGainHiLoRatio, :size=>5
+%p
+	Lighting thresholds
+	%br
+	Dark threshold (high-gain units, 0-65535):
+	= @form.text_field :lightGainHiLoRatio, :size=>5
+	Artificial threshold (test is 120Hz/mean > 1/value, 0-255):
+	= @form.text_field :artificialThreshold, :size=>3
