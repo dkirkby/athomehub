@@ -51,6 +51,7 @@ class HubListener
       self.listen { |msg| self.handle msg }
     elsif options[:raw] then
       # run interactively and simply print all serial traffic to stdout
+      @@periodicInterval = nil
       @logger = Logger.new(STDOUT)
       @logger.info "Tracing raw serial messages. Use ^C to stop."
       self.listen { |msg| puts msg }
@@ -400,7 +401,7 @@ protected
     @configured = { }
     @config_max_id = -1
     # Initialize our periodic housekeeping
-    nextIntervalExpiresAt = periodicHandler
+    nextIntervalExpiresAt = periodicHandler if @@periodicInterval
     begin
       while true do
         @hub.readlines.each do |message|
@@ -417,7 +418,7 @@ protected
             yield message
           end
         end
-        if nextIntervalExpiresAt < Time.now then
+        if @@periodicInterval and nextIntervalExpiresAt < Time.now then
           nextIntervalExpiresAt = periodicHandler
         else
           sleep 0.2
