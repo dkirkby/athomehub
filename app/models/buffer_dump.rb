@@ -38,7 +38,7 @@ class BufferDump < ActiveRecord::Base
       values = binary.unpack("CCevv")
     when 2,3
       # lightingAnalysis
-      keys = [:alpha00,:beta0,:beta1,:beta2]
+      keys = [:nSamples,:rawPhase,:mean,:amplitude]
       values = binary.unpack("vvvv")
     when 4
       # phaseAnalysis

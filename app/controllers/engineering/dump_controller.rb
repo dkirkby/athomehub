@@ -31,7 +31,7 @@ class Engineering::DumpController < Engineering::ApplicationController
       tzero = @results[:rawPhase]
       offset = tzero-@results[:relativePhase]
       mean = @dump.samples.sum*1.0/@dump.samples.length
-      fit = lambda {|t| mean + amplitude*Math.sin(@@omega*(t-tzero)) }
+      fit = lambda {|t| mean + amplitude*Math.sin(@@omega60*(t-tzero)) }
       @model = [ ]
       dt = 200 # microseconds
       250.times do |k|
@@ -46,8 +46,18 @@ class Engineering::DumpController < Engineering::ApplicationController
         @model << [t,fit[t]]
       end
     when 2,3
-      # lightingAnalysis:
+      # lightingAnalysis: model is 120Hz function with the fitted amplitude and
+      # phase
+      tzero = @results[:rawPhase]
+      mean = 0.1*@results[:mean]
+      amplitude = 0.1*@results[:amplitude]
+      fit = lambda {|t| mean + amplitude*Math.sin(@@omega120*(t-tzero)) }
       @model = [ ]
+      dt = 200 # microseconds
+      250.times do |k|
+        t = dt*k # microseconds
+        @model << [t,fit[t]]
+      end
     when 4
       # phaseAnalysis: model shows voltage fiducial spikes corresponding to the
       # mean pulse centroid (modulo 120 Hz)
@@ -70,7 +80,8 @@ class Engineering::DumpController < Engineering::ApplicationController
   
 protected
 
-  @@omega = 2*Math::PI*60/1e6
+  @@omega60 = 2*Math::PI*60/1e6
+  @@omega120 = 2*Math::PI*120/1e6
   @@micros_per_120Hz = 1e6/120
 
   def dump_raw_samples
