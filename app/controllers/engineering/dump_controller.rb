@@ -49,6 +49,7 @@ class Engineering::DumpController < Engineering::ApplicationController
       # lightingAnalysis: model is 120Hz function with the fitted amplitude and
       # phase
       tzero = @results[:rawPhase]
+      offset = tzero-@results[:relativePhase]
       mean = 0.1*@results[:mean]
       amplitude = 0.1*@results[:amplitude]
       fit = lambda {|t| mean + amplitude*Math.sin(@@omega120*(t-tzero)) }
@@ -56,6 +57,13 @@ class Engineering::DumpController < Engineering::ApplicationController
       dt = 200 # microseconds
       250.times do |k|
         t = dt*k # microseconds
+        # insert a fiducial spike before the next point?
+        delta = (t-offset).modulo(@@micros_per_120Hz)
+        if delta < dt then
+          tmark = t-delta
+          ymark = fit[tmark]
+          @model << [tmark,ymark] << [tmark,mean+amplitude] << [tmark,mean-amplitude] << [tmark,ymark]
+        end
         @model << [t,fit[t]]
       end
     when 4
