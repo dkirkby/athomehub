@@ -1,0 +1,33 @@
+-content_for :head do
+	=javascript_include_tag 'excanvas','flot','eng-plot'
+
+%h1 Engineering::Analysis#light
+
+%p Displaying lighting analysis for the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
+
+%p Found #{@dumps.length} dumps for network ID #{@config.networkID} during this interval.
+
+%p Analysis requested at #{@at.localtime}. Using configuration ID #{@config.id} created at #{@config.created_at.localtime}.
+
+:javascript
+	analysisPlots = #{@analysisPlots.to_json}
+
+%h2 Lighting-Voltage Relative Phase
+
+%h3#relPhase.analysis-plot Raw Phase Shift
+
+%p The raw phase shift is the delay in &micro;s between the zero crossing of the 60 Hz component of the measured current and the previous fiducial pulse centroid, modulo a 120 Hz cycle. The possible range is 0 to 8,333 &micro;s.
+
+%h2 Lighting Levels
+
+%h3#lightingLevel.analysis-plot Mean Lighting Level
+
+%p Some text here...
+
+%h3#artificialLevel.analysis-plot Lighting Level Fluctuations
+
+%p Some text here...
+
+%h2#numSamplesUsed.analysis-plot Number of Lighting Samples Used
+
+%p Some text here...
