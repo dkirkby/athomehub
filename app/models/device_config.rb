@@ -76,7 +76,7 @@ class DeviceConfig < ActiveRecord::Base
       fiducialHiLoDelta,fiducialShiftHi,powerGainHi,powerGainLo,nClipCut,
       powerAudioControl,lightFidHiLoDelta,lightFidShiftHi,lightGainHi,
 			lightGainHiLoRatio,darkThreshold,artificialThreshold
-    ].pack("CvCCCvCCvvvC vCvCvvC")
+    ].pack("CvCCCvCCvvvCvCvCvvC")
     # serialize to hex digits
     serialized = packed.unpack("C*").map! { |c| sprintf "%02x",c }.join
     # add the command header and terminating newline
