@@ -22,6 +22,13 @@ class Engineering::ConfigController < Engineering::ApplicationController
     @config.powerGainHi = 253 # mW/ADC
     @config.powerGainLo = 4500 # mW/ADC
     @config.nClipCut = 8 # samples
+    @config.powerAudioControl = 0
+    @config.lightFidHiLoDelta = 0 # microsecs
+		@config.lightFidShiftHi = 0 # microsecs
+		@config.lightGainHi = 16 # arb./ADC
+		@config.lightGainHiLoRatio = 46562
+		@config.darkThreshold = 250
+		@config.artificialThreshold = 100
   end
   
   def edit

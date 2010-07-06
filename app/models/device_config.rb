@@ -63,6 +63,7 @@ class DeviceConfig < ActiveRecord::Base
     bits |= (1<<11) if amberFlash
     bits |= (1<<12) if redFlash
     bits |= (1<<13) if blueFlash
+    bits |= (1<<14) if lightAudio
     return bits
   end
 
@@ -72,8 +73,10 @@ class DeviceConfig < ActiveRecord::Base
     packed = [
       networkID,capabilities(),dumpInterval,
       comfortTempMin,comfortTempMax,selfHeatOffset,selfHeatDelay,
-      fiducialHiLoDelta,fiducialShiftHi,powerGainHi,powerGainLo,nClipCut
-    ].pack("CvCCCvCCvvvC")
+      fiducialHiLoDelta,fiducialShiftHi,powerGainHi,powerGainLo,nClipCut,
+      powerAudioControl,lightFidHiLoDelta,lightFidShiftHi,lightGainHi,
+			lightGainHiLoRatio,lightGainHiLoRatio,darkThreshold,artificialThreshold
+    ].pack("CvCCCvCCvvvCvCvCvvC")
     # serialize to hex digits
     serialized = packed.unpack("C*").map! { |c| sprintf "%02x",c }.join
     # add the command header and terminating newline
