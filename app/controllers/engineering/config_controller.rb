@@ -22,7 +22,7 @@ class Engineering::ConfigController < Engineering::ApplicationController
     @config.powerGainHi = 253 # mW/ADC
     @config.powerGainLo = 4500 # mW/ADC
     @config.nClipCut = 8 # samples
-    @config.powerAudioControl = 0
+    @config.powerAudioControl = 0x1771 # =6001
     @config.lightFidHiLoDelta = 0 # microsecs
 		@config.lightFidShiftHi = 0 # microsecs
 		@config.lightGainHi = 16 # arb./ADC
