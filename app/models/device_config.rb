@@ -89,9 +89,10 @@ class DeviceConfig < ActiveRecord::Base
       dumpInterval
     line2 = sprintf "%04X%04X%02X%02X%04X\n",powerGainLo,powerGainHi,
       comfortTempMin,comfortTempMax,selfHeatOffset
-    line3 = sprintf "%04X%02X%02X%02X......\n",fiducialShiftHi,
-      fiducialHiLoDelta,nClipCut,selfHeatDelay
-    line4 = "................\n"
+    line3 = sprintf "%04X%02X%02X%02X%04X%02X\n",fiducialShiftHi,
+      fiducialHiLoDelta,nClipCut,selfHeatDelay,powerAudioControl,lightFidHiLoDelta
+    line4 = sprintf "%04X%02X%04X%04X%02X\n",lightFidShiftHi,lightGainHi,
+      lightGainHiLoRatio,darkThreshold,artificialThreshold
     line1 + line2 + line3 + line4
   end
 
