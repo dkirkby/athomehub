@@ -23,6 +23,7 @@ Displaying #{@configs.length} device configurations.
 		%th Amber Flash?
 		%th Red Flash?
 		%th Blue Flash?
+		%th Light Audio?
 		%th Dump Interval (cycles)
 		%th Min Comfort (F)
 		%th Max Comfort (F)
@@ -33,6 +34,13 @@ Displaying #{@configs.length} device configurations.
 		%th Pwr Gain Hi (mW/ADC)
 		%th Pwr Gain Lo (mW/ADC)
 		%th Max Hi Clip
+		%th Pwr Audio Control
+		%th Light Hi-Lo Delta (&mu;s)
+		%th Light Shift Hi (&mu;s)
+		%th Light Gain Hi (arb./ADC)
+		%th Light Hi/Lo Gain Ratio
+		%th Dark Thresh
+		%th Art Thresh
 	-@configs.each do |c|
 		%tr
 			%td&=c.id
@@ -54,6 +62,7 @@ Displaying #{@configs.length} device configurations.
 			%td=capability c.amberFlash
 			%td=capability c.redFlash
 			%td=capability c.blueFlash
+			%td=capability c.lightAudio
 			%td&=c.dumpInterval
 			%td&=c.comfortTempMin
 			%td&=c.comfortTempMax
@@ -64,6 +73,13 @@ Displaying #{@configs.length} device configurations.
 			%td&=c.powerGainHi
 			%td&=c.powerGainLo
 			%td&=c.nClipCut
+			%td&=c.powerAudioControl
+			%td&=c.lightFidHiLoDelta
+			%td&=c.lightFidShiftHi
+			%td&=c.lightGainHi
+			%td&=(16.0*c.lightGainHiLoRatio)/(1<<15) if c.lightGainHiLoRatio
+			%td&=c.darkThreshold
+			%td&="1/#{c.artificialThreshold}"
 			%td=link_to 'Update', :action=>:edit, :id => c
 			%td=link_to 'Raw', :action=>:raw, :id=> c, :format=> :text
 
