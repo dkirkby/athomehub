@@ -22,6 +22,20 @@ class DeviceConfig < ActiveRecord::Base
     :greater_than_or_equal_to=>0, :less_than=>65536
   validates_numericality_of :nClipCut, :only_integer=>true,
     :greater_than_or_equal_to=>0, :less_than=>256
+  validates_numericality_of :powerAudioControl, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>65536
+  validates_numericality_of :lightFidHiLoDelta, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>256
+  validates_numericality_of :lightFidShiftHi, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>65536    
+  validates_numericality_of :lightGainHi, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>256
+  validates_numericality_of :lightGainHiLoRatio, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>65536
+  validates_numericality_of :darkThreshold, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>65536
+  validates_numericality_of :artificialThreshold, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>256
     
   validates_format_of :serialNumber, :with=>/^[0-9A-F]{8}$/,
     :message=>"is invalid (expected 8 upper-case hex digits)"
