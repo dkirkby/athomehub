@@ -12,8 +12,8 @@ class Engineering::AnalysisController < Engineering::ApplicationController
     tLo,tHi = [ ],[ ]
     nLo,nHi = [ ],[ ]
     relPhaseLo,relPhaseHi = [ ],[ ]
-    levelLo,levelHi = [ ],[ ]
-    ampLo,ampHi = [ ],[ ]
+    levelLo,levelHi,calLevelLo,calLevelHi = [ ],[ ],[ ],[ ]
+    ampLo,ampHi,calAmpLo,calAmpHi = [ ],[ ],[ ],[ ]
     tz_offset = @begin_at.localtime.utc_offset
     @dumps.each do |dump|
       # calculate a unix timestamp in the server timezone, suitable for plotting.
@@ -21,19 +21,26 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       t = 1e3*(dump.created_at.to_i + tz_offset)
       # unpack this buffer analysis header
       params = dump.unpack_header
+      # calculate the channel gains (undo x10 in device dump)
+      hiGain = 0.1*@config.lightGainHi
+      loGain = hiGain*@config.lightGainHiLoRatio*16.0/(1<<15)
       case dump.source
       when 2
         tLo << t
         nLo << params[:nSamples]
         relPhaseLo << params[:relativePhase]
-        levelLo << 22.7*params[:mean]
-        ampLo << 22.7*params[:amplitude]
+        #levelLo << params[:mean]
+        #ampLo << params[:amplitude]
+        calLevelLo << loGain*params[:mean]
+        calAmpLo << loGain*params[:amplitude]
       when 3
         tHi << t
         nHi << params[:nSamples]
         relPhaseHi << params[:relativePhase]
-        levelHi << params[:mean]
-        ampHi << params[:amplitude]
+        #levelHi << params[:mean]
+        #ampHi << params[:amplitude]
+        calLevelHi << hiGain*params[:mean]
+        calAmpHi << hiGain*params[:amplitude]
       end
     end
     # zip up (t,y) arrays for plotting and save them in a dictionary
@@ -43,13 +50,13 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         { :data => tHi.zip(relPhaseHi), :label=> "HI "+stats(relPhaseHi) },
         { :data => tLo.zip(relPhaseLo), :label=> "LO "+stats(relPhaseLo) }
       ],
-      :lightingLevel => [
-        { :data => tHi.zip(levelHi), :label=> "HI "+stats(levelHi) },
-        { :data => tLo.zip(levelLo), :label=> "LO "+stats(levelLo) }
+      :lightLevel => [
+        { :data => tHi.zip(calLevelHi), :label=> "HI "+stats(calLevelHi) },
+        { :data => tLo.zip(calLevelLo), :label=> "LO "+stats(calLevelLo) }
       ],
       :artificialLevel => [
-        { :data => tHi.zip(ampHi), :label=> "HI "+stats(ampHi) },
-        { :data => tLo.zip(ampLo), :label=> "LO "+stats(ampLo) }
+        { :data => tHi.zip(calAmpHi), :label=> "HI "+stats(calAmpHi) },
+        { :data => tLo.zip(calAmpLo), :label=> "LO "+stats(calAmpLo) }
       ],
       :numSamplesUsed => [
         { :data => tHi.zip(nHi), :label=> "HI "+stats(nHi) },

@@ -16,11 +16,17 @@
 
 %h3#relPhase.analysis-plot Raw Phase Shift
 
-%p The raw phase shift is the delay in &micro;s between the zero crossing of the 60 Hz component of the measured current and the previous fiducial pulse centroid, modulo a 120 Hz cycle. The possible range is 0 to 8,333 &micro;s.
+%ul
+	%li Hi-Gain: #{@config.lightFidShiftHi} &mu;s
+	%li Hi-Lo Delta: #{@config.lightFidHiLoDelta} &mu;s
 
 %h2 Lighting Levels
 
-%h3#lightingLevel.analysis-plot Mean Lighting Level
+%ul
+	%li Hi-Gain Scale: #{@config.lightGainHi}
+	%li Hi/Lo Scale Ratio: #{@config.lightGainHiLoRatio*16.0/(1<<15)} [#{@config.lightGainHiLoRatio}]
+
+%h3#lightLevel.analysis-plot Mean Lighting Level
 
 %p Some text here...
 
