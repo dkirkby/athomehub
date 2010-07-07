@@ -9,8 +9,5 @@ class Sample < ActiveRecord::Base
   def location
     config.location if config
   end
-  
-  def cost
-  end
 
 end
