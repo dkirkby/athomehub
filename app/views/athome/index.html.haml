@@ -22,8 +22,8 @@
 						%span&= s.lighting
 						%span><= "/"
 						%span&= s.artificial
-					%td= s.power ? (sprintf "%.1fW",1e-1*s.power) : "&mdash;"
-					%td= s.cost ? (sprintf "$%4.2f",s.cost) : "&mdash;"
+					%td= s.power ? (sprintf "%.3fW",s.power) : "&mdash;"
+					%td
 	%ul#navigation
 		%li home
 		%li=link_to "help"
