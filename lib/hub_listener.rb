@@ -253,13 +253,13 @@ protected
       log = DeviceLog.create({:code=>-6,:networkID=>networkID})
       @logger.warn log.message
     end
-    # Finally, write the sample values we received
-    # (the "2" suffix indicates a lo-gain channel)
+    # Finally, write the sample values we received, translating
+    # float infinity to database NULL.
     Sample.create({
       :networkID=>networkID,
-      :lighting=>lighting,
+      :lighting=>(lighting.infinite? ? nil : lighting),
       :artificial=>sampleData[1],
-      :power=>power,
+      :power=>(power.infinite? ? nil : power),
       :powerFactor=>sampleData[3],
       :complexity=>sampleData[4],
       :temperature=>sampleData[5]
