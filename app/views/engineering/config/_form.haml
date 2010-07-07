@@ -92,9 +92,9 @@
 %p
 	ADC to lighting level calibration
 	%br
-	High-gain channel (arb./ADC, 0-255):
+	High-gain scale factor (arb./ADC, (1+value)/128, 0-255):
 	= @form.text_field :lightGainHi, :size=>3
-	High/low gain ratio (value << 4)/(1<<15), 0-65535):
+	High/low gain ratio ((value << 4)/(1<<15), 0-65535):
 	= @form.text_field :lightGainHiLoRatio, :size=>5
 %p
 	Lighting thresholds

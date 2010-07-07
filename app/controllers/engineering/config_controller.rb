@@ -25,7 +25,7 @@ class Engineering::ConfigController < Engineering::ApplicationController
     @config.powerAudioControl = 0x1771 # =6001
     @config.lightFidHiLoDelta = 0 # microsecs
 		@config.lightFidShiftHi = 0 # microsecs
-		@config.lightGainHi = 16 # arb./ADC
+		@config.lightGainHi = 127
 		@config.lightGainHiLoRatio = 46562
 		@config.darkThreshold = 250
 		@config.artificialThreshold = 100
