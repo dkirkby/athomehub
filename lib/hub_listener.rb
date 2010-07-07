@@ -186,7 +186,7 @@ protected
   # Handles a Data message
   def handleData(values)
     # do we have the expected number of values?
-    if values.length != 11 then
+    if values.length != 9 then
       log = DeviceLog.create({:code=>-1,:value=>values.length})
       @logger.error log.message
       return
@@ -201,6 +201,9 @@ protected
       index += 1
       v.hex
     end
+    
+    puts sprintf("%08x/%08x",sampleData[0],sampleData[2])
+    
     # is this a valid network ID?
     if networkID > 255 then
       log = DeviceLog.create({:code=>-16,:value=>networkID})
@@ -428,7 +431,7 @@ protected
       @logger.info 'Hub listener exiting'
     rescue => e
       @logger.error e.inspect
-      @logger.error e.backtrace
+      @logger.error e.backtrace.join("\n    ")
     end
   end
 
