@@ -28,17 +28,23 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       when 2
         tLo << t
         nLo << params[:nSamples]
-        relPhaseLo << params[:relativePhase]
-        #levelLo << params[:mean]
-        #ampLo << params[:amplitude]
+        # shift the unsigned phase to be centered at zero
+        if params[:relativePhase] < 0.5*@@micros_per_120Hz then
+          relPhaseLo << params[:relativePhase]
+        else
+          relPhaseLo << params[:relativePhase] - @@micros_per_120Hz
+        end
         calLevelLo << loGain*params[:mean]
         calAmpLo << loGain*params[:amplitude]
       when 3
         tHi << t
         nHi << params[:nSamples]
-        relPhaseHi << params[:relativePhase]
-        #levelHi << params[:mean]
-        #ampHi << params[:amplitude]
+        # shift the unsigned phase to be centered at zero
+        if params[:relativePhase] < 0.5*@@micros_per_120Hz then
+          relPhaseHi << params[:relativePhase]
+        else
+          relPhaseHi << params[:relativePhase] - @@micros_per_120Hz
+        end
         calLevelHi << hiGain*params[:mean]
         calAmpHi << hiGain*params[:amplitude]
       end
