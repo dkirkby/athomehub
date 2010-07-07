@@ -426,6 +426,9 @@ protected
       end
     rescue Interrupt
       @logger.info 'Hub listener exiting'
+    rescue => e
+      @logger.error e.inspect
+      @logger.error e.backtrace
     end
   end
 
