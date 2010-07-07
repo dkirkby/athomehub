@@ -201,9 +201,9 @@ protected
       index += 1
       v.hex
     end
-    
-    puts sprintf("%08x/%08x",sampleData[0],sampleData[2])
-    
+    # the power and lighting values are IEEE floats: unpack them now
+    binary = [sampleData[0],sampleData[2]].pack("LL")
+    lighting,power = binary.unpack("ee")
     # is this a valid network ID?
     if networkID > 255 then
       log = DeviceLog.create({:code=>-16,:value=>networkID})
@@ -257,14 +257,12 @@ protected
     # (the "2" suffix indicates a lo-gain channel)
     Sample.create({
       :networkID=>networkID,
-      :acPhase=>sampleData[0],
-      :power2=>sampleData[1],
-      :power=>sampleData[2],
-      :lighting2=>sampleData[3],
-      :lighting=>sampleData[4],
-      :artificial2=>sampleData[5],
-      :artificial=>sampleData[6],
-      :temperature=>sampleData[7]
+      :lighting=>lighting,
+      :artificial=>sampleData[1],
+      :power=>power,
+      :powerFactor=>sampleData[3],
+      :complexity=>sampleData[4],
+      :temperature=>sampleData[5]
     })
   end
 
@@ -432,6 +430,7 @@ protected
     rescue => e
       @logger.error e.inspect
       @logger.error e.backtrace.join("\n    ")
+      # retry
     end
   end
 
