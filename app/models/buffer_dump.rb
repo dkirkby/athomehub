@@ -19,6 +19,7 @@ class BufferDump < ActiveRecord::Base
   end
 
   def add_samples(base,values)
+    return unless @samples
     values.each_with_index do |v,k|
       @samples[base+k]= v.hex
     end
