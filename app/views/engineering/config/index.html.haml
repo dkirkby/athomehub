@@ -74,7 +74,7 @@ Displaying #{@configs.length} device configurations.
 			%td&=c.powerGainLo
 			%td&=c.nClipCut
 			%td&=sprintf "$%04x",c.powerAudioControl
-			%td&=c.lightFidHiLoDelta
+			%td&="100+#{c.lightFidHiLoDelta}"
 			%td&=c.lightFidShiftHi
 			%td&=sprintf("%.3f",(1.0+c.lightGainHi)/128.0) if c.lightGainHi
 			%td&=sprintf("%.3f",(16.0*c.lightGainHiLoRatio)/(1<<15)) if c.lightGainHiLoRatio
