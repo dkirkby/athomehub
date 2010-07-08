@@ -12,7 +12,14 @@ class Engineering::ConfigController < Engineering::ApplicationController
   def new
     @config = DeviceConfig.new
     # set defaults (capability booleans are false by default)
-    @config.dumpInterval = 16 # samples
+    @config.lightingFeedback = true
+    @config.lightingDump = true
+    @config.powerDump = true
+    @config.audioDiagnostics = true
+    @config.powerEdgeAudio = true
+    @config.powerLevelAudio = true
+    @config.lightAudio = true
+    @config.dumpInterval = 2 # samples
     @config.comfortTempMin = 70 # degF
     @config.comfortTempMax = 80 # degF
     @config.selfHeatOffset = 0 # degF/100
@@ -23,12 +30,12 @@ class Engineering::ConfigController < Engineering::ApplicationController
     @config.powerGainLo = 4500 # mW/ADC
     @config.nClipCut = 8 # samples
     @config.powerAudioControl = 0x1771 # =6001
-    @config.lightFidHiLoDelta = 0 # microsecs
-		@config.lightFidShiftHi = 0 # microsecs
-		@config.lightGainHi = 127
-		@config.lightGainHiLoRatio = 46562
-		@config.darkThreshold = 250
-		@config.artificialThreshold = 100
+    @config.lightFidHiLoDelta = 150 # microsecs
+		@config.lightFidShiftHi = 7827 # microsecs
+		@config.lightGainHi = 127 # gain of 1.0
+		@config.lightGainHiLoRatio = 46562 # gain of about 22
+		@config.darkThreshold = 0x040a # high byte is for low-gain
+		@config.artificialThreshold = 6 # /512
   end
   
   def edit
