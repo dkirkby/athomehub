@@ -13,7 +13,8 @@ class Engineering::AnalysisController < Engineering::ApplicationController
     nLo,nHi = [ ],[ ]
     relPhaseLo,relPhaseHi = [ ],[ ]
     levelLo,levelHi,calLevelLo,calLevelHi = [ ],[ ],[ ],[ ]
-    ampLo,ampHi,calAmpLo,calAmpHi = [ ],[ ],[ ],[ ]
+    calAmpLo,calAmpHi = [ ],[ ],[ ],[ ]
+    artRatioLo,artRatioHi = [ ],[ ]
     tz_offset = @begin_at.localtime.utc_offset
     @dumps.each do |dump|
       # calculate a unix timestamp in the server timezone, suitable for plotting.
@@ -36,6 +37,11 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         end
         calLevelLo << 0.1*@hiGain*@hiloRatio*params[:mean]
         calAmpLo << 0.1*@hiGain*@hiloRatio*params[:amplitude]
+        if params[:mean] > 0 then
+          artRatioLo << 511.0*params[:amplitude]/params[:mean]
+        else
+          artRatioLo << 0.0
+        end
       when 3
         tHi << t
         nHi << params[:nSamples]
@@ -47,6 +53,11 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         end
         calLevelHi << 0.1*@hiGain*params[:mean]
         calAmpHi << 0.1*@hiGain*params[:amplitude]
+        if params[:mean] > 0 then
+          artRatioHi << 511.0*params[:amplitude]/params[:mean]
+        else
+          artRatioHi << 0.0
+        end
       end
     end
     # zip up (t,y) arrays for plotting and save them in a dictionary
@@ -63,6 +74,10 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       :artificialLevel => [
         { :data => tHi.zip(calAmpHi), :label=> "HI "+stats(calAmpHi) },
         { :data => tLo.zip(calAmpLo), :label=> "LO "+stats(calAmpLo) }
+      ],
+      :artificialRatio => [
+        { :data => tHi.zip(artRatioHi), :label=> "HI "+stats(artRatioHi) },
+        { :data => tLo.zip(artRatioLo), :label=> "LO "+stats(artRatioLo) }
       ],
       :numSamplesUsed => [
         { :data => tHi.zip(nHi), :label=> "HI "+stats(nHi) },

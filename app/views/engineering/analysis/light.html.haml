@@ -32,9 +32,13 @@
 	%li Hi-Gain Dark Threshold: #{(@config.darkThreshold & 0xff)}
 	%li Lo-Gain Dark Threshold: #{(@config.darkThreshold >> 8)*@hiloRatio}
 
-%h3#artificialLevel.analysis-plot Lighting Level Fluctuations
+%h3#artificialLevel.analysis-plot Amount of 120Hz Detected
 
 %p Some text here...
+
+%h3#artificialRatio.analysis-plot 120Hz / Mean Lighting Ratio
+
+%p Cut is at #{@config.artificialThreshold}
 
 %h2#numSamplesUsed.analysis-plot Number of Lighting Samples Used
 
