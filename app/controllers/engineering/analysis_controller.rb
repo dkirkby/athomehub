@@ -22,8 +22,8 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       # unpack this buffer analysis header
       params = dump.unpack_header
       # calculate the channel gains (undo x10 in device dump)
-      hiGain = 0.1*(1+@config.lightGainHi)/128.0
-      loGain = hiGain*@config.lightGainHiLoRatio*16.0/(1<<15)
+      @hiGain = (1+@config.lightGainHi)/128.0
+      @hiloRatio = @config.lightGainHiLoRatio*16.0/(1<<15)
       case dump.source
       when 2
         tLo << t
@@ -34,8 +34,8 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         else
           relPhaseLo << params[:relativePhase] - @@micros_per_120Hz
         end
-        calLevelLo << loGain*params[:mean]
-        calAmpLo << loGain*params[:amplitude]
+        calLevelLo << 0.1*@hiGain*@hiloRatio*params[:mean]
+        calAmpLo << 0.1*@hiGain*@hiloRatio*params[:amplitude]
       when 3
         tHi << t
         nHi << params[:nSamples]
@@ -45,8 +45,8 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         else
           relPhaseHi << params[:relativePhase] - @@micros_per_120Hz
         end
-        calLevelHi << hiGain*params[:mean]
-        calAmpHi << hiGain*params[:amplitude]
+        calLevelHi << 0.1*@hiGain*params[:mean]
+        calAmpHi << 0.1*@hiGain*params[:amplitude]
       end
     end
     # zip up (t,y) arrays for plotting and save them in a dictionary
