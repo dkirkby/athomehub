@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100707034354) do
+ActiveRecord::Schema.define(:version => 20100708013328) do
 
   create_table "binned_samples", :force => true do |t|
     t.integer "networkID"
@@ -110,6 +110,7 @@ ActiveRecord::Schema.define(:version => 20100707034354) do
     t.float    "power"
     t.integer  "powerFactor"
     t.integer  "complexity"
+    t.integer  "lightFactor"
   end
 
   create_table "users", :force => true do |t|
