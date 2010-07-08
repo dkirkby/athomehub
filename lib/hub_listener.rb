@@ -186,7 +186,7 @@ protected
   # Handles a Data message
   def handleData(values)
     # do we have the expected number of values?
-    if values.length != 9 then
+    if values.length != 10 then
       log = DeviceLog.create({:code=>-1,:value=>values.length})
       @logger.error log.message
       return
@@ -202,7 +202,7 @@ protected
       v.hex
     end
     # the power and lighting values are IEEE floats: unpack them now
-    binary = [sampleData[0],sampleData[2]].pack("LL")
+    binary = [sampleData[0],sampleData[3]].pack("LL")
     lighting,power = binary.unpack("ee")
     # is this a valid network ID?
     if networkID > 255 then
@@ -259,10 +259,11 @@ protected
       :networkID=>networkID,
       :lighting=>(lighting.infinite? ? nil : lighting),
       :artificial=>sampleData[1],
+      :lightFactor=>sampleData[2],
       :power=>(power.infinite? ? nil : power),
-      :powerFactor=>sampleData[3],
-      :complexity=>sampleData[4],
-      :temperature=>sampleData[5]
+      :powerFactor=>sampleData[4],
+      :complexity=>sampleData[5],
+      :temperature=>sampleData[6]
     })
   end
 
