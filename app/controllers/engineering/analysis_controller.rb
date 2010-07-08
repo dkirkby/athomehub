@@ -22,7 +22,7 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       # unpack this buffer analysis header
       params = dump.unpack_header
       # calculate the channel gains (undo x10 in device dump)
-      hiGain = 0.1*@config.lightGainHi
+      hiGain = 0.1*(1+@config.lightGainHi)/128.0
       loGain = hiGain*@config.lightGainHiLoRatio*16.0/(1<<15)
       case dump.source
       when 2
