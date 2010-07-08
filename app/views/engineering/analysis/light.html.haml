@@ -23,7 +23,7 @@
 %h2 Lighting Levels
 
 %ul
-	%li Hi-Gain Scale: #{@config.lightGainHi}
+	%li Hi-Gain Scale: #{(1+@config.lightGainHi)/128.0} [#{@config.lightGainHi}]
 	%li Hi/Lo Scale Ratio: #{@config.lightGainHiLoRatio*16.0/(1<<15)} [#{@config.lightGainHiLoRatio}]
 
 %h3#lightLevel.analysis-plot Mean Lighting Level
