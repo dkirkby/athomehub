@@ -24,8 +24,8 @@ class Engineering::ConfigController < Engineering::ApplicationController
     @config.comfortTempMax = 80 # degF
     @config.selfHeatOffset = 0 # degF/100
     @config.selfHeatDelay = 0 # secs*10
-    @config.fiducialHiLoDelta = 90 # microsecs
-    @config.fiducialShiftHi = 3000 # microsecs
+    @config.fiducialHiLoDelta = 100 # microsecs
+    @config.fiducialShiftHi = 3500 # microsecs
     @config.powerGainHi = 253 # mW/ADC
     @config.powerGainLo = 4500 # mW/ADC
     @config.nClipCut = 8 # samples
