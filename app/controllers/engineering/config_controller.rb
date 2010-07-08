@@ -35,7 +35,7 @@ class Engineering::ConfigController < Engineering::ApplicationController
 		@config.lightGainHi = 127 # gain of 1.0
 		@config.lightGainHiLoRatio = 46562 # gain of about 22
 		@config.darkThreshold = 0x040a # high byte is for low-gain
-		@config.artificialThreshold = 6 # /512
+		@config.artificialThreshold = 5 # /512
   end
   
   def edit
