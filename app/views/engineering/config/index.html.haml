@@ -78,7 +78,7 @@ Displaying #{@configs.length} device configurations.
 			%td&=c.lightFidShiftHi
 			%td&=sprintf("%.3f",(1.0+c.lightGainHi)/128.0) if c.lightGainHi
 			%td&=sprintf("%.3f",(16.0*c.lightGainHiLoRatio)/(1<<15)) if c.lightGainHiLoRatio
-			%td&=c.darkThreshold
+			%td&=sprintf "$%04x",c.darkThreshold
 			%td&="#{c.artificialThreshold}/511"
 			%td=link_to 'Update', :action=>:edit, :id => c
 			%td=link_to 'Raw', :action=>:raw, :id=> c, :format=> :text
