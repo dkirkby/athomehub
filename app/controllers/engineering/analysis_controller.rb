@@ -28,7 +28,7 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       case dump.source
       when 2
         tLo << t
-        nLo << params[:nSamples]
+        nLo << 0.1*params[:nSamples]
         # shift the unsigned phase to be centered at zero
         if params[:relativePhase] < 0.5*@@micros_per_120Hz then
           relPhaseLo << params[:relativePhase]
@@ -44,7 +44,7 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         end
       when 3
         tHi << t
-        nHi << params[:nSamples]
+        nHi << 0.1*params[:nSamples]
         # shift the unsigned phase to be centered at zero
         if params[:relativePhase] < 0.5*@@micros_per_120Hz then
           relPhaseHi << params[:relativePhase]
