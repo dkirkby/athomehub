@@ -167,6 +167,7 @@ class Engineering::AnalysisController < Engineering::ApplicationController
     # Calculates statistics of the input values and returns a formatted label
     floatFormat = "%.1f" unless floatFormat
     labelFormat = floatFormat + " [" + floatFormat + "] &plusmn; " + floatFormat
+    return 'no data' unless values and values.length > 0
     # calculate the mean and RMS using all values
     n = 1.0*values.length
     sum1 = values.sum
