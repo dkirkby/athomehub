@@ -2,13 +2,12 @@
 	%tr
 		%th Timestamp
 		%th ID
-		%th Light(HI)
-		%th 120Hz(HI)
-		%th Light(LO)
-		%th 120Hz(LO)
-		%th Phase
-		%th Power(HI)
-		%th Power(LO)
+		%th Light
+		%th Art./256
+		%th L.F./256
+		%th Power (W)
+		%th P.F./256
+		%th Complex/256
 		%th Temp (&deg;F)
 	-@samples.each do |s|
 		%tr
@@ -16,9 +15,8 @@
 			%td&=s.networkID
 			%td&=s.lighting
 			%td&=s.artificial
-			%td&=s.lighting2
-			%td&=s.artificial2
-			%td&=s.acPhase
+			%td&=s.lightFactor
 			%td&=s.power
-			%td&=s.power2
+			%td&=s.powerFactor
+			%td&=s.complexity
 			%td&=sprintf "%.2f",1e-2*s.temperature

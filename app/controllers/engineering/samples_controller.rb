@@ -49,7 +49,7 @@ protected
       data.each do |s|
         dump << sprintf("%d %f %d %f %6d %6d %7.2f",
           s.created_at.to_i+offset,
-          s.lighting,s.artificial,s.power,s.powerFactor,s.complexity,
+          s.lighting,s.artificial,s.lightFactor,s.power,s.powerFactor,s.complexity,
           1e-2*s.temperature)
       end
       # insert two blank lines between devices
