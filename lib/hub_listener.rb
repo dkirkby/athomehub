@@ -354,7 +354,6 @@ protected
   def periodicHandler
     now = Time.now
     nextAt = now + @@periodicInterval
-    puts "periodicHandler firing at #{now}"
     # look for any new device configurations
     new_configs = DeviceConfig.find(:all,:readonly=>true,:order=>'id ASC',
       :conditions=>['id > ?',@config_max_id])
