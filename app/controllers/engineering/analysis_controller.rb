@@ -31,7 +31,7 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       case dump.source
       when 2
         tLo << t
-        nLo << 0.1*params[:nSamples]
+        nLo << 0.1*params[:nClipped]
         # shift the unsigned phase to be centered at zero
         if params[:relativePhase] < 0.5*@@micros_per_120Hz then
           relPhaseLo << params[:relativePhase]
@@ -40,14 +40,10 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         end
         calLevelLo << 0.1*@hiGain*@hiloRatio*params[:mean]
         calAmpLo << 0.1*@hiGain*@hiloRatio*params[:amplitude]
-        if params[:mean] > 0 then
-          artRatioLo << 511.0*params[:amplitude]/params[:mean]
-        else
-          artRatioLo << 0.0
-        end
+        artRatioLo << params[:artRatio]*0.015594958342234566 # 511/32767
       when 3
         tHi << t
-        nHi << 0.1*params[:nSamples]
+        nHi << 0.1*params[:nClipped]
         # shift the unsigned phase to be centered at zero
         if params[:relativePhase] < 0.5*@@micros_per_120Hz then
           relPhaseHi << params[:relativePhase]
@@ -56,11 +52,7 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         end
         calLevelHi << 0.1*@hiGain*params[:mean]
         calAmpHi << 0.1*@hiGain*params[:amplitude]
-        if params[:mean] > 0 then
-          artRatioHi << 511.0*params[:amplitude]/params[:mean]
-        else
-          artRatioHi << 0.0
-        end
+        artRatioHi << params[:artRatio]*0.015594958342234566 # 511/32767
       end
     end
     # zip up (t,y) arrays for plotting and save them in a dictionary

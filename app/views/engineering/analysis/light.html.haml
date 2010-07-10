@@ -30,17 +30,19 @@
 
 %ul
 	%li Dark Threshold: $#{sprintf "%04X",@config.darkThreshold}
-	%li Hi-Gain Dark Threshold: #{@hiDark}
-	%li Lo-Gain Dark Threshold: #{@loDark}
+	%li Hi-Gain Dark Threshold (use LO only): #{@hiDark}
+	%li Lo-Gain Dark Threshold (use HI+LO unless HI is clipped): #{@loDark}
 
-%h3#artificialLevel.analysis-plot Amount of 120Hz Detected
+%h3#artificialLevel.analysis-plot Amplitude of 120Hz Detected
 
-%p Some text here...
+%ul
+	%li 0.1 x Hi-Gain Dark Threshold (use HI only, no visual feedback): #{0.1*@hiDark}
+	%li 0.1 x Lo-Gain Dark Threshold (use HI+LO unless HI is clipped): #{0.1*@loDark}
 
 %h3#artificialRatio.analysis-plot 120Hz / Mean Lighting Ratio
 
 %p Cut is at #{@config.artificialThreshold}
 
-%h2#numSamplesUsed.analysis-plot Number of Lighting Samples Used
+%h2#numSamplesUsed.analysis-plot Number of Samples Clipped
 
-%p Some text here...
+%p High-gain analysis not used if more than 100 samples are clipped.
