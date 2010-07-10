@@ -8,6 +8,12 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       :conditions=>['created_at > ? and created_at <= ? and networkID = ? and source in (2,3)',
         @begin_at,@end_at,@config.networkID],
       :order=>'id ASC',:readonly=>true)
+    # calculate the channel gains (undo x10 in device dump)
+    @hiGain = (1+@config.lightGainHi)/128.0
+    @hiloRatio = @config.lightGainHiLoRatio*16.0/(1<<15)
+    # calculate the dark thresholds
+    @hiDark = @config.darkThreshold & 0xff
+    @loDark = (@config.darkThreshold >> 8)*@hiloRatio;
     # fill arrays of analysis results
     tLo,tHi = [ ],[ ]
     nLo,nHi = [ ],[ ]
@@ -22,9 +28,6 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       t = 1e3*(dump.created_at.to_i + tz_offset)
       # unpack this buffer analysis header
       params = dump.unpack_header
-      # calculate the channel gains (undo x10 in device dump)
-      @hiGain = (1+@config.lightGainHi)/128.0
-      @hiloRatio = @config.lightGainHiLoRatio*16.0/(1<<15)
       case dump.source
       when 2
         tLo << t

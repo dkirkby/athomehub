@@ -29,8 +29,9 @@
 %h3#lightLevel.analysis-plot Mean Lighting Level
 
 %ul
-	%li Hi-Gain Dark Threshold: #{(@config.darkThreshold & 0xff)}
-	%li Lo-Gain Dark Threshold: #{(@config.darkThreshold >> 8)*@hiloRatio}
+	%li Dark Threshold: $#{sprintf "%04X",@config.darkThreshold}
+	%li Hi-Gain Dark Threshold: #{@hiDark}
+	%li Lo-Gain Dark Threshold: #{@loDark}
 
 %h3#artificialLevel.analysis-plot Amount of 120Hz Detected
 
