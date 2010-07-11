@@ -50,7 +50,7 @@ class Engineering::ConfigController < Engineering::ApplicationController
     @config = DeviceConfig.new(params[:device_config])
     if @config.save
       flash[:notice] = 'Device configuration was successfully saved.'
-      redirect_to :action=>"active"
+      redirect_to :action=>"index"
     else
       render :action=>"new"
     end
