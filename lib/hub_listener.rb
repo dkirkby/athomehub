@@ -325,6 +325,12 @@ protected
     end
   end
 
+  # Handles a log message
+  def handleLog(values)
+    log = DeviceLog.create({:code=>values[0],:value=>values[1]})
+    @logger.info log.message
+  end
+
   # Handles a complete message received from the hub. Logging is via @logger.
   def handle(msg)
     # Split the message into whitespace-separated tokens. The first token
@@ -341,8 +347,7 @@ protected
     elsif msgType == 'DUMP' then
       handleDump values
     elsif msgType == 'LOG' then
-      log = DeviceLog.create({:code=>values[0],:value=>values[1]})
-      @logger.info log.message
+      handleLog values
     elsif msgType == 'SENS' then
       handleHubSensorReadings values
     else
