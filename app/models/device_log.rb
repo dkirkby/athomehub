@@ -38,11 +38,16 @@ class DeviceLog < ActiveRecord::Base
     @@levels[key] if @@levels.has_key? key
   end
 
+  # Returns the severity as a symbol
+  def severity_symbol
+    @@messages[code][0] if @@messages.has_key? code
+  end
+
   # Returns a descriptive severity string
   def severity_string
-    if @@messages.has_key? code then
-      severity,template = @@messages[code]
-      severity.to_s.upcase
+    s = severity_symbol
+    if s then
+      s.to_s.upcase
     else
       "UNKNOWN"
     end
