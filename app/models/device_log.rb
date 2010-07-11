@@ -10,7 +10,7 @@ class DeviceLog < ActiveRecord::Base
     -13=>[:error,"Hub sensor readings with unexpected length %d"],
     -12=>[:warn,"Device buffer dump missing initial packet at sequence number %d"],
     -11=>[:error,"Device buffer dump has illegal sequence number %d"],
-    -10=>[:info,"Receiving new device buffer dump from source %d"],
+    -10=>[:debug,"Receiving new device buffer dump from source %d"],
     -9=>[:warn,"Saving partial device buffer dump"],
     -8=>[:error,"Device buffer dump has invalid value at position %d"],
     -7=>[:error,"Device data has invalid value at position %d"],
