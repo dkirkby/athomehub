@@ -13,6 +13,11 @@ namespace :listener do
     HubListener.instance.start
   end
 
+  desc "Starts the hub listener service as a foreground process"
+  task :service => :environment do
+    HubListener.instance.start :service=>true
+  end
+
   desc "Starts a new interactive hub listener process for debugging"
   task :debug => :environment do
     HubListener.instance.start :debug=>true

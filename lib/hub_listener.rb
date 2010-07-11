@@ -49,6 +49,13 @@ class HubListener
       @logger = Logger.new(STDOUT)
       @logger.info "Running interactively. Use ^C to stop."
       self.listen { |msg| self.handle msg }
+    elsif options[:service] then
+      # run in the foreground with filtered logging to stdout
+      # this mode is appropriate for use as an upstart service
+      @logger = Logger.new(STDOUT)
+      @logger.level = Logger::ERROR
+      puts "Listener service started (will stop on SIGINT)"
+      self.listen { |msg| self.handle msg }
     elsif options[:raw] then
       # run interactively and simply print all serial traffic to stdout
       @@periodicInterval = nil
