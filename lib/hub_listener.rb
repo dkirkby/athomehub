@@ -165,14 +165,13 @@ protected
       @logger.warn(
         "Unexpected commit ID length #{lam.commitID.length} in '#{lam.commitID}'")
     end
-    if values[3] == '0' then
-      lam.modified = false
-    else
-      if values[3] != '1' then
-        @logger.warn "Unexpected LAM modified field '#{values[3]}'"
-      end
-      lam.modified = true
-    end
+    # parse the LAM status bits
+    status = values[3].to_i
+    lam.powerReset = true if status & (1<<0)
+    lam.extReset = true if status & (1<<1)
+    lam.brownoutReset = true if status & (1<<2)
+    lam.wdogReset = true if status & (1<<3)
+    lam.modified = true if status & (1<<4)
     # save this message in the db
     lam.save
     # should we respond with a config message?
