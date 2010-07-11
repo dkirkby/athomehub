@@ -4,7 +4,7 @@ class HubListener
   
   include Singleton
   
-  @@periodicInterval = 10.seconds
+  @@periodicInterval = 30.seconds
   
   # Looks for a running listener process and sets the @pid global if one
   # is found.
