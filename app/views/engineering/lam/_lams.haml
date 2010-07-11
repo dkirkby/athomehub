@@ -6,6 +6,10 @@
 		%th Commit Date
 		%th Commit ID
 		%th Modified?
+		%th Power Reset?
+		%th Ext Reset?
+		%th Brown-out Reset?
+		%th Watch-dog Reset?
 	-@lams.each do |l|
 		%tr
 			%td&=l.created_at.localtime
@@ -14,3 +18,7 @@
 			%td&=l.commitDate
 			%td=link_to_commitID(l)
 			%td&=l.modified
+			%td&=l.powerReset
+			%td&=l.extReset
+			%td&=l.brownoutReset
+			%td&=l.wdogReset

@@ -130,7 +130,7 @@ protected
     while offset < config_msg.length do
       @hub.write config_msg[offset,chunk_size]
       offset += chunk_size
-      sleep 0.01
+      sleep 0.1
     end
     # remember that this device has been sent this configuration
     @configs_pending[config.networkID] = config
@@ -167,11 +167,11 @@ protected
     end
     # parse the LAM status bits
     status = values[3].to_i
-    lam.powerReset = true if status & (1<<0)
-    lam.extReset = true if status & (1<<1)
-    lam.brownoutReset = true if status & (1<<2)
-    lam.wdogReset = true if status & (1<<3)
-    lam.modified = true if status & (1<<4)
+    lam.powerReset = (0 != status & (1<<0))
+    lam.extReset = (0 != status & (1<<1))
+    lam.brownoutReset = (0 != status & (1<<2))
+    lam.wdogReset = (0 != status & (1<<3))
+    lam.modified = (0 != status & (1<<4))
     # save this message in the db
     lam.save
     # should we respond with a config message?
