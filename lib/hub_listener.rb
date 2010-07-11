@@ -4,7 +4,7 @@ class HubListener
   
   include Singleton
   
-  @@periodicInterval = 30.seconds
+  @@periodicInterval = 10.seconds
   
   # Looks for a running listener process and sets the @pid global if one
   # is found.
@@ -126,8 +126,25 @@ protected
     @logger.info "Using config command #{config_msg.rstrip}"
     @hub.write(config_msg)
     # remember that this device has been sent this configuration
+    @configs_pending[config.networkID] = config
+  end
+
+  # Registers that a device configuration has been received
+  def registerConfig(networkID)
+    # were we expecting this?
+    @logger.error(
+      "No pending config to register for network ID #{networkID}") unless
+      @configs_pending.has_key? networkID
+    # lookup the config this device was pending on
+    config = @configs_pending[networkID]
+    # update the config associated with each serial number
     @configs[config.serialNumber] = config
+    # remember that this networkID is configured
     @configured[config.networkID] = true
+    # update our config high water mark if it was set by this pending config
+    @config_min_id += 1 if @config_min_id == config.id
+    # we are no longer pending on this device
+    @configs_pending.delete networkID
   end
 
   # Handles a Look-at-Me message
@@ -138,8 +155,8 @@ protected
     lam.commitDate = Time.at(values[1].to_i)
     lam.commitID = values[2]
     if lam.commitID.length != 40 then
-      @logger.warn
-        "Unexpected commit ID length #{lam.commitID.length} in '#{lam.commitID}'"
+      @logger.warn(
+        "Unexpected commit ID length #{lam.commitID.length} in '#{lam.commitID}'")
     end
     if values[3] == '0' then
       lam.modified = false
@@ -157,7 +174,7 @@ protected
       config = DeviceConfig.find(:last,:readonly=>true,:order=>'id ASC',
         :conditions=>['serialNumber = ?',lam.serialNumber])
       if not config then
-        @logger.warn "No config found for SN #{lam.serialNumber}"
+        @logger.error "No config found for SN #{lam.serialNumber}"
       else
         sendConfig config
       end
@@ -210,21 +227,6 @@ protected
       @logger.warn log.message
       return
     end
-    # have we ever configured this device?
-    if not @configured.has_key? networkID then
-      log = DeviceLog.create({:code=>-15,:value=>networkID,:networkID=>networkID})
-      @logger.warn log.message
-      # find the most recent config for this network ID
-      config = DeviceConfig.find(:last,:readonly=>true,:order=>'id ASC',
-        :conditions=>['networkID = ?',networkID])
-      if not config then
-        log = DeviceLog.create({:code=>-17,:value=>networkID,:networkID=>networkID})
-        @logger.warn log.message
-        return
-      else
-        sendConfig config
-      end
-    end
     # did we drop any packets since the last one seen?
     if @sequences[networkID] then
       dropped = (seqno-@sequences[networkID])%256 - 1
@@ -242,16 +244,36 @@ protected
     end
     # did the device receive config data?
     if (status & 0x10) != 0 then
+      # initial config
       log = DeviceLog.create({:code=>-4,:networkID=>networkID})
       @logger.info log.message
+      registerConfig networkID
     end
     if (status & 0x20) != 0 then
+      # updated config
       log = DeviceLog.create({:code=>-5,:networkID=>networkID})
       @logger.info log.message
+      registerConfig networkID
     end
     if (status & 0x40) != 0 then
+      # invalid config
       log = DeviceLog.create({:code=>-6,:networkID=>networkID})
       @logger.warn log.message
+    end
+    # have we ever configured this device?
+    if not @configured.has_key? networkID then
+      log = DeviceLog.create({:code=>-15,:value=>networkID,:networkID=>networkID})
+      @logger.warn log.message
+      # find the most recent config for this network ID
+      config = DeviceConfig.find(:last,:readonly=>true,:order=>'id ASC',
+        :conditions=>['networkID = ?',networkID])
+      if not config then
+        log = DeviceLog.create({:code=>-17,:value=>networkID,:networkID=>networkID})
+        @logger.error log.message
+        return
+      else
+        sendConfig config
+      end
     end
     # Finally, write the sample values we received, translating
     # float infinity to database NULL.
@@ -352,35 +374,48 @@ protected
     elsif msgType == 'SENS' then
       handleHubSensorReadings values
     else
-      @logger.warn "Skipping unexpected hub message \"#{msg}\""
+      @logger.error "Skipping unexpected hub message \"#{msg}\""
     end
   end
   
   # Performs periodic housekeeping
   def periodicHandler
     now = Time.now
-    nextAt = now + @@periodicInterval
+    @logger.debug "periodicHandler: config.id >= #{@config_min_id} and "+
+      "#{@configs_pending.length} config(s) pending at #{now}"
     # look for any new device configurations
     new_configs = DeviceConfig.find(:all,:readonly=>true,:order=>'id ASC',
-      :conditions=>['id > ?',@config_max_id])
+      :conditions=>['id >= ?',@config_min_id])
     # keep track of the most recent config update for each serial number, just
     # in case there have been multiple updates since the last time this
     # handler ran
     to_send = { }
+    id_min = nil
     new_configs.each do |c|
-      # update our high water mark so that we only process this config update once
-      @config_max_id = c.id
-      # ignore updates for devices that we are not already talking to
-      next unless @configs.has_key? c.serialNumber
-      # send the updated config to the device
-      @logger.info "Found an updated config ID #{c.id} for SN #{c.serialNumber}"
-      to_send[c.serialNumber] = c
+      # remember the smallest id we see
+      id_min = c.id if not id_min or c.id < id_min
+      # are we already talking to the device whose config this is?
+      if @configs.has_key? c.serialNumber then
+        # is this config newer than what we have already sent?
+        if c.id <= @configs[c.serialNumber].id then
+          # don't resend it
+          @config_min_id += 1 if c.id == @config_min_id
+        else
+          @logger.info "Found an updated config ID #{c.id} for SN #{c.serialNumber}"
+          to_send[c.serialNumber] = c
+        end
+      else
+        # ignore updates for devices that we are not already talking to
+        @config_min_id += 1 if c.id == @config_min_id
+      end
     end
+    # our min ID should be at least the smallest ID seen
+    @config_min_id = id_min if id_min and id_min > @config_min_id
     # send the config updates now
     to_send.each do |sn,c|
       sendConfig c
     end
-    return nextAt
+    return now + @@periodicInterval
   end
   
   # Connects to a hub serial port and enters an infinite message handling loop,
@@ -403,10 +438,20 @@ protected
     @dumps = { }
     # We will reconstruct message fragments in this string buffer
     partialMessage = ""
-    # Track the configuration status of devices
+    # Track the configuration status of devices...
+    # @configs is indexed by serial number and used by the periodic handler
+    # to ensure that we only push updates for devices we are talking to.
     @configs = { }
+    # @configured is indexed by networkID and allows us to automatically
+    # push the latest config to a device that is already sending samples
+    # when the listener starts up.
     @configured = { }
-    @config_max_id = -1
+    # @configs_pending tracks configurations that have been sent at least
+    # once but not yet updated in the appropriate device.
+    @configs_pending = { }
+    # @configs_max_id keeps track of which new configs we have already
+    # acted upon in the periodic handler's push logic.
+    @config_min_id = 0
     # Initialize our periodic housekeeping
     nextIntervalExpiresAt = periodicHandler if @@periodicInterval
     begin
