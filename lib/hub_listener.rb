@@ -124,7 +124,14 @@ protected
     @logger.info "Sending config ID #{config.id} created at #{config.created_at.localtime} for SN #{config.serialNumber}"
     config_msg = config.serialize_for_device
     @logger.info "Using config command #{config_msg.rstrip}"
-    @hub.write(config_msg)
+    # break the message into chunks to allow the hub to keep up
+    offset = 0
+    chunk_size = 8
+    while offset < config_msg.length do
+      @hub.write config_msg[offset,chunk_size]
+      offset += chunk_size
+      sleep 0.01
+    end
     # remember that this device has been sent this configuration
     @configs_pending[config.networkID] = config
   end
