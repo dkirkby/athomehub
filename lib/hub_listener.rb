@@ -328,7 +328,8 @@ protected
   # Handles a log message
   def handleLog(values)
     log = DeviceLog.create({:code=>values[0],:value=>values[1]})
-    @logger.info log.message
+    level = log.severity_symbol or :error
+    @logger.send(level,log.message)
   end
 
   # Handles a complete message received from the hub. Logging is via @logger.
