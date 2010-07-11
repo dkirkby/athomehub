@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100708013328) do
+ActiveRecord::Schema.define(:version => 20100711215227) do
 
   create_table "binned_samples", :force => true do |t|
     t.integer "networkID"
@@ -90,6 +90,10 @@ ActiveRecord::Schema.define(:version => 20100708013328) do
     t.string   "commitID"
     t.boolean  "modified"
     t.datetime "created_at"
+    t.boolean  "wdogReset"
+    t.boolean  "brownoutReset"
+    t.boolean  "extReset"
+    t.boolean  "powerReset"
   end
 
   create_table "notes", :force => true do |t|
