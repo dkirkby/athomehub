@@ -11,6 +11,7 @@ class Engineering::ConfigController < Engineering::ApplicationController
 
   def new
     @config = DeviceConfig.new
+    @config.enabled = true
     # set defaults (capability booleans are false by default)
     @config.lightingFeedback = true
     @config.lightingDump = true

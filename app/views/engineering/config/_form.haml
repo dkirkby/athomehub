@@ -1,6 +1,8 @@
 %p
 	Serial Number (8 upper-case hex digits):
 	= @form.text_field :serialNumber, :size=>8
+	Device enabled?
+	= @form.check_box :enabled
 	Network ID (0-255):
 	= @form.text_field :networkID, :size=>3
 

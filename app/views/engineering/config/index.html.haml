@@ -6,8 +6,9 @@ Displaying #{@configs.length} device configurations.
 	%tr
 		%th ID
 		%th Created
-		%th netID
+		%th Enabled?
 		%th Serial Num
+		%th netID
 		%th Temp FB?
 		%th Light FB?
 		%th Light Dumps?
@@ -44,8 +45,9 @@ Displaying #{@configs.length} device configurations.
 		%tr
 			%td&=c.id
 			%td&="#{time_ago_in_words c.created_at} ago"
-			%td&=c.networkID
+			%td=capability c.enabled
 			%td&=format_serialNumber c.serialNumber
+			%td&=c.networkID
 			%td=capability c.temperatureFeedback
 			%td=capability c.lightingFeedback
 			%td=capability c.lightingDump
