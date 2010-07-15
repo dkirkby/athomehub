@@ -1,0 +1,80 @@
+%table.small-text
+	%tr
+		%th ID
+		%th Created
+		%th Enabled?
+		%th Serial Num
+		%th netID
+		%th Temp FB?
+		%th Light FB?
+		%th Light Dumps?
+		%th Pwr Dumps?
+		%th Audio Diag?
+		%th Pwr Edge?
+		%th Pwr Level?
+		%th Green Glow?
+		%th Amber Glow?
+		%th Red Glow?
+		%th Green Flash?
+		%th Amber Flash?
+		%th Red Flash?
+		%th Blue Flash?
+		%th Light Audio?
+		%th Dump Interval (cycles)
+		%th Min Comfort (F)
+		%th Max Comfort (F)
+		%th Self Heat Offset (F/100)
+		%th Self Heat Delay (sec*10)
+		%th Fid Shift Hi (&mu;s)
+		%th Fid Hi-Lo Delta (&mu;s)
+		%th Pwr Gain Hi (mW/ADC)
+		%th Pwr Gain Lo (mW/ADC)
+		%th Max Hi Clip
+		%th Pwr Audio Control
+		%th Light Hi-Lo Delta (&mu;s)
+		%th Light Shift Hi (&mu;s)
+		%th Light Gain Hi (arb./ADC)
+		%th Light Hi/Lo Gain Ratio
+		%th Dark Thresh
+		%th Art Thresh
+	-@configs.each do |c|
+		%tr
+			%td&=c.id
+			%td&="#{time_ago_in_words c.created_at} ago"
+			%td=capability c.enabled
+			%td&=format_serialNumber c.serialNumber
+			%td&=c.networkID
+			%td=capability c.temperatureFeedback
+			%td=capability c.lightingFeedback
+			%td=capability c.lightingDump
+			%td=capability c.powerDump
+			%td=capability c.audioDiagnostics
+			%td=capability c.powerEdgeAudio
+			%td=capability c.powerLevelAudio
+			%td=capability c.greenGlow
+			%td=capability c.amberGlow
+			%td=capability c.redGlow
+			%td=capability c.greenFlash
+			%td=capability c.amberFlash
+			%td=capability c.redFlash
+			%td=capability c.blueFlash
+			%td=capability c.lightAudio
+			%td&=c.dumpInterval
+			%td&=c.comfortTempMin
+			%td&=c.comfortTempMax
+			%td&=c.selfHeatOffset
+			%td&=c.selfHeatDelay
+			%td&=c.fiducialShiftHi
+			%td&=c.fiducialHiLoDelta
+			%td&=c.powerGainHi
+			%td&=c.powerGainLo
+			%td&=c.nClipCut
+			%td&=sprintf "$%04x",c.powerAudioControl
+			%td&="100+#{c.lightFidHiLoDelta}"
+			%td&=c.lightFidShiftHi
+			%td&=sprintf("%.3f",(1.0+c.lightGainHi)/128.0) if c.lightGainHi
+			%td&=sprintf("%.3f",(16.0*c.lightGainHiLoRatio)/(1<<15)) if c.lightGainHiLoRatio
+			%td&=sprintf "$%04x",c.darkThreshold
+			%td&="#{c.artificialThreshold}/511"
+			%td=link_to 'Update', :action=>:edit, :id => c
+			%td=link_to 'Raw', :action=>:raw, :id=> c, :format=> :text
