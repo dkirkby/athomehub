@@ -1,0 +1,9 @@
+%h1 Most Recent Device Configurations
+
+Displaying the #{@configs.length} most recent device configurations defined at #{@at.localtime}
+
+=render :partial => "configs"
+
+%br
+
+=link_to 'New Device Config', :action=>:new

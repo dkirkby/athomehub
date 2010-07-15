@@ -1,8 +1,7 @@
 class Engineering::ConfigController < Engineering::ApplicationController
 
-  def active
+  def index
     @configs = DeviceConfig.find(:all,:order=>'id DESC',:group=>:serialNumber,:readonly=>true)
-    render :action=>"index"
   end
 
   def all
