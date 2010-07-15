@@ -5,7 +5,7 @@ class Engineering::ConfigController < Engineering::ApplicationController
     render :action=>"index"
   end
 
-  def index
+  def all
     @configs = DeviceConfig.find(:all,:order=>'id DESC',:readonly=>true)
   end
 
