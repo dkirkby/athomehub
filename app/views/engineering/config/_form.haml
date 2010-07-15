@@ -1,12 +1,8 @@
 %p
-	Serial Number (8 hex digits):
+	Serial Number (8 upper-case hex digits):
 	= @form.text_field :serialNumber, :size=>8
 	Network ID (0-255):
 	= @form.text_field :networkID, :size=>3
-%p
-	Location (must be unique)
-	%br
-	= @form.text_field :location, :size=>40
 
 %h3 Capabilities
 %p
