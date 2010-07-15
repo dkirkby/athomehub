@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100715225111) do
+ActiveRecord::Schema.define(:version => 20100715230612) do
 
   create_table "binned_samples", :force => true do |t|
     t.integer "networkID"
@@ -67,6 +67,7 @@ ActiveRecord::Schema.define(:version => 20100715225111) do
     t.integer  "lightGainHiLoRatio"
     t.integer  "darkThreshold"
     t.integer  "artificialThreshold"
+    t.boolean  "enabled"
   end
 
   create_table "device_logs", :force => true do |t|
