@@ -55,8 +55,6 @@ class DeviceConfig < ActiveRecord::Base
       next if config.serialNumber == serialNumber
       # check for a duplicate networkID
       errors.add_to_base("Device #{config.serialNumber} is already using network ID #{networkID}") if config.networkID == networkID
-      # check for a duplicate location
-      errors.add_to_base("Device #{config.serialNumber} is already at location \"#{location}\"") if config.location == location
     end
   end
 
