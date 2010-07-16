@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100715230612) do
+ActiveRecord::Schema.define(:version => 20100716183548) do
 
   create_table "binned_samples", :force => true do |t|
     t.integer "networkID"
@@ -76,6 +76,13 @@ ActiveRecord::Schema.define(:version => 20100715230612) do
     t.datetime "created_at"
     t.integer  "severity"
     t.integer  "networkID"
+  end
+
+  create_table "device_profiles", :force => true do |t|
+    t.integer  "networkID"
+    t.string   "description"
+    t.datetime "created_at"
+    t.integer  "display_order"
   end
 
   create_table "hub_samples", :force => true do |t|
