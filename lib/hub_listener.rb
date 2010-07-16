@@ -276,11 +276,13 @@ protected
       log = DeviceLog.create({:code=>-15,:value=>networkID,:networkID=>networkID})
       @logger.warn log.message
       # find the most recent config for this network ID
-      config = DeviceConfig.find(:last,:readonly=>true,:order=>'id ASC',
-        :conditions=>['networkID = ?',networkID])
+      config = DeviceConfig.for_networkID(networkID).last
       if not config then
         log = DeviceLog.create({:code=>-17,:value=>networkID,:networkID=>networkID})
         @logger.error log.message
+        return
+      elsif not config.enabled then
+        @logger.error "Ignoring unsolicited data from disabled networkID #{networkID}"
         return
       else
         sendConfig config

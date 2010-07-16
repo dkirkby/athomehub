@@ -24,10 +24,20 @@ class DeviceConfig < ActiveRecord::Base
   #
   named_scope :for_serialNumber, lambda { |*args|
     {
-      #:order=>'id ASC',
       :conditions => (args.length > 1) ?
         [ 'serialNumber = ? and created_at < ?',args.first,args.last ] :
         [ 'serialNumber = ?',args.first ],
+      :readonly => true
+    }
+  }
+
+  # Returns the configs for the specified networkID at the specified utc
+  # time which defaults to now. Usage is similar to for_serialNumber.
+  named_scope :for_networkID, lambda { |*args|
+    {
+      :conditions => (args.length > 1) ?
+        [ 'networkID = ? and created_at < ?',args.first,args.last ] :
+        [ 'networkID = ?',args.first ],
       :readonly => true
     }
   }
