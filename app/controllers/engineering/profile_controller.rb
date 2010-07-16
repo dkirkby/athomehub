@@ -11,4 +11,14 @@ class Engineering::ProfileController < Engineering::ApplicationController
     @profile.display_order = last ? (last.display_order + 1) : 0
   end
 
+  def create
+    @profile = DeviceProfile.new(params[:device_profile])
+    if @profile.save
+      flash[:notice] = 'Device profile was successfully saved.'
+      redirect_to :action=>"index"
+    else
+      render :action=>"new"
+    end
+  end
+
 end
