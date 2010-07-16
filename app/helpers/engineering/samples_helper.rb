@@ -1,2 +1,0 @@
-module Engineering::SamplesHelper
-end
