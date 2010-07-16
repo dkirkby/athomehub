@@ -413,6 +413,12 @@ protected
         if c.id <= @configs[c.serialNumber].id then
           # don't resend it
           @config_min_id += 1 if c.id == @config_min_id
+        elsif not c.enabled then
+          @logger.info "Disabling SN #{c.serialNumber} for config ID #{c.id}"
+          @configs.delete c.serialNumber
+          @configured.delete c.networkID
+          @configs_pending.delete c.networkID
+          @config_min_id += 1 if c.id == @config_min_id
         else
           @logger.info "Found an updated config ID #{c.id} for SN #{c.serialNumber}"
           to_send[c.serialNumber] = c
@@ -459,8 +465,8 @@ protected
     # push the latest config to a device that is already sending samples
     # when the listener starts up.
     @configured = { }
-    # @configs_pending tracks configurations that have been sent at least
-    # once but not yet updated in the appropriate device.
+    # @configs_pending is indexed by networkID and tracks configurations that
+    # have been sent at least once but not yet updated in the appropriate device.
     @configs_pending = { }
     # @configs_max_id keeps track of which new configs we have already
     # acted upon in the periodic handler's push logic.
