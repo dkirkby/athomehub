@@ -3,7 +3,10 @@ class DeviceLog < ActiveRecord::Base
   before_validation :set_severity
   
   @@messages = {
-    -17=>[:error,"Hub ignoring samples from network ID %d with no config"],
+    -20=>[:error,"Ignoring unsolicited buffer dump from disabled network ID %d"],
+    -19=>[:error,"Hub ignoring buffer from network ID %d with no config"],
+    -18=>[:error,"Ignoring unsolicited sample from disabled network ID %d"],
+    -17=>[:error,"Hub ignoring sample from network ID %d with no config"],
     -16=>[:warn,"Hub received samples from invalid network ID %d"],
     -15=>[:warn,"Hub receiving samples from un-configured network ID %d"],
     -14=>[:error,"Hub sensor readings have badly formatted values"],
