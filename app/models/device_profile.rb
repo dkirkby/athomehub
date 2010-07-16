@@ -27,4 +27,25 @@ class DeviceProfile < ActiveRecord::Base
     }
   }
 
+  validates_numericality_of :networkID, :only_integer=>true,
+    :greater_than_or_equal_to=>0, :less_than=>256
+  validates_numericality_of :display_order, :only_integer=>true
+  validates_presence_of :description
+  
+  validate_on_create :active_profiles_are_unique
+  
+  def active_profiles_are_unique
+    # trim any whitespace from the proposed description
+    description.strip!
+    # lookup the most recent profile for each network ID
+    DeviceProfile.latest.each do |profile|
+      # skip any existing profile for the network ID we are updating since
+      # we will be overwriting it
+      next if profile.networkID == networkID
+      # check for a duplicate description
+      errors.add_to_base("Profile #{profile.networkID} is already using " +
+        "the same description") if profile.description == description
+    end
+  end
+
 end
