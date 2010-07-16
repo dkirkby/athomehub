@@ -7,7 +7,7 @@ class DeviceConfig < ActiveRecord::Base
       :from => 'device_configs c1',
       :conditions => args.first ?
         [ 'c1.id = (select max(id) from device_configs c2 where ' +
-          'c2.serialNumber = c1.serialNumber and created_at < ?)',args.first ] :
+          'c2.serialNumber = c1.serialNumber and created_at <= ?)',args.first ] :
         ( 'c1.id = (select max(id) from device_configs c2 where ' +
           'c2.serialNumber = c1.serialNumber)' ),
       :readonly => true
@@ -25,7 +25,7 @@ class DeviceConfig < ActiveRecord::Base
   named_scope :for_serialNumber, lambda { |*args|
     {
       :conditions => (args.length > 1) ?
-        [ 'serialNumber = ? and created_at < ?',args.first,args.last ] :
+        [ 'serialNumber = ? and created_at <= ?',args.first,args.last ] :
         [ 'serialNumber = ?',args.first ],
       :readonly => true
     }
@@ -36,7 +36,7 @@ class DeviceConfig < ActiveRecord::Base
   named_scope :for_networkID, lambda { |*args|
     {
       :conditions => (args.length > 1) ?
-        [ 'networkID = ? and created_at < ?',args.first,args.last ] :
+        [ 'networkID = ? and created_at <= ?',args.first,args.last ] :
         [ 'networkID = ?',args.first ],
       :readonly => true
     }
