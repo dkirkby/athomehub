@@ -4,6 +4,10 @@ class Engineering::ProfileController < Engineering::ApplicationController
     @profiles = DeviceProfile.latest(@at).find(:all,:order=>'networkID ASC')
   end
 
+  def all
+    @profiles = DeviceProfile.find(:all,:order=>'networkID ASC',:readonly=>true)
+  end
+
   def new
     @profile = DeviceProfile.new
     # by default, a new config displays after all existing configs
