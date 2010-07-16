@@ -1,9 +1,11 @@
 %h1 All Device Configurations
 
-Displaying the #{@configs.length} device configurations defined at #{@at.localtime}
+Displaying all #{@configs.length} device configurations defined at #{@at.localtime}.
 
 =render :partial => "configs"
 
 %br
 
+=link_to 'Most Recent Configs', :action=>:index, :at=>@at.httpdate
+|
 =link_to 'New Device Config', :action=>:new
