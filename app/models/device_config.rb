@@ -1,4 +1,10 @@
 class DeviceConfig < ActiveRecord::Base
+  
+  named_scope :latest_at, lambda { |at| {
+    :from => 'device_configs c1',
+    :conditions => [ 'c1.id = (select max(id) from device_configs c2 where ' +
+      'c2.serialNumber = c1.serialNumber and created_at < ?)',at ]
+  } }
 
   validates_numericality_of :networkID, :only_integer=>true,
     :greater_than_or_equal_to=>0, :less_than=>256
