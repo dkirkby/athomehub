@@ -1,11 +1,11 @@
 class Engineering::ConfigController < Engineering::ApplicationController
 
   def index
-    @configs = DeviceConfig.latest(@at)
+    @configs = DeviceConfig.latest(@at).find(:all,:order=>'serialNumber ASC')
   end
 
   def all
-    @configs = DeviceConfig.find(:all,:order=>'id DESC',:readonly=>true)
+    @configs = DeviceConfig.find(:all,:order=>'serialNumber ASC',:readonly=>true)
   end
 
   def new
