@@ -1,0 +1,10 @@
+%h1 Update Device Profile
+
+-form_for(:device_profile,@profile,:url=>{:action=>"create"}) do |@form|
+	-if @form.error_messages and @form.error_messages.length > 0
+		#flash= @form.error_messages
+	=render :partial => "form"
+	%p
+		= @form.submit 'Update'
+
+= link_to 'Back', :back

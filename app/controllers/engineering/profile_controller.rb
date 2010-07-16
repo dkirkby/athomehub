@@ -15,6 +15,14 @@ class Engineering::ProfileController < Engineering::ApplicationController
     @profile.display_order = last ? (last.display_order + 1) : 0
   end
 
+  def edit
+    # Edit action returns a clone of the original record so that
+    # all history is preserved. The follow-up action should
+    # be "create" instead of the usual "update".
+    old_profile = DeviceProfile.find(params[:id],:readonly=>true)
+    @profile = old_profile.clone
+  end
+
   def create
     @profile = DeviceProfile.new(params[:device_profile])
     if @profile.save
