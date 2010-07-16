@@ -1,0 +1,14 @@
+%table
+	%tr
+		%th ID
+		%th Created
+		%th NetID
+		%th Display Order
+		%th Description
+	-@profiles.each do |p|
+		%tr
+			%td&=p.id
+			%td&="#{time_ago_in_words p.created_at} ago"
+			%td&=c.networkID
+			%th&=c.display_order
+			%th&=c.description

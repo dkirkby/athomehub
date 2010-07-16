@@ -1,0 +1,11 @@
+%h1 Most Recent Device Profiles
+
+Displaying the #{@profiles.length} most recent device profiles defined at #{@at.localtime}.
+
+=render :partial => "profiles"
+
+%br
+
+=link_to 'All Profiles', :action=>:all, :at=>@at.httpdate
+|
+=link_to 'New Device Profile', :action=>:new
