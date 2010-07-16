@@ -181,10 +181,11 @@ protected
     # should we respond with a config message?
     if not lam.is_hub? and lam.serialNumber != '00000000' then
       # find the most recent config for this serial number
-      config = DeviceConfig.find(:last,:readonly=>true,:order=>'id ASC',
-        :conditions=>['serialNumber = ?',lam.serialNumber])
+      config = DeviceConfig.for_serialNumber(lam.serialNumber).last
       if not config then
-        @logger.error "No config found for SN #{lam.serialNumber}"
+        @logger.warn "No config found for SN #{lam.serialNumber}"
+      elsif not config.enabled then
+        @logger.warn "Not sending config to disabled SN #{lam.serialNumber}"
       else
         sendConfig config
       end
