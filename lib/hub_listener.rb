@@ -282,7 +282,8 @@ protected
         @logger.error log.message
         return
       elsif not config.enabled then
-        @logger.error "Ignoring unsolicited data from disabled networkID #{networkID}"
+        log = DeviceLog.create({:code=>-18,:value=>networkID,:networkID=>networkID})
+        @logger.error log.message
         return
       else
         sendConfig config
@@ -302,7 +303,7 @@ protected
     })
   end
 
-  # Handles a buffer dump message
+  # Handles a buffer dump message.
   def handleDump(values)
     # check that all fields are pure hex
     index = 0
@@ -349,8 +350,20 @@ protected
       @dumps[networkID].add_samples 10+24*(sequenceNumber-1),values[2..25]
       # save this dump now?
       if sequenceNumber == 10 then
-        @dumps[networkID].save
-        @dumps[networkID] = nil
+        # find the most recent config for this network ID
+        config = DeviceConfig.for_networkID(networkID).last
+        if not config then
+          log = DeviceLog.create({:code=>-19,:value=>networkID,:networkID=>networkID})
+          @logger.error log.message
+        elsif not config.enabled then
+          log = DeviceLog.create({:code=>-20,:value=>networkID,:networkID=>networkID})
+          @logger.error log.message
+        else
+          # config looks ok, go ahead and save now
+          @dumps[networkID].save
+        end
+        # closeout this dump reconstruction
+        @dumps.delete networkID
       end
     else
       # we should never see a sequence number > 11
