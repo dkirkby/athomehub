@@ -90,13 +90,17 @@ class DeviceConfig < ActiveRecord::Base
   end
   
   def active_configs_are_unique
+    # a disabled config cannot conflict with existing configs
+    return if not enabled
     # lookup the most recent config for each serial number
-    active = DeviceConfig.find(:all,:group=>:serialNumber,:readonly=>true)
-    active.each do |config|
-      # skip any existing config with the serial number we are updating
+    DeviceConfig.latest.each do |config|
+      # skip any existing config for the serial number we are updating since
+      # we will be overwriting it
       next if config.serialNumber == serialNumber
-      # check for a duplicate networkID
-      errors.add_to_base("Device #{config.serialNumber} is already using network ID #{networkID}") if config.networkID == networkID
+      # check for a duplicate networkID on an enabled config for a different SN
+      errors.add_to_base("Device #{config.serialNumber} is already using " +
+        "network ID #{networkID}") if (config.enabled and
+        config.networkID == networkID)
     end
   end
 
