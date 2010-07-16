@@ -1,0 +1,7 @@
+%p
+	NetworkID (0-255):
+	= @form.text_field :networkID, :size=>3
+	Display order (negative values are hidden):
+	= @form.text_field :display_order, :size=>4
+	Description (must be unique):
+	= @form.text_field :description, :size=>30
