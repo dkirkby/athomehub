@@ -79,7 +79,6 @@ protected
         flash.now[:notice] = "Invalid parameter at=\'#{params['end']}\'. Using now (#{@at}) instead."
       end
     end
-    puts "@at = #{@at}"
   end
   
   # Validates input params['nid'] and sets @config. Value represents the
