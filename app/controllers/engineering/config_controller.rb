@@ -1,7 +1,7 @@
 class Engineering::ConfigController < Engineering::ApplicationController
 
   def index
-    @configs = DeviceConfig.latest_at(@at)
+    @configs = DeviceConfig.latest(@at)
   end
 
   def all
