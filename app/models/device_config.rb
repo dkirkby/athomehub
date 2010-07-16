@@ -13,6 +13,24 @@ class DeviceConfig < ActiveRecord::Base
       :readonly => true
     }
   }
+  # Returns the configs for the specified serial number at the specified utc
+  # time which defaults to now. Examples:
+  #
+  #   # Find the config that was active 1 day ago
+  #   DeviceConfig.for_serialNumber('0000012E',1.day.ago).last
+  #
+  #   # Find the config history in reverse chronological order
+  #   DeviceConfig.for_serialNumber('0000012E').find(:all,:order=>'id DESC')
+  #
+  named_scope :for_serialNumber, lambda { |*args|
+    {
+      #:order=>'id ASC',
+      :conditions => (args.length > 1) ?
+        [ 'serialNumber = ? and created_at < ?',args.first,args.last ] :
+        [ 'serialNumber = ?',args.first ],
+      :readonly => true
+    }
+  }
 
   validates_numericality_of :networkID, :only_integer=>true,
     :greater_than_or_equal_to=>0, :less_than=>256
