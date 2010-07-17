@@ -84,7 +84,10 @@ protected
   # Validates input params['nid'] and sets @config. Value represents the
   # networkID of a configured device. The selected @config depends on the
   # value of @at and represents the configuration that was valid at the time.
-  def valid_nid
+  # Sets @config = nil if no valid selection was made. Sets a flash error
+  # message if an invalid selection was made but is silent if no selection
+  # was made.
+  def optional_nid
     @config = nil
     if params.has_key? 'nid' then
       # is it a decimal integer?
@@ -94,23 +97,30 @@ protected
         if nid < 0 || nid > 255 then
           error_msg = "Parameter out of range (0-255): nid=#{nid}."
         else
-          # is there a device registered with this network ID?
-          @config = DeviceConfig.find(:last,:order=>'id ASC',:readonly=>true,
-            :conditions=>['networkID=? and created_at < ?',nid,@at])
+          # is there a device registered with this network ID at the specified time?
+          @config = DeviceConfig.for_networkID(nid,@at).last
           if not @config then
-            error_msg = "No device registered with nid=#{nid} at @at."
+            error_msg = "No device registered with nid=#{nid} at #{@at}."
+          elsif not @config.enabled then
+            error_msg = "Device registered with nid=#{nid} is disabled at #{@at}."
           end
         end
       else
         error_msg = "Invalid parameter nid=\`#{params['nid']}\`."
       end
-    else
-      error_msg = "Missing required nid parameter."
     end
+    flash.now[:notice] = error_msg if error_msg
+  end
+  
+  # Similar to optional_nid but sets a flash error if no selection was made
+  # and attempts to pick a valid default network ID. Will still return
+  # @config = nil if no default can be found.
+  def valid_nid
+    optional_nid
     # try to pick a default network ID if we don't have a valid selection
     if not @config then
-      @config = DeviceConfig.find(:last,:order=>'id ASC',:readonly=>true,
-        :conditions=>['created_at < ?',@at])
+      error_msg = "Missing required nid parameter."
+      @config = DeviceConfig.latest(@at).first(:conditions=>'enabled=TRUE')
       if @config then
         flash.now[:notice] = error_msg + " Using nid=#{@config.networkID} instead."
       else

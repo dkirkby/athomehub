@@ -2,6 +2,7 @@ class Engineering::SampleController < Engineering::ApplicationController
 
   before_filter :valid_n,:only=>:recent
   before_filter :valid_ival,:only=>:bydate
+  before_filter :optional_nid, :only=>[:recent,:bydate]
 
   def index
     @samples = [ ]

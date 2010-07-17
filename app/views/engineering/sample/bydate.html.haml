@@ -2,4 +2,6 @@
 
 %p Displaying #{@samples.length} LAMs received during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
 
+=render :partial => "config" if @config
+
 =render :partial => "samples"
