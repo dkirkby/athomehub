@@ -90,6 +90,34 @@ protected
       pf[netID] << s.powerFactor
       cmplx[netID] << s.complexity
     end
+    # build plots suitable for display with the javascript flot library
+    @samplePlots = {
+      :temperature => [ ],
+      :lighting => [ ],
+      :artificial => [ ],
+      :lightFactor => [ ],
+      :power => [ ],
+      :powerFactor => [ ],
+      :complexity => [ ],
+    }
+    configs.each do |c|
+      netID = c.networkID
+      label = @template.format_serialNumber c.serialNumber
+      @samplePlots[:temperature] <<
+        { :data => tval[netID].zip(temp[netID]), :label => label }
+      @samplePlots[:lighting] <<
+        { :data => tval[netID].zip(light[netID]), :label => label }
+      @samplePlots[:artificial] <<
+        { :data => tval[netID].zip(art[netID]), :label => label }
+      @samplePlots[:lightFactor] <<
+        { :data => tval[netID].zip(lf[netID]), :label => label }
+      @samplePlots[:power] <<
+        { :data => tval[netID].zip(power[netID]), :label => label }
+      @samplePlots[:powerFactor] <<
+        { :data => tval[netID].zip(pf[netID]), :label => label }
+      @samplePlots[:complexity] <<
+        { :data => tval[netID].zip(cmplx[netID]), :label => label }
+    end
   end
   
   def dump_by_device
