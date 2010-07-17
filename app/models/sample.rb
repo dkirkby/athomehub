@@ -38,4 +38,18 @@ class Sample < ActiveRecord::Base
     return display
   end
 
+  def displayPower
+    # select a precision based on the value and append "W" for Watts
+    case power
+    when 0..0.03
+      sprintf "%.3fW",power
+    when 0.03..0.3
+      sprintf "%.2fW",power
+    when 0.3..3
+      sprintf "%.1fW",power
+    else
+      sprintf "%.0fW",power
+    end
+  end
+
 end
