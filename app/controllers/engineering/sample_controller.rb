@@ -29,7 +29,7 @@ class Engineering::SampleController < Engineering::ApplicationController
     prepare configs,samples
     respond_to do |format|
       format.html
-      format.text { render :text=> dump_by_device }
+      format.text { render :text=> render_as_text }
     end
   end
 
@@ -48,7 +48,7 @@ class Engineering::SampleController < Engineering::ApplicationController
     prepare configs,samples
     respond_to do |format|
       format.html
-      format.text { render :text=> dump_by_device }
+      format.text { render :text=> render_as_text }
     end
   end
   
@@ -59,11 +59,11 @@ protected
     tz_offset = @at.localtime.utc_offset
     tval,temp,light,art,lf,power,pf,cmplx = { },{ },{ },{ },{ },{ },{ },{ }
     # make a hash of configs keyed on the netID and key the plot data on netID
-    config_lookup = { }
+    @config_lookup = { }
     configs.each do |c|
       netID = c.networkID
       next if @config and @config.networkID != netID
-      config_lookup[netID] = c
+      @config_lookup[netID] = c
       tval[netID] = [ ]
       temp[netID] = [ ]
       light[netID] = [ ]
@@ -80,7 +80,7 @@ protected
       netID = s.networkID
       # rescale temperature to degF (but no self-heating correction applied)
       s.temperature = 1e-2*s.temperature
-      @samples << [ config_lookup[s.networkID],s ]
+      @samples << [ @config_lookup[s.networkID],s ]
       # convert the sample timestamp to microseconds in the local timezone
       tval[netID] << 1e3*(s.created_at.to_i + tz_offset)
       temp[netID] << s.temperature
@@ -91,6 +91,8 @@ protected
       pf[netID] << s.powerFactor
       cmplx[netID] << s.complexity
     end
+    # make the arrays global for render_as_text
+    @arrays = [tval,temp,light,art,lf,power,pf,cmplx]
     # build plots suitable for display with the javascript flot library
     @samplePlots = {
       :temperature => [ ],
@@ -122,33 +124,24 @@ protected
     end
   end
   
-  def dump_by_device
-    # initialize the data dump we will return
-    dump = [ ]
-    # loop over @samples, building separate arrays for each device
-    by_device = { }
-    @samples.each do |s|
-      # create a new empty array when we first see a device
-      if not by_device.has_key? s.networkID then
-        by_device[s.networkID] = [ ]
+  def render_as_text
+    # renders the raw data in a text format suitable for gnuplot
+    lines = [ ]
+    tval,temp,light,art,lf,power,pf,cmplx = @arrays
+    # loop over devices
+    @config_lookup.each do |sn,c|
+      # output the samples for each device in their own section
+      netID = c.networkID
+      lines << "# SN #{@template.format_serialNumber c.serialNumber} netID #{netID}"
+      tval[netID].each_index do |k|
+        lines << sprintf("%d %.2f %d %d %d %d %d %d",
+          1e-3*tval[netID][k],temp[netID][k],light[netID][k],art[netID][k],
+          lf[netID][k],power[netID][k],pf[netID][k],cmplx[netID][k])
       end
-      # append this sample
-      by_device[s.networkID] << s
+      # append two blank lines between devices
+      lines << "" << ""
     end
-    # dump the data by device with timestamps in localtime seconds since epoch
-    offset = Time.now.utc_offset
-    by_device.each do |id,data|
-      dump << "# Network ID #{id} has #{data.length} samples"
-      data.each do |s|
-        dump << sprintf("%d %f %d %f %6d %6d %7.2f",
-          s.created_at.to_i+offset,
-          s.lighting,s.artificial,s.lightFactor,s.power,s.powerFactor,s.complexity,
-          1e-2*s.temperature)
-      end
-      # insert two blank lines between devices
-      dump << "" << ""
-    end
-    dump.join "\n"
+    lines.join "\n"
   end
   
 end

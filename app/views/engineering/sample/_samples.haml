@@ -1,6 +1,8 @@
 :javascript
 	samplePlots = #{@samplePlots.to_json}
 
+%p=link_to "Download raw values", params.merge(:format => :text)
+
 %h2#temperature.sample-plot Temperature
 
 %p These are the raw measurements without any self-heating corrections applied.
