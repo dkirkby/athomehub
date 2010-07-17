@@ -25,7 +25,7 @@ $(document).ready(function(){
   /* display any sample plots on this page */
   var samplePlotOptions = {
     xaxis: { mode:"time" },
-    series:{ points:{ show:true,radius:2,fill:false } }
+    series:{ lines:{ show: true}, points:{ show:false,radius:2,fill:false } }
   };
   $('.sample-plot').each(function(index) {
     var plotID = this.id + '-plot';

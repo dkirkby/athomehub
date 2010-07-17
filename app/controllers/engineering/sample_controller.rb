@@ -78,12 +78,11 @@ protected
     # build the arrays now
     samples.each do |s|
       netID = s.networkID
-      # rescale temperature to degF (but no self-heating correction applied)
-      s.temperature = 1e-2*s.temperature
       @samples << [ @config_lookup[s.networkID],s ]
       # convert the sample timestamp to microseconds in the local timezone
       tval[netID] << 1e3*(s.created_at.to_i + tz_offset)
-      temp[netID] << s.temperature
+      # rescale temperature to degF (but no self-heating correction applied)
+      temp[netID] << 1e-2*s.temperature
       light[netID] << s.lighting
       art[netID] << s.artificial
       lf[netID] << s.lightFactor
