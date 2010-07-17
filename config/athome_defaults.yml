@@ -1,18 +1,18 @@
 development:
     display_temperature: true
-    display_light: true
+    display_lighting: true
     display_power: true
     temperature_units: F
     
 test:
     display_temperature: true
-    display_light: true
+    display_lighting: true
     display_power: true
     temperature_units: F
     
 production:
     display_temperature: false
-    display_light: false
+    display_lighting: false
     display_power: true
     temperature_units: F
     
