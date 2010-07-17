@@ -4,6 +4,8 @@
 !shade2 = #5D7A1E
 !shade3 = #959C2A
 !shade4 = #DED068
+!blackish = #2B340A
+!whiteish = #F5F9DD
 
 !radius = 16px
 
@@ -27,17 +29,17 @@ body
     font-size: 36px
     margin-bottom: 12px
     color= !shade1
+    text-shadow= !shade2 2px 2px 3px
   #body
     position: relative
-    border= "8px" "solid" !contrast
+    border= 10px solid !contrast
     -webkit-border-radius= !radius
     -moz-border-radius= !radius
-    background-color= !shade2
+    background-color= !contrast
     font-size: 18px
     #datetime
       line-height: 18px
       height: 22px
-      background-color= !contrast
     #date
       position: absolute
       left: 8px
@@ -45,16 +47,22 @@ body
       position: absolute
       right: 8px
     table
+      color= !blackish
+      background-color= !whiteish
       width: 100%
       text-align: right
       th
-        border-bottom= 1px dotted !shade1
+        border-bottom= 1px dotted !blackish
       th.vcol
         width: 75px
       td.temp
       td.light
         padding: 4 2 4 12
         border= solid 1px !shade1
+      a:link,a:visited
+        color: inherit
+      a:hover,a:active
+        color= !contrast
     .graph
       width: auto
       height: 200px
