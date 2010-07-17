@@ -40,30 +40,40 @@ class Engineering::SampleController < Engineering::ApplicationController
 protected
 
   def prepare(configs,samples)
-    # make a hash of configs keyed on the network ID
-    config_lookup = { }
-    configs.each do |c|
-      config_lookup[c.networkID] = c
-    end
     # prepare to build (t,y) arrays for plotting
     tz_offset = @at.localtime.utc_offset
-    tval,temp,light,art,lf,power,pf,cmplx = [ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]
+    tval,temp,light,art,lf,power,pf,cmplx = { },{ },{ },{ },{ },{ },{ },{ }
+    # make a hash of configs keyed on the netID and key the plot data on netID
+    config_lookup = { }
+    configs.each do |c|
+      netID = c.networkID
+      config_lookup[netID] = c
+      tval[netID] = [ ]
+      temp[netID] = [ ]
+      light[netID] = [ ]
+      art[netID] = [ ]
+      lf[netID] = [ ]
+      power[netID] = [ ]
+      pf[netID] = [ ]
+      cmplx[netID] = [ ]
+    end
     # prepare to build an array of [config,sample] entries
     @samples = [ ]
     # build the arrays now
     samples.each do |s|
+      netID = s.networkID
       @samples << [ config_lookup[s.networkID],s ]
       # convert the sample timestamp to microseconds in the local timezone
-      tval << 1e3*(s.created_at.to_i + tz_offset)
+      tval[netID] << 1e3*(s.created_at.to_i + tz_offset)
       # convert temperature to degrees F (no self-heating correction applied)
-      temp << 1e-2*s.temperature
+      temp[netID] << 1e-2*s.temperature
       # the remaining fields are displayed without any transformation
-      light << s.lighting
-      art << s.artificial
-      lf << s.lightFactor
-      power << s.power
-      pf << s.powerFactor
-      cmplx << s.complexity
+      light[netID] << s.lighting
+      art[netID] << s.artificial
+      lf[netID] << s.lightFactor
+      power[netID] << s.power
+      pf[netID] << s.powerFactor
+      cmplx[netID] << s.complexity
     end
   end
   
