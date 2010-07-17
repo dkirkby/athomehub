@@ -1,5 +1,5 @@
 development:
-    display_temperature: false
+    display_temperature: true
     display_lighting: false
     display_power: true
     temperature_units: F

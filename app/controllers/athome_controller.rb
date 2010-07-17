@@ -5,18 +5,30 @@ class AthomeController < ApplicationController
 
   def index
     @samples = [ ]
+    # cutoff for supressing stale data
+    stale_cutoff = @at - 1.minute
     # use profiles for the requested @at time
     DeviceProfile.latest(@at).each do |profile|
       # hide this profile's data if requested
       next if profile.display_order < 0
       # find most recent sample for this profile at the requested time
       sample = Sample.for_networkID(profile.networkID,@at).last
-      @samples << {
-        :profile => profile,
-        :temperature => sample.theTemperature,
-        :lighting => [sample.lighting,sample.artificial,sample.lightFactor],
-        :power => [sample.power,sample.powerFactor,sample.complexity]
-      }
+      # is this a recent enough sample to display?
+      if sample.created_at < stale_cutoff then
+        @samples << {
+          :profile => profile,
+          :temperature => "&mdash;",
+          :lighting => ["&mdash;"],
+          :power => ["&mdash;"]
+        }
+      else
+        @samples << {
+          :profile => profile,
+          :temperature => sample.displayTemperature,
+          :lighting => [sample.lighting,sample.artificial,sample.lightFactor],
+          :power => [sample.power,sample.powerFactor,sample.complexity]
+        }
+      end
     end
     @note = new_note
   end

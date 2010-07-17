@@ -24,10 +24,18 @@ class Sample < ActiveRecord::Base
     # lookup this sample's config if necessary (lazy cache)
     @config = DeviceConfig.for_networkID(networkID,created_at).last unless @config
     # adjust for self-heating
-    result -= @config.selfHeatOffset if @config
+    result -= 1e-2*@config.selfHeatOffset if @config
     # convert to Celsius if requested
     result = (result - 32.0)/1.8 if ATHOME['temperature_units'] == 'C'
     return result
+  end
+  
+  def displayTemperature
+    # truncate to one decimal place
+    display = sprintf "%.1f",theTemperature
+    # append the appropriate unit
+    display += "&deg;" + ATHOME['temperature_units']
+    return display
   end
 
 end
