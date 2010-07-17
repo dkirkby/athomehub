@@ -15,11 +15,12 @@ class AthomeController < ApplicationController
       sample = Sample.for_networkID(profile.networkID,@at).last
       # is this a recent enough sample to display?
       if sample.created_at < stale_cutoff then
+        no_data = "<span class='nodata'>no data</span>"
         @samples << {
           :profile => profile,
-          :temperature => "&mdash;",
-          :lighting => ["&mdash;"],
-          :power => ["&mdash;"]
+          :temperature => no_data,
+          :lighting => [no_data],
+          :power => [no_data]
         }
       else
         @samples << {
