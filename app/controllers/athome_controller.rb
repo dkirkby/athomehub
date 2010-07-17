@@ -4,9 +4,15 @@ class AthomeController < ApplicationController
   before_filter :valid_window,:only=>:detail
 
   def index
-    @samples = Sample.find(:all,:group=>'networkID',
-      :conditions=>['networkID IS NOT NULL and created_at < ?',@at],
-      :readonly=>true)
+    @samples = [ ]
+    # use profiles for the requested @at time
+    DeviceProfile.latest(@at).each do |profile|
+      # hide this profile's data if requested
+      next if profile.display_order < 0
+      # find most recent sample for this profile at the requested time
+      sample = Sample.for_networkID(profile.networkID,@at).last
+      @samples << [profile,sample]
+    end
     @note = new_note
   end
   

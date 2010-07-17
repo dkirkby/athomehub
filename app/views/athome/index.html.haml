@@ -12,9 +12,10 @@
 				%th.vcol Light
 				%th.vcol Power
 				%th.vcol Cost
-			-@samples.each do |s|
+			-@samples.each do |profile_and_sample|
+				-p,s = profile_and_sample
 				%tr
-					%td= link_to s.location, :action=>'detail', :nid=>s.networkID
+					%td= link_to p.description, :action=>'detail', :nid=>p.networkID
 					%td.temp
 						%span&= sprintf "%.1f",1e-2*s.temperature
 						%span>="&deg;F"
