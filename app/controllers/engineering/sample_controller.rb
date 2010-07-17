@@ -3,6 +3,16 @@ class Engineering::SampleController < Engineering::ApplicationController
   before_filter :valid_n,:only=>:recent
   before_filter :valid_ival,:only=>:bydate
 
+  def index
+    @samples = [ ]
+    # loop over active configs
+    DeviceConfig.latest(@at).each do |config|
+      next unless config.enabled
+      sample = Sample.for_networkID(config.networkID,@at).last
+      @samples << sample if sample
+    end
+  end
+
   def recent
     @count = Sample.count
     @samples = Sample.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)

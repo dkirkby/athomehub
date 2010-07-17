@@ -2,6 +2,7 @@
 	%tr
 		%th Timestamp
 		%th ID
+		%th netID
 		%th Light
 		%th Art./256
 		%th L.F./256
@@ -11,7 +12,8 @@
 		%th Temp (&deg;F)
 	-@samples.each do |s|
 		%tr
-			%td&=s.created_at.localtime.strftime "%d %b %H:%M:%S"
+			%td&="#{time_ago_in_words s.created_at} ago"
+			%td&=s.id
 			%td&=s.networkID
 			%td&=s.lighting
 			%td&=s.artificial
