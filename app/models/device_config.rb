@@ -6,10 +6,11 @@ class DeviceConfig < ActiveRecord::Base
     {
       :from => 'device_configs c1',
       :conditions => args.first ?
-        [ 'c1.id = (select max(id) from device_configs c2 where ' +
-          'c2.serialNumber = c1.serialNumber and created_at <= ?)',args.first ] :
-        ( 'c1.id = (select max(id) from device_configs c2 where ' +
-          'c2.serialNumber = c1.serialNumber)' ),
+        [ 'c1.id = (select id from device_configs c2 where ' +
+          'c2.serialNumber = c1.serialNumber and created_at <= ? ' +
+          'ORDER BY id DESC LIMIT 1)',args.first ] :
+        ( 'c1.id = (select id from device_configs c2 where ' +
+          'c2.serialNumber = c1.serialNumber ORDER BY id DESC LIMIT 1)' ),
       :readonly => true
     }
   }

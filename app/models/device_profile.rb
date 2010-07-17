@@ -7,10 +7,11 @@ class DeviceProfile < ActiveRecord::Base
       :from => 'device_profiles c1',
       :order => 'c1.display_order ASC',
       :conditions => args.first ?
-        [ 'c1.id = (select max(id) from device_profiles c2 where ' +
-          'c2.networkID = c1.networkID and created_at <= ?)',args.first ] :
-        ( 'c1.id = (select max(id) from device_profiles c2 where ' +
-          'c2.networkID = c1.networkID)' ),
+        [ 'c1.id = (select id from device_profiles c2 where ' +
+          'c2.networkID = c1.networkID and created_at <= ? ' +
+          'ORDER BY id DESC LIMIT 1)',args.first ] :
+        ( 'c1.id = (select id from device_profiles c2 where ' +
+          'c2.networkID = c1.networkID ORDER BY id DESC LIMIT 1)' ),
       :readonly => true
     }
   }
