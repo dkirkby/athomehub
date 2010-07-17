@@ -1,4 +1,7 @@
-%h1 Engineering::Sample#bydate
+-content_for :head do
+	=javascript_include_tag 'excanvas','flot','eng-plot'
+
+%h1 Device Samples Recorded in a Time Window
 
 %p Displaying #{@samples.length} LAMs received during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
 
