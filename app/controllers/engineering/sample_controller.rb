@@ -6,16 +6,17 @@ class Engineering::SampleController < Engineering::ApplicationController
   def index
     @samples = [ ]
     # loop over active configs
-    DeviceConfig.latest(@at).each do |config|
+    DeviceConfig.latest(@at).find(:all,:order=>'serialNumber ASC').each do |config|
       next unless config.enabled
       sample = Sample.for_networkID(config.networkID,@at).last
-      @samples << sample if sample
+      @samples << [config,sample] if sample
     end
   end
 
   def recent
     @count = Sample.count
-    @samples = Sample.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
+    @samples = config_merge DeviceConfig.latest(@at),
+      Sample.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
     respond_to do |format|
       format.html
       format.text { render :text=> dump_by_device }
@@ -23,21 +24,30 @@ class Engineering::SampleController < Engineering::ApplicationController
   end
 
   def bydate
-    @samples = Sample.find(:all,
-      :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at],
-      :order=>'created_at DESC',:readonly=>true)
+    @samples = config_merge DeviceConfig.latest(@at),
+      Sample.find(:all,:order=>'created_at DESC',:readonly=>true,
+        :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at])
     respond_to do |format|
       format.html
       format.text { render :text=> dump_by_device }
     end
   end
   
-  def last
-    @samples = Sample.find(:all,:group=>'networkID',
-      :conditions=>'networkID IS NOT NULL',:readonly=>true)
-  end
-  
 protected
+
+  def config_merge(configs,samples)
+    # make a hash of configs keyed on the network ID
+    config_lookup = { }
+    configs.each do |c|
+      config_lookup[c.networkID] = c
+    end
+    # build an array of [config,sample] entries that mirrors the input samples
+    merged = [ ]
+    samples.each do |s|
+      merged << [ config_lookup[s.networkID],s ]
+    end
+    return merged
+  end
   
   def dump_by_device
     # initialize the data dump we will return

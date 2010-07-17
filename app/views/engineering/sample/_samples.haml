@@ -2,6 +2,7 @@
 	%tr
 		%th Timestamp
 		%th ID
+		%th Serial Num
 		%th netID
 		%th Light
 		%th Art./256
@@ -9,11 +10,13 @@
 		%th Power (W)
 		%th P.F./256
 		%th Complex/256
-		%th Temp (&deg;F)
-	-@samples.each do |s|
+		%th Temp (&deg;F*100)
+	-@samples.each do |c_and_s|
+		-c,s= c_and_s
 		%tr
 			%td&="#{time_ago_in_words s.created_at} ago"
 			%td&=s.id
+			%td&=format_serialNumber(c.serialNumber) if c
 			%td&=s.networkID
 			%td&=s.lighting
 			%td&=s.artificial
@@ -21,4 +24,4 @@
 			%td&=s.power
 			%td&=s.powerFactor
 			%td&=s.complexity
-			%td&=sprintf "%.2f",1e-2*s.temperature
+			%td&=s.temperature
