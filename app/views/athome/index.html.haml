@@ -1,6 +1,6 @@
 #content
 	#header
-		Welcome to your hub@home
+		Welcome to your uci@home hub
 	#body
 		#datetime
 			%span#date= format_date @at
@@ -11,20 +11,13 @@
 				%th.vcol Temp
 				%th.vcol Light
 				%th.vcol Power
-				%th.vcol Cost
-			-@samples.each do |profile_and_sample|
-				-p,s = profile_and_sample
+			-@samples.each do |s|
+				-p = s[:profile]
 				%tr
 					%td= link_to p.description, :action=>'detail', :nid=>p.networkID
-					%td.temp
-						%span&= sprintf "%.1f",1e-2*s.temperature
-						%span>="&deg;F"
-					%td.light
-						%span&= s.lighting
-						%span><= "/"
-						%span&= s.artificial
-					%td= s.power ? (sprintf "%.3fW",s.power) : "&mdash;"
-					%td
+					%td.temp= sprintf "%.1f&deg;",s[:temperature]
+					%td.light= s[:lighting][0]
+					%td.power= sprintf "%.2fW",s[:power][0]
 	%ul#navigation
 		%li home
 		%li=link_to "help"

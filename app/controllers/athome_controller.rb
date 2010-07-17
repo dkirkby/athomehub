@@ -11,7 +11,12 @@ class AthomeController < ApplicationController
       next if profile.display_order < 0
       # find most recent sample for this profile at the requested time
       sample = Sample.for_networkID(profile.networkID,@at).last
-      @samples << [profile,sample]
+      @samples << {
+        :profile => profile,
+        :temperature => sample.theTemperature,
+        :lighting => [sample.lighting,sample.artificial,sample.lightFactor],
+        :power => [sample.power,sample.powerFactor,sample.complexity]
+      }
     end
     @note = new_note
   end
