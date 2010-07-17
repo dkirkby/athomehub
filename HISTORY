@@ -1,3 +1,4 @@
+Sat Jul 17 11:18:37 PDT 2010 david@dk.local Implement engineering sample plots
 Sat Jul 17 08:13:35 PDT 2010 david@dk.local Refactorize config and introduce profile
 Sun Jul 11 15:33:41 PDT 2010 david@dk.local Adapt listener to upstart init service
 Sun Jul 11 15:13:23 PDT 2010 david@dk.local Handle new LAM status bits
