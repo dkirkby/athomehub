@@ -62,6 +62,7 @@ protected
     config_lookup = { }
     configs.each do |c|
       netID = c.networkID
+      next if @config and @config.networkID != netID
       config_lookup[netID] = c
       tval[netID] = [ ]
       temp[netID] = [ ]
@@ -102,6 +103,7 @@ protected
     }
     configs.each do |c|
       netID = c.networkID
+      next if @config and @config.networkID != netID
       label = @template.format_serialNumber c.serialNumber
       @samplePlots[:temperature] <<
         { :data => tval[netID].zip(temp[netID]), :label => label }

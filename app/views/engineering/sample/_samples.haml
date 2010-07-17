@@ -1,3 +1,6 @@
+:javascript
+	samplePlots = #{@samplePlots.to_json}
+
 %h2#temperature.sample-plot Temperature
 
 %p These are the raw measurements without any self-heating corrections applied.
@@ -24,7 +27,7 @@
 
 %p A resistive load has a high value. Capacitive and inductive loads have lower values.
 
-%h3#complexity.sample-plot Mean Lighting Level
+%h3#complexity.sample-plot Power Load Complexity
 
 %p A high complexity usually indicates that a load does internal power management.
 
