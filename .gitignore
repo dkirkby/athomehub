@@ -7,3 +7,6 @@ public/stylesheets/*.css
 
 # copy and edit config/database-template.yml
 config/database.yml
+
+# ignore local overrides of config/athome_defaults.yml
+config/athome_local.yml
