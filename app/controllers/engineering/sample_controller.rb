@@ -5,9 +5,10 @@ class Engineering::SampleController < Engineering::ApplicationController
 
   def index
     @samples = [ ]
-    # loop over active configs
+    # use configs for the requested @at time
     DeviceConfig.latest(@at).find(:all,:order=>'serialNumber ASC').each do |config|
       next unless config.enabled
+      # find most recent sample for each config at the requested @at time
       sample = Sample.for_networkID(config.networkID,@at).last
       @samples << [config,sample] if sample
     end
@@ -15,7 +16,8 @@ class Engineering::SampleController < Engineering::ApplicationController
 
   def recent
     @count = Sample.count
-    @samples = config_merge DeviceConfig.latest(@at),
+    # use the most recent configs
+    @samples = config_merge DeviceConfig.latest,
       Sample.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
     respond_to do |format|
       format.html
@@ -24,7 +26,8 @@ class Engineering::SampleController < Engineering::ApplicationController
   end
 
   def bydate
-    @samples = config_merge DeviceConfig.latest(@at),
+    # use configs that were active at the end of the requested interval
+    @samples = config_merge DeviceConfig.latest(@end_at),
       Sample.find(:all,:order=>'created_at DESC',:readonly=>true,
         :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at])
     respond_to do |format|
