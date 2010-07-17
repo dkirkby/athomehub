@@ -18,8 +18,15 @@ class Engineering::SampleController < Engineering::ApplicationController
   def recent
     @count = Sample.count
     # use the most recent configs
-    prepare DeviceConfig.latest,
-      Sample.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
+    configs = DeviceConfig.latest
+    # fetch the most recent samples and filter on networkID if requested
+    if @config then
+      samples = Sample.find(:all,:conditions=>['networkID=?',@config.networkID],
+        :limit=>@n,:order=>'id DESC',:readonly=>true)
+    else
+      samples = Sample.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
+    end
+    prepare configs,samples
     respond_to do |format|
       format.html
       format.text { render :text=> dump_by_device }
@@ -28,9 +35,17 @@ class Engineering::SampleController < Engineering::ApplicationController
 
   def bydate
     # use configs that were active at the end of the requested interval
-    prepare DeviceConfig.latest(@end_at),
-      Sample.find(:all,:order=>'created_at DESC',:readonly=>true,
+    configs = DeviceConfig.latest(@end_at)
+    # fetch samples from the requested interval and filter on networkID if requested
+    if @config then
+      samples = Sample.find(:all,:order=>'created_at DESC',:readonly=>true,
+        :conditions=>['created_at > ? and created_at <= ? and networkID=?',
+          @begin_at,@end_at,@config.networkID])
+    else
+      samples = Sample.find(:all,:order=>'created_at DESC',:readonly=>true,
         :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at])
+    end
+    prepare configs,samples
     respond_to do |format|
       format.html
       format.text { render :text=> dump_by_device }
@@ -62,12 +77,12 @@ protected
     # build the arrays now
     samples.each do |s|
       netID = s.networkID
+      # rescale temperature to degF (but no self-heating correction applied)
+      s.temperature = 1e-2*s.temperature
       @samples << [ config_lookup[s.networkID],s ]
       # convert the sample timestamp to microseconds in the local timezone
       tval[netID] << 1e3*(s.created_at.to_i + tz_offset)
-      # convert temperature to degrees F (no self-heating correction applied)
-      temp[netID] << 1e-2*s.temperature
-      # the remaining fields are displayed without any transformation
+      temp[netID] << s.temperature
       light[netID] << s.lighting
       art[netID] << s.artificial
       lf[netID] << s.lightFactor
