@@ -17,7 +17,7 @@ class Engineering::SampleController < Engineering::ApplicationController
   def recent
     @count = Sample.count
     # use the most recent configs
-    @samples = config_merge DeviceConfig.latest,
+    prepare DeviceConfig.latest,
       Sample.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
     respond_to do |format|
       format.html
@@ -27,7 +27,7 @@ class Engineering::SampleController < Engineering::ApplicationController
 
   def bydate
     # use configs that were active at the end of the requested interval
-    @samples = config_merge DeviceConfig.latest(@end_at),
+    prepare DeviceConfig.latest(@end_at),
       Sample.find(:all,:order=>'created_at DESC',:readonly=>true,
         :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at])
     respond_to do |format|
@@ -38,18 +38,32 @@ class Engineering::SampleController < Engineering::ApplicationController
   
 protected
 
-  def config_merge(configs,samples)
+  def prepare(configs,samples)
     # make a hash of configs keyed on the network ID
     config_lookup = { }
     configs.each do |c|
       config_lookup[c.networkID] = c
     end
-    # build an array of [config,sample] entries that mirrors the input samples
-    merged = [ ]
+    # prepare to build (t,y) arrays for plotting
+    tz_offset = @at.localtime.utc_offset
+    tval,temp,light,art,lf,power,pf,cmplx = [ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]
+    # prepare to build an array of [config,sample] entries
+    @samples = [ ]
+    # build the arrays now
     samples.each do |s|
-      merged << [ config_lookup[s.networkID],s ]
+      @samples << [ config_lookup[s.networkID],s ]
+      # convert the sample timestamp to microseconds in the local timezone
+      tval << 1e3*(s.created_at.to_i + tz_offset)
+      # convert temperature to degrees F (no self-heating correction applied)
+      temp << 1e-2*s.temperature
+      # the remaining fields are displayed without any transformation
+      light << s.lighting
+      art << s.artificial
+      lf << s.lightFactor
+      power << s.power
+      pf << s.powerFactor
+      cmplx << s.complexity
     end
-    return merged
   end
   
   def dump_by_device
