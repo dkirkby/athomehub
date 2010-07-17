@@ -7,17 +7,23 @@
 			%span#time= format_time @at
 		%table
 			%tr
-				%th
-				%th.vcol Temp
-				%th.vcol Light
-				%th.vcol Power
+				%th.where Location
+				-if ATHOME['display_temperature']
+					%th.vcol= "Temp"
+				-if ATHOME['display_lighting']
+					%th.vcol Light
+				-if ATHOME['display_power']
+					%th.vcol Power
 			-@samples.each do |s|
 				-p = s[:profile]
 				%tr
-					%td= link_to p.description, :action=>'detail', :nid=>p.networkID
-					%td.temp= sprintf "%.1f&deg;",s[:temperature]
-					%td.light= s[:lighting][0]
-					%td.power= sprintf "%.2fW",s[:power][0]
+					%td.where= link_to p.description, :action=>'detail', :nid=>p.networkID
+					-if ATHOME['display_temperature']
+						%td.temp= sprintf "%.1f&deg;",s[:temperature]
+					-if ATHOME['display_lighting']
+						%td.light= s[:lighting][0]
+					-if ATHOME['display_power']
+						%td.power= sprintf "%.2fW",s[:power][0]
 	%ul#navigation
 		%li home
 		%li=link_to "help"
