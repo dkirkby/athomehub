@@ -10,6 +10,13 @@ function handleUpdate(response) {
   last = response.last;
   $('#date').html(response.date);
   $('#time').html(response.time);
+  $.each(response.updates,function(nid_tag,cells) {
+    // iterate over the cells of the table row displaying this network ID
+    $('#'+nid_tag+' > *').each(function(index) {
+      // replace the cell contents after the initial location cell
+      if(index > 0) $(this).html(cells[index-1]);
+    })
+  });
 }
 
 function requestUpdate() {

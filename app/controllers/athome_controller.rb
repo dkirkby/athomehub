@@ -45,14 +45,24 @@ class AthomeController < ApplicationController
     response = {
       :date => @template.format_date(@at),
       :time => @template.format_time(@at),
+      :updates => { }
     }
     # loop over new samples with record IDs newer than the caller's
     # high watermark
     last = params['last'].to_i or -1
-    Sample.find(:all,:conditions=>['id > ?',last]).each do |s|
+    Sample.find(:all,:conditions=>['id > ?',last],:order=>'id ASC').each do |s|
       last = s.id if (s.id > last)
+      # Add this sample to our response, overwriting any previous update
+      # for the same network ID.
+      cells = [ ]
+      cells << s[:temperature] if ATHOME['display_temperature']
+      cells << s[:lighting][0] if ATHOME['display_lighting']
+      cells << @template.colorize(s.displayPower) <<
+        @template.colorize(s.displayCost) if ATHOME['display_power']
+      tag = sprintf "nid%02x",s.networkID
+      response[:updates][tag] = cells
     end
-    # return the new high water mark
+    # include the new high water mark in our response
     response[:last] = last
     # return our response via json
     render :json => response
