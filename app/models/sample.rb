@@ -68,7 +68,7 @@ class Sample < ActiveRecord::Base
     # using (24x60x60 secs/day)/(1000x60x60 J/kWh) = 0.024 (kWh/day)/W
     kWh_per_day = 0.024*power
     # convert to an equivalent cost in cents
-    return kWh_per_day*ATHOME['power_cost']
+    return kWh_per_day*ATHOME['energy_cost']
   end
   
   def displayCost

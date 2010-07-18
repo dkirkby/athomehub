@@ -2,4 +2,4 @@ display_temperature: false
 display_lighting: false
 display_power: true
 temperature_units: F
-power_cost: 10.0
+energy_cost: 10.0
