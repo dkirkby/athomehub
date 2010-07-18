@@ -3,16 +3,25 @@
 $(document).ready(function(){
   updateNoteForm();
   displayGraphs();
-  startLiveUpdates();
+  enableLiveUpdates();
 });
 
-function startLiveUpdates() {
-  if($('#live-updates').length != 1) return;
-  setInterval(function() {
-    jQuery.getJSON("/athome/update",{last:123},function(data) {
-      $('#time').html(data.time);
-    });
-  },1000); // runs every 1000ms
+function handleUpdate(response) {
+  $('#date').html(response.date);
+  $('#time').html(response.time);
+}
+
+function requestUpdate() {
+  jQuery.getJSON("/athome/update",{last:123},handleUpdate);
+}
+
+function enableLiveUpdates() {
+  if($('#live-updates').length == 1) {
+    setInterval(requestUpdate,1000); // runs every 1000ms
+  }
+  else {
+    $('#datetime').click(requestUpdate);
+  }
 }
 
 // Replaces any tables of class 'graph-me' with a graph

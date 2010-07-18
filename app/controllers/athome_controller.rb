@@ -37,7 +37,10 @@ class AthomeController < ApplicationController
   end
   
   def update
-    render :json=> {:time=>'Bingo!'}
+    render :json=> {
+      :date => @template.format_date(@at),
+      :time => @template.format_time(@at)
+    }
   end
   
   def detail
