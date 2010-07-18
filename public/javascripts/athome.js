@@ -112,6 +112,15 @@ function updateNoteForm() {
   $('#note_body').click(function() {
     if(this.value == initialPrompt) this.select();
   });
+  /** don't implement a blur handler since it interferes with the submit handler
+  $('#note_body').blur(function() {
+    // remove the textarea highlight
+    $('#note_body').removeClass('active');
+    // hide the text below the note textarea
+    $('#note_by').hide();
+    $('#note_save').hide();
+  });
+  **/
   // redefine the submit action to use Ajax
   f.submit(function(){
     $.post($(this).attr('action')+'.txt',$(this).serialize(),function(data) {
@@ -127,7 +136,6 @@ function updateNoteForm() {
         // hide the text below the note textarea
         $('#note_by').hide();
         $('#note_save').hide();
-        $('#note_body').removeClass('active');
       });
     },"text");
     return false; // don't actually submit this form
