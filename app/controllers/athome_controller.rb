@@ -36,6 +36,10 @@ class AthomeController < ApplicationController
     @note = new_note
   end
   
+  def update
+    render :json=> {:time=>'Bingo!'}
+  end
+  
   def detail
     # retrieve all samples for the requested device within the requested window
     @samples = Sample.find(:all,

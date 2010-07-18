@@ -3,7 +3,17 @@
 $(document).ready(function(){
   updateNoteForm();
   displayGraphs();
+  startLiveUpdates();
 });
+
+function startLiveUpdates() {
+  if($('#live-updates').length != 1) return;
+  setInterval(function() {
+    jQuery.getJSON("/athome/update",{last:123},function(data) {
+      $('#time').html(data.time);
+    });
+  },1000); // runs every 1000ms
+}
 
 // Replaces any tables of class 'graph-me' with a graph
 function displayGraphs() {
