@@ -42,7 +42,11 @@ class AthomeController < ApplicationController
   
   def update
     # initialize our response
+    # (we create a temporary note to ensure that the view_at timestamp is
+    # compatible with ActiveSupport::TimeWithZone... this is probably unecessary)
+    note = Note.new(:view_at=>@at)
     response = {
+      :view_at => note.view_at.to_param,
       :date => @template.format_date(@at),
       :time => @template.format_time(@at),
       :updates => { }
@@ -178,7 +182,8 @@ protected
       Note.new({
         :body=>"Click to enter a new note...",
         :view=>action_name,
-        :view_at=>@at.localtime,
+        # timestamp will be rendered by ActiveSupport::TimeWithZone.to_param
+        :view_at=> @at,
         :user_id=>session[:user_id]
       })
     end

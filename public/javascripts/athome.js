@@ -7,9 +7,13 @@ $(document).ready(function(){
 });
 
 function handleUpdate(response) {
+  // remember our new high water mark
   last = response.last;
+  // update our date and time display
   $('#date').html(response.date);
   $('#time').html(response.time);
+  // update the timestamp associated with a new note
+  $('#note_view_at').val(response.view_at);
   $.each(response.updates,function(nid_tag,cells) {
     // iterate over the cells of the table row displaying this network ID
     $('#'+nid_tag+' > *').each(function(index) {
