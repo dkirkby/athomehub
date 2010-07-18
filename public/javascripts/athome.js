@@ -7,12 +7,13 @@ $(document).ready(function(){
 });
 
 function handleUpdate(response) {
+  last = response.last;
   $('#date').html(response.date);
   $('#time').html(response.time);
 }
 
 function requestUpdate() {
-  jQuery.getJSON("/athome/update",{last:123},handleUpdate);
+  jQuery.getJSON("/athome/update",{last:last},handleUpdate);
 }
 
 function enableLiveUpdates() {

@@ -41,10 +41,21 @@ class AthomeController < ApplicationController
   end
   
   def update
-    render :json=> {
+    # initialize our response
+    response = {
       :date => @template.format_date(@at),
-      :time => @template.format_time(@at)
+      :time => @template.format_time(@at),
     }
+    # loop over new samples with record IDs newer than the caller's
+    # high watermark
+    last = params['last'].to_i or -1
+    Sample.find(:all,:conditions=>['id > ?',last]).each do |s|
+      last = s.id if (s.id > last)
+    end
+    # return the new high water mark
+    response[:last] = last
+    # return our response via json
+    render :json => response
   end
   
   def detail
