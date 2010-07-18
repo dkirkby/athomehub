@@ -64,7 +64,7 @@ module ApplicationHelper
     if what.has_key? :rgb then
       color = rgb_to_hex what[:rgb]
     elsif what.has_key? :hsb then
-      color = rgb_to_hex hsb_to_rgb what[:hsb]
+      color = rgb_to_hex(hsb_to_rgb(what[:hsb]))
     end
     if color then
       "<span style='color:#{color}'>#{what[:content]}</span>"

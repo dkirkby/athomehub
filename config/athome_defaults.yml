@@ -1,18 +1,5 @@
-development:
-    display_temperature: true
-    display_lighting: false
-    display_power: true
-    temperature_units: F
-    
-test:
-    display_temperature: true
-    display_lighting: true
-    display_power: true
-    temperature_units: F
-    
-production:
-    display_temperature: false
-    display_lighting: false
-    display_power: true
-    temperature_units: F
-    
+display_temperature: false
+display_lighting: false
+display_power: true
+temperature_units: F
+power_cost: 10.0
