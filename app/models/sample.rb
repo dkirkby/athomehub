@@ -42,8 +42,9 @@ class Sample < ActiveRecord::Base
     # Returns the HSB color corresponding to this sample's power factor and complexity.
     hue = 50.0 - 184.0*powerFactor/255.0
     hue += 360 if hue < 0
-    saturation = 0.5
-    brightness = 0.5 + 0.5*complexity/255.0
+    cratio = complexity/255.0
+    saturation = 0.4 + 0.2*cratio
+    brightness = 0.5 + 0.5*cratio
     return [hue,saturation,brightness]
   end
 
