@@ -1,15 +1,16 @@
--if @replay
-	&= "#{@note.user.name} wrote..."
-	#replay<
-		=find_and_preserve(@note.body)
--else
-	-form_for(@note,:url=>{:action=>"create_note"}) do |f|
-		=f.error_messages
-		=f.hidden_field :view
-		=f.hidden_field :view_at
-		=f.text_area :body,:rows=>4
-		#note_by
-			Note by
-			=collection_select :note,:user_id,User.all,:id,:name,{:prompt=>true}
-		#note_save
-			=submit_tag "Save"
+#note
+	-if @replay
+		&= "#{@note.user ? @note.user.name : 'Somebody'} wrote..."
+		#replay<
+			=find_and_preserve(@note.body)
+	-else
+		-form_for(@note,:url=>{:action=>"create_note"}) do |f|
+			=f.error_messages
+			=f.hidden_field :view
+			=f.hidden_field :view_at
+			=f.text_area :body,:rows=>4
+			#note_by
+				Note by
+				=collection_select :note,:user_id,User.all,:id,:name,{:prompt=>true}
+			#note_save
+				=submit_tag "Save"

@@ -78,12 +78,10 @@ function displayGraphs() {
 
 // Updates the note form found on all athome views to enable javascript behaviors
 function updateNoteForm() {
-  // check that there is a rails-generated new-note form on this page
+  // check that there is a rails-generated new-note form to update on this page
   var f = $('#new_note');
-  if(f.length == 0) {
-    alert("updateNoteForm called on page with no new-note form");
-    return;
-  }
+  if(f.length == 0) return;
+
   // if we have a default user, replace the selector with the name and a change link
   if($('#note_user_id option[selected]').length == 1) {
     $('#note_user_id').hide();
