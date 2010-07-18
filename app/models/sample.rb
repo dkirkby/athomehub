@@ -63,4 +63,17 @@ class Sample < ActiveRecord::Base
     return {:content=>display,:hsb=>colorPower}
   end
 
+  def theCost
+    # calculate the energy in kWh used in 24 hours at this power level
+    # using (24x60x60 secs/day)/(1000x60x60 J/kWh) = 0.024 (kWh/day)/W
+    kWh_per_day = 0.024*power
+    # convert to an equivalent cost in cents
+    return kWh_per_day*ATHOME['power_cost']
+  end
+  
+  def displayCost
+    # display as $d.cc
+    sprintf "$%.2f",1e-2*theCost
+  end
+
 end
