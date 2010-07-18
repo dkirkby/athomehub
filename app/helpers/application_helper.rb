@@ -14,7 +14,7 @@ module ApplicationHelper
   def format_time(timestamp)
     # convert to a DateTime since it provides some strftime goodies
     # like %l and %P that we want
-    formatted = h timestamp.localtime.to_datetime.strftime("%l:%M%P")
+    formatted = h timestamp.localtime.to_datetime.strftime("%l:%M:%S%P")
   end
   
   def hsb_to_rgb(hsb)
