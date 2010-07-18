@@ -38,18 +38,23 @@ class Sample < ActiveRecord::Base
     return display
   end
 
+  def colorPower
+    return '#ff0000'
+  end
+
   def displayPower
     # select a precision based on the value and append "W" for Watts
     case power
     when 0..0.03
-      sprintf "%.3fW",power
+      display = sprintf "%.3fW",power
     when 0.03..0.3
-      sprintf "%.2fW",power
+      display = sprintf "%.2fW",power
     when 0.3..3
-      sprintf "%.1fW",power
+      display = sprintf "%.1fW",power
     else
-      sprintf "%.0fW",power
+      display = sprintf "%.0fW",power
     end
+    return {:content=>display,:rgb=>colorPower}
   end
 
 end

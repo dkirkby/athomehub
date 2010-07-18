@@ -16,5 +16,10 @@ module ApplicationHelper
     # like %l and %P that we want
     formatted = h timestamp.localtime.to_datetime.strftime("%l:%M%P")
   end
+  
+  def colorize(what)
+    return what if what.instance_of? String
+    "<span style='color:#{what[:rgb]}'>#{what[:content]}</span>"
+  end
 
 end
