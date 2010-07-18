@@ -39,13 +39,15 @@ class Sample < ActiveRecord::Base
   end
 
   def colorPower
+    # Return the previously cached value if available
+    return @colorPower if @colorPower
     # Returns the HSB color corresponding to this sample's power factor and complexity.
     hue = 50.0 - 184.0*powerFactor/255.0
     hue += 360 if hue < 0
     cratio = complexity/255.0
     saturation = 0.4 + 0.2*cratio
     brightness = 0.5 + 0.5*cratio
-    return [hue,saturation,brightness]
+    @colorPower = [hue,saturation,brightness]
   end
 
   def displayPower
@@ -63,6 +65,8 @@ class Sample < ActiveRecord::Base
     return {:content=>display,:hsb=>colorPower}
   end
 
+  # Returns the cost in cents corresponding to 24 hour continuous usage
+  # at this sample's power level.
   def theCost
     # calculate the energy in kWh used in 24 hours at this power level
     # using (24x60x60 secs/day)/(1000x60x60 J/kWh) = 0.024 (kWh/day)/W
@@ -73,7 +77,8 @@ class Sample < ActiveRecord::Base
   
   def displayCost
     # display as $d.cc
-    sprintf "$%.2f",1e-2*theCost
+    display = sprintf "$%.2f",1e-2*theCost
+    return {:content=>display,:hsb=>colorPower}
   end
 
 end

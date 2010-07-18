@@ -14,6 +14,7 @@
 					%th.vcol Light
 				-if ATHOME['display_power']
 					%th.vcol Power
+					%th.vcol Cost
 			-@samples.each do |s|
 				-p = s[:profile]
 				%tr
@@ -23,7 +24,8 @@
 					-if ATHOME['display_lighting']
 						%td.light= s[:lighting][0]
 					-if ATHOME['display_power']
-						%td.power= colorize s[:power]
+						%td= colorize s[:power]
+						%td= colorize s[:cost]
 	%ul#navigation
 		%li home
 		%li=link_to "help"
