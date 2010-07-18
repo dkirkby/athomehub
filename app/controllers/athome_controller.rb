@@ -7,12 +7,16 @@ class AthomeController < ApplicationController
     @samples = [ ]
     # cutoff for supressing stale data
     stale_cutoff = @at - 1.minute
+    # keep track of the maximum sample record ID seen
+    @max_id = -1
     # use profiles for the requested @at time
     DeviceProfile.latest(@at).each do |profile|
       # hide this profile's data if requested
       next if profile.display_order < 0
       # find most recent sample for this profile at the requested time
       sample = Sample.for_networkID(profile.networkID,@at).last
+      # update the maximum sample record ID seen
+      @max_id = sample.id if sample.id > @max_id
       # is this a recent enough sample to display?
       if sample.created_at < stale_cutoff then
         no_data = "<span class='nodata'>no data</span>"

@@ -1,3 +1,6 @@
+:javascript
+	max_id = #{@max_id}
+
 #content
 	#header
 		uci@home
@@ -17,7 +20,7 @@
 					%th.vcol Cost
 			-@samples.each do |s|
 				-p = s[:profile]
-				%tr
+				%tr{:id=>sprintf("nid%02x",p.networkID)}
 					%td.where= link_to p.description, :action=>'detail', :nid=>p.networkID
 					-if ATHOME['display_temperature']
 						%td.temp= s[:temperature]
