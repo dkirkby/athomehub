@@ -17,7 +17,7 @@
 					%th.vcol Light
 				-if ATHOME['display_power']
 					%th.vcol Power
-					%th.vcol Cost
+					%th.vcol Projected
 			-@samples.each do |s|
 				-p = s[:profile]
 				%tr{:id=>sprintf("nid%02x",p.networkID)}

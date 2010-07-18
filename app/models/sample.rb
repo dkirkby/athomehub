@@ -76,8 +76,14 @@ class Sample < ActiveRecord::Base
   end
   
   def displayCost
-    # display as $d.cc
-    display = sprintf "$%.2f",1e-2*theCost
+    case cost = theCost
+    when 0..1
+      display = "&lt;1&cent;/day"
+    when 1..99
+      display = sprintf "%d&cent;/day",cost.round
+    else
+      display = sprintf "$%.2f/day",1e-2*cost
+    end
     return {:content=>display,:hsb=>colorPower}
   end
 
