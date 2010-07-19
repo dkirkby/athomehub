@@ -5,16 +5,20 @@ class BinnedSample < ActiveRecord::Base
     2.minutes, 10.minutes, 1.hour, 6.hours, 1.day, 1.week, 4.weeks, 16.weeks ]
 
   # bin size by zoom level: must divide evenly into half of the window size
-  # and the bin size of the next zoom level
+  # and the bin size of the next zoom level.
+  ##
+  ##?? How to handle the alignment of bins bigger than one hour with respect to
+  ##?? daylight saving or other time zone shifts by a number hours ??
+  ##
   @@bin_size = [
     10.seconds, 30.seconds, 3.minutes, 15.minutes, 1.hour, 6.hours, 1.day, 1.week ]
 
   # number of bins per half window by zoom level
   @@bins_per_half_window = @@window_size.zip(@@bin_size).map {|wb| wb[0]/(2*wb[1]) }
 
-  # epoch for calculating bin indices: use local time so that bin edges
-  # have natural alignment in the local time zone
-  @@epoch = Time.local(2010).to_i
+  # epoch for calculating bin indices: determines the natural alignment of bins
+  # and must be chronoloogically before the first bin that might ever be used.
+  @@epoch = Time.utc(2010).to_i
 
   def self.bin(at,zoom_level)
     # Returns the bin code corresponding to the specified time.
