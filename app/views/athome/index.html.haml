@@ -32,5 +32,5 @@
 						%td= colorize s[:cost]
 	%ul#navigation
 		%li home
-		%li=link_to "help"
+		%li=link_to "help",:controller=>:help,:action=>:home
 	=render :partial=>"note"

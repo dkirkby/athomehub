@@ -1,17 +1,26 @@
 %h1 Home Page Help
 
 %p
-	The home page shows the most recent measurements from each smartstrip in
+	The
+	=link_to "home page", :controller=>:athome, :action=>:index
+	shows the most recent measurements from each smartstrip in
 	your home. The display will update automatically as long as you have the page open.
 	Each smartstrip sends new measurements wirelessly every three seconds or so.
+	
+%p
+	Let one of the uci@home researchers know during your next visit if you would like to
+	change the description of a smartstrip location on this page, or change the order
+	in which locations are listed.
 	
 %p
 	In case there is no data displayed for one of your smartstrips, refer to the
 	=link_to "troubleshooting guide.",:action=>:trouble
 
 %p
-	Use the bottom of the page to record your impressions and questions about the 
-	measurements displayed on the home page or the page design itself.
+	Use the bottom of the page to
+	=link_to "record your impressions",:action=>:notes
+	and questions about the measurements displayed on the home page or the page
+	design itself.
 	
 %h2 Power Display
 
@@ -19,3 +28,5 @@
 	The electric power consumed by each smartstrip is display in two ways: in Watts and
 	as a projected cost. The projected cost corresponds to continuous usage at the
 	present rate for 24 hours, using a nominal energy cost of 10&cent; per kilowatt-hour.
+	Let one of the researchers know if you would like to use a different nominal cost
+	for your display.
