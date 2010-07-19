@@ -28,10 +28,12 @@ function requestUpdate() {
 }
 
 function enableLiveUpdates() {
-  if($('#live-updates').length == 1) {
-    setInterval(requestUpdate,1000); // runs every 1000ms
+  if($('.live-updates').length) {
+    // runs once per second
+    setInterval(requestUpdate,1000);
   }
-  else {
+  if($('.click-to-update').length) {
+    // runs on demand
     $('#datetime').click(requestUpdate);
   }
 }
