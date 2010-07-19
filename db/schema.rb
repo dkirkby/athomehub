@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100716183548) do
+ActiveRecord::Schema.define(:version => 20100719013607) do
 
   create_table "binned_samples", :force => true do |t|
     t.integer "networkID"
@@ -18,6 +18,10 @@ ActiveRecord::Schema.define(:version => 20100716183548) do
     t.float   "lighting"
     t.float   "artificial"
     t.float   "power"
+    t.float   "lightFactor"
+    t.float   "powerFactor"
+    t.float   "complexity"
+    t.integer "binCount"
   end
 
   add_index "binned_samples", ["binCode"], :name => "index_binned_samples_on_binCode"
