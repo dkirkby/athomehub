@@ -21,7 +21,8 @@
 			-@samples.each do |s|
 				-p = s[:profile]
 				%tr{:id=>sprintf("nid%02x",p.networkID)}
-					%td.where= link_to p.description, :action=>'detail', :nid=>p.networkID
+					-#%td.where= link_to p.description, :action=>'detail', :nid=>p.networkID
+					%td.where= p.description
 					-if ATHOME['display_temperature']
 						%td.temp= s[:temperature]
 					-if ATHOME['display_lighting']
