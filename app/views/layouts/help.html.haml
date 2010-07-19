@@ -9,5 +9,8 @@
 	%body
 		#help
 			=yield
+			#footer
+				#back=link_to "Back",:back
+				=link_to "uci@home","http://athome.ps.uci.edu/"
 		-if flash[:notice]
 			#flash&= flash[:notice]
