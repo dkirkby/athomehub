@@ -30,7 +30,11 @@ class Engineering::DumpController < Engineering::ApplicationController
       amplitude = Math.sqrt(2)*@results[:currentRMS]
       tzero = @results[:rawPhase]
       offset = tzero-@results[:relativePhase]
-      mean = @dump.samples.sum*1.0/@dump.samples.length
+      begin
+        mean = @dump.samples.sum*1.0/@dump.samples.length
+      rescue
+        mean = 511
+      end
       fit = lambda {|t| mean + amplitude*Math.sin(@@omega60*(t-tzero)) }
       @model = [ ]
       dt = 200 # microseconds
