@@ -1,3 +1,4 @@
+Tue Jul 20 14:20:18 PDT 2010 david@dk.local Fix listener crash in handleDump
 Mon Jul 19 10:32:14 PDT 2010 david@dk.local Implement help controller
 Mon Jul 19 07:09:53 PDT 2010 david@dk.local Overhaul graphing
 Sun Jul 18 15:33:51 PDT 2010 david@dk.local Update athome index action and view
