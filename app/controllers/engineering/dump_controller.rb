@@ -19,7 +19,7 @@ class Engineering::DumpController < Engineering::ApplicationController
     # fill a 2 x 250 table of (time,adc) values
     @data = Array.new 250
     @dump.samples.each_index do |k|
-      @data[k] = [ 200*k, @dump.samples[k] ]
+      @data[k] = [ 200*k, (@dump.samples[k] or -1) ]
     end
     # unpack the analysis header
     @results = @dump.unpack_header
