@@ -3,6 +3,7 @@ class DeviceLog < ActiveRecord::Base
   before_validation :set_severity
   
   @@messages = {
+    -21=>[:warn,"Device buffer dump with unexpected length %d"],
     -20=>[:error,"Ignoring unsolicited buffer dump from disabled network ID %d"],
     -19=>[:error,"Hub ignoring buffer from network ID %d with no config"],
     -18=>[:error,"Ignoring unsolicited sample from disabled network ID %d"],

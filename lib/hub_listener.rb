@@ -305,6 +305,12 @@ protected
 
   # Handles a buffer dump message.
   def handleDump(values)
+    # check that we have at least an initial header
+    if values.length < 2 then
+      log = DeviceLog.create({:code=>-21,:value=>values.length})
+      @logger.warn log.message
+      return
+    end
     # check that all fields are pure hex
     index = 0
     values.each do |v|
@@ -325,10 +331,16 @@ protected
         @logger.error log.message
         @dumps[networkID].save
       end
+      # check for the expected length
+      if values.length != 15 then
+        log = DeviceLog.create({:code=>-21,:networkID=>networkID,:value=>values.length})
+        @logger.warn log.message
+        return
+      end      
+      # create a new dump for this device
       source = values[3].hex
       log = DeviceLog.create({:code=>-10,:networkID=>networkID,:value=>source})
       @logger.info log.message
-      # create a new dump for this device
       @dumps[networkID] = BufferDump.new({
         :networkID=>networkID,
         :header=>values[2],
@@ -338,6 +350,12 @@ protected
       # add the first 8 samples
       @dumps[networkID].init_samples 250,values[5..14]
     elsif sequenceNumber <= 10 then
+      # check for the expected length
+      if values.length != 26 then
+        log = DeviceLog.create({:code=>-21,:networkID=>networkID,:value=>values.length})
+        @logger.warn log.message
+        return
+      end      
       # has this dump already been started?
       if not @dumps[networkID] then
         log = DeviceLog.create({:code=>-12,:networkID=>networkID,
