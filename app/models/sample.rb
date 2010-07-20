@@ -53,7 +53,9 @@ class Sample < ActiveRecord::Base
   def displayPower
     # select a precision based on the value and append "W" for Watts
     case power
-    when 0..0.03
+    when 0..0.003
+      display = "0W"
+    when 0.003..0.03
       display = sprintf "%.3fW",power
     when 0.03..0.3
       display = sprintf "%.2fW",power
