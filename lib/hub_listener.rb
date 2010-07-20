@@ -382,25 +382,32 @@ protected
 
   # Handles a complete message received from the hub. Logging is via @logger.
   def handle(msg)
-    # Split the message into whitespace-separated tokens. The first token
-    # identifies the message type.
-    msgType,*values = msg.split
-    # ignore anything in the serial buffer before the hub is restarted
-    return if msgType != 'HUB' and @starting
-    @starting = false
-    # HUB and LAM messages have the same format
-    if msgType == 'HUB' or msgType == 'LAM' then
-      handleLAM values
-    elsif msgType == 'DATA' then
-      handleData values
-    elsif msgType == 'DUMP' then
-      handleDump values
-    elsif msgType == 'LOG' then
-      handleLog values
-    elsif msgType == 'SENS' then
-      handleHubSensorReadings values
-    else
-      @logger.error "Skipping unexpected hub message \"#{msg}\""
+    begin
+      # Split the message into whitespace-separated tokens. The first token
+      # identifies the message type.
+      msgType,*values = msg.split
+      # ignore anything in the serial buffer before the hub is restarted
+      return if msgType != 'HUB' and @starting
+      @starting = false
+      # HUB and LAM messages have the same format
+      if msgType == 'HUB' or msgType == 'LAM' then
+        handleLAM values
+      elsif msgType == 'DATA' then
+        handleData values
+      elsif msgType == 'DUMP' then
+        handleDump values
+      elsif msgType == 'LOG' then
+        handleLog values
+      elsif msgType == 'SENS' then
+        handleHubSensorReadings values
+      else
+        @logger.error "Skipping unexpected hub message \"#{msg}\""
+      end
+    rescue => e
+      # log the exception and keep going
+      @logger.error 'Exception caught in listener::handler (will try to keep going)'
+      @logger.error e.inspect
+      @logger.error e.backtrace.join("\n    ")
     end
   end
   
