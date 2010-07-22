@@ -33,4 +33,15 @@ $(document).ready(function(){
     $.plot($("#" + plotID),samplePlots[this.id],samplePlotOptions);
   });
 
+  /* display any binned plots on this page */
+  var binnedPlotOptions = {
+    xaxis: { mode:"time" },
+    series:{ lines:{ show: true}, points:{ show:true,radius:4,fill:false } }
+  };
+  $('.binned-plot').each(function(index) {
+    var plotID = this.id + '-plot';
+    $(this).after('<div id="' + plotID + '" class="eng-plot"></div>');
+    $.plot($("#" + plotID),binnedPlots[this.id],binnedPlotOptions);
+  });
+
 });

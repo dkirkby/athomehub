@@ -50,6 +50,10 @@ class BinnedSample < ActiveRecord::Base
     complexitySum/binCount if binCount > 0
   end
 
+  def self.zoom_levels
+    @@bin_size.length
+  end
+  
   def interval
     # Returns a non-exclusive range [a,b) of UTC timestamps corresponding
     # to this bin's time interval. Implemented with caching.

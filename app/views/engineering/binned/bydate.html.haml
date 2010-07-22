@@ -3,7 +3,6 @@
 
 %h1 Device Samples Binned in a Time Window
 
-%p Displaying #{@binned.length} samples binned during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
+%p Displaying samples binned for network ID #{@config.networkID} during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
 
--#=render :partial => "plots"
--#=render :partial => "samples"
+=render :partial => "plots"
