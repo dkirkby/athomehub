@@ -1,0 +1,9 @@
+-content_for :head do
+	=javascript_include_tag 'excanvas','flot','eng-plot'
+
+%h1 Device Samples Binned in a Time Window
+
+%p Displaying #{@binned.length} samples binned during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
+
+-#=render :partial => "plots"
+-#=render :partial => "samples"

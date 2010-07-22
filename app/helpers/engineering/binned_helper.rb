@@ -1,0 +1,2 @@
+module Engineering::BinnedHelper
+end
