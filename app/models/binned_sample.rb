@@ -40,5 +40,8 @@ class BinnedSample < ActiveRecord::Base
     bin_index = (code & 0x0fffffff)
     Time.at(@@epoch + bin_index*@@bin_size[zoom_level]).utc
   end
+  
+  def self.accumulate(sample)
+  end
 
 end
