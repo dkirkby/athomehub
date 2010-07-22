@@ -50,6 +50,26 @@ class BinnedSample < ActiveRecord::Base
     complexitySum/binCount if binCount > 0
   end
 
+  def interval
+    # Returns a non-exclusive range [a,b) of UTC timestamps corresponding
+    # to this bin's time interval. Implemented with caching.
+    @interval ||= begin
+      zoom_level = (binCode >> 28)
+      bin_index = (binCode & 0x0fffffff)
+      size = @@bin_size[zoom_level]
+      begin_at = (@@epoch + bin_index*size).to_i
+      end_at = begin_at + size.to_i
+      Range.new(begin_at,end_at,true) # [begin,end)      
+    end
+  end
+
+  def span?(sample)
+    # Tests if the specified sample falls within this bin based on its
+    # network ID and timestamp. This method does NOT test if the sample
+    # has already been accumulated in this bin.
+    self.networkID == sample.networkID and
+      self.interval.include? sample.created_at.to_i
+  end
 
   def self.bin(at,zoom_level)
     # Returns the bin code corresponding to the specified time.
@@ -74,17 +94,16 @@ class BinnedSample < ActiveRecord::Base
   
   def self.accumulate(sample)
     # Accumulates one new sample at all zoom levels simultaneously.
-    # Samples must be passed to this method in ascending ID order.
-    if defined? @@last_id then
-      raise "Samples must be accumulated in increasing ID order " +
-        "(#{sample.id} < #{@@last_id})" unless sample.id > @@last_id
-    else
-      # create an empty dictionary for our per-networkID accumulators
-      @@accumulators = { }
-    end
-    @@last_id = sample.id
-    # have we already seen this network ID?
+    @@last_id = { } unless defined? @@last_id
+    @@accumulators = { } unless defined? @@accumulators
     netID = sample.networkID
+    if @@last_id.has_key? netID then
+      # samples must be passed to this method in ascending ID order.
+      raise "Samples must be accumulated in increasing ID order " +
+        "(#{sample.id} < #{@@last_id[netID]})" unless sample.id > @@last_id[netID]
+    end
+    @@last_id[netID] = sample.id
+    # have we seen this network ID before?
     if not @@accumulators.has_key?(netID) then
       # create the accumulators at each zoom level for this network ID
       at = sample.created_at
@@ -94,11 +113,34 @@ class BinnedSample < ActiveRecord::Base
       end
     else
       # loop over the active bins for this networkID
-      @@accumulators[netID].each do |bin|
-        # use send to call protected method from class method
-        bin.send :add_sample,sample
+      at = sample.created_at.to_i
+      spanned = false
+      accumulators = @@accumulators[netID]
+      accumulators.each_index do |zoom_level|
+        bin = accumulators[zoom_level]
+        if not spanned
+          # this sample did not fit into a smaller zoom level bin so might
+          # not fit into the bin at this zoom level either
+          if at < bin.interval.end then
+            # accumulate this sample (using send to call protected from class method)
+            bin.send :add_sample,sample
+            # the active bins at all larger zoom levels must, by construction,
+            # span this sample
+            spanned = true
+          else
+            # save the active bin
+            bin.save
+            # create a new bin containing only this sample
+            code = bin(sample.created_at,zoom_level)
+            accumulators[zoom_level] = new_for_sample(code,sample)
+          end
+        else
+          # accumulate this sample (using send to call protected from class method)
+          bin.send :add_sample,sample
+        end
       end
     end
+    return
   end
 
 protected
