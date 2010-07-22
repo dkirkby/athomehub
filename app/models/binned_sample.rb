@@ -20,6 +20,35 @@ class BinnedSample < ActiveRecord::Base
   # and must be chronoloogically before the first bin that might ever be used.
   @@epoch = Time.utc(2010).to_i
 
+  def temperature
+    temperatureSum/binCount if binCount > 0
+  end
+
+  def lighting
+    lightingSum/binCount if binCount > 0
+  end
+
+  def artificial
+    artificialSum/binCount if binCount > 0
+  end
+
+  def lightFactor
+    lightFactorSum/binCount if binCount > 0
+  end
+
+  def power
+    powerSum/binCount if binCount > 0
+  end
+
+  def powerFactor
+    powerFactorSum/binCount if binCount > 0
+  end
+
+  def complexity
+    complexitySum/binCount if binCount > 0
+  end
+
+
   def self.bin(at,zoom_level)
     # Returns the bin code corresponding to the specified time.
     raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
