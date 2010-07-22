@@ -48,12 +48,31 @@ class BinnedSample < ActiveRecord::Base
       raise "Samples must be accumulated in increasing ID order " +
         "(#{sample.id} < #{@@last_id})" unless sample.id > @@last_id
     else
-      # initialize our bin accumulators at each zoom level
-      @@accumulators = Array.new(@@bin_size.length) do |zoom_level|
-        find_or_initialize_by_binCode(bin(sample.created_at,zoom_level))
-      end
+      # create an empty dictionary for our per-networkID accumulators
+      @@accumulators = { }
     end
     @@last_id = sample.id
+    # create the accumulators for this network ID if necessary
+    netID = sample.networkID
+    if not @@accumulators.has_key?(netID) then
+      at = sample.created_at
+      @@accumulators[netID] = Array.new(@@bin_size.length) do |zoom_level|
+        code = bin(at,zoom_level)
+        find_by_networkID_and_binCode(netID,code) or new({
+          :networkID => netID,
+          :binCode => code,
+          :temperature => 0.0,
+          :lighting => 0.0,
+          :artificial => 0.0,
+          :lightFactor => 0.0,
+          :power => 0.0,
+          :powerFactor => 0.0,
+          :complexity => 0.0,
+          :binCount => 0
+        })
+      end
+      logger.info "Initialized accumulators for netID #{netID}"
+    end
   end
 
 end
