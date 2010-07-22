@@ -52,27 +52,56 @@ class BinnedSample < ActiveRecord::Base
       @@accumulators = { }
     end
     @@last_id = sample.id
-    # create the accumulators for this network ID if necessary
+    # have we already seen this network ID?
     netID = sample.networkID
     if not @@accumulators.has_key?(netID) then
+      # create the accumulators at each zoom level for this network ID
       at = sample.created_at
       @@accumulators[netID] = Array.new(@@bin_size.length) do |zoom_level|
         code = bin(at,zoom_level)
-        find_by_networkID_and_binCode(netID,code) or new({
-          :networkID => netID,
-          :binCode => code,
-          :temperature => 0.0,
-          :lighting => 0.0,
-          :artificial => 0.0,
-          :lightFactor => 0.0,
-          :power => 0.0,
-          :powerFactor => 0.0,
-          :complexity => 0.0,
-          :binCount => 0
-        })
+        find_by_networkID_and_binCode(netID,code) or new_for_sample(code,sample)
       end
-      logger.info "Initialized accumulators for netID #{netID}"
+    else
+      # loop over the active bins for this networkID
+      @@accumulators[netID].each do |bin|
+        # use send to call protected method from class method
+        bin.send :add_sample,sample
+      end
     end
+  end
+
+protected
+
+  def self.new_for_sample(code,sample)
+    # Returns a new bin for the specified code containing one sample.
+    # Method is protected since we do not check the consistency of code
+    # and sample.created_at.
+    new({
+      :binCode => code,
+      :networkID => sample.networkID,
+      :temperature => sample.temperature,
+      :lighting => sample.lighting,
+      :artificial => sample.artificial,
+      :lightFactor => sample.lightFactor,
+      :power => sample.power,
+      :powerFactor => sample.powerFactor,
+      :complexity => sample.complexity,
+      :binCount => 1
+    })
+  end
+
+  def add_sample(sample)
+    # Adds the specified sample to this bin.
+    # Method is protected since we do not check the consistency of our code
+    # and networkID with sample.created_at and sample.networkID.
+    self.temperature += sample.temperature
+    self.lighting += sample.lighting
+    self.artificial += sample.artificial
+    self.lightFactor += sample.lightFactor
+    self.power += sample.power
+    self.powerFactor += sample.powerFactor
+    self.complexity += sample.complexity
+    self.binCount += 1
   end
 
 end
