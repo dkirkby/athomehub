@@ -10,10 +10,14 @@ module Measured
   def theTemperature
     # raw measurement is in hundredths of a degree Farenheit
     result = 1e-2*temperature
-    # lookup this sample's config if necessary (lazy cache)
-    @config = DeviceConfig.for_networkID(networkID).last unless @config
+    # lookup this network ID's self-heating correction if necessary
+    @@self_heating = { } unless defined? @@self_heating
+    if not @@self_heating.has_key? networkID then
+      config = DeviceConfig.for_networkID(networkID).last
+      @@self_heating[networkID] = config ? 1e-2*config.selfHeatOffset : 0
+    end
     # adjust for self-heating
-    result -= 1e-2*@config.selfHeatOffset if @config
+    result -= @@self_heating[networkID]
     # convert to Celsius if requested
     result = (result - 32.0)/1.8 if ATHOME['temperature_units'] == 'C'
     return result
