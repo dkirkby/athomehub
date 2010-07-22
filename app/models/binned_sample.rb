@@ -1,4 +1,6 @@
 class BinnedSample < ActiveRecord::Base
+  
+  include Measured
 
   # window size by zoom level
   @@window_size = [
