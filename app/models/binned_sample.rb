@@ -42,6 +42,18 @@ class BinnedSample < ActiveRecord::Base
   end
   
   def self.accumulate(sample)
+    # Accumulates one new sample at all zoom levels simultaneously.
+    # Samples must be passed to this method in ascending ID order.
+    if defined? @@last_id then
+      raise "Samples must be accumulated in increasing ID order " +
+        "(#{sample.id} < #{@@last_id})" unless sample.id > @@last_id
+    else
+      # initialize our bin accumulators at each zoom level
+      @@accumulators = Array.new(@@bin_size.length) do |zoom_level|
+        find_or_initialize_by_binCode(bin(sample.created_at,zoom_level))
+      end
+    end
+    @@last_id = sample.id
   end
 
 end
