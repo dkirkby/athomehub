@@ -9,18 +9,18 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100719013607) do
+ActiveRecord::Schema.define(:version => 20100722152753) do
 
   create_table "binned_samples", :force => true do |t|
     t.integer "networkID"
     t.integer "binCode"
-    t.float   "temperature"
-    t.float   "lighting"
-    t.float   "artificial"
-    t.float   "power"
-    t.float   "lightFactor"
-    t.float   "powerFactor"
-    t.float   "complexity"
+    t.float   "temperatureSum"
+    t.float   "lightingSum"
+    t.float   "artificialSum"
+    t.float   "powerSum"
+    t.float   "lightFactorSum"
+    t.float   "powerFactorSum"
+    t.float   "complexitySum"
     t.integer "binCount"
   end
 

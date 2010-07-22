@@ -79,13 +79,13 @@ protected
     new({
       :binCode => code,
       :networkID => sample.networkID,
-      :temperature => sample.temperature,
-      :lighting => sample.lighting,
-      :artificial => sample.artificial,
-      :lightFactor => sample.lightFactor,
-      :power => sample.power,
-      :powerFactor => sample.powerFactor,
-      :complexity => sample.complexity,
+      :temperatureSum => sample.temperature,
+      :lightingSum => sample.lighting,
+      :artificialSum => sample.artificial,
+      :lightFactorSum => sample.lightFactor,
+      :powerSum => sample.power,
+      :powerFactorSum => sample.powerFactor,
+      :complexitySum => sample.complexity,
       :binCount => 1
     })
   end
@@ -94,13 +94,13 @@ protected
     # Adds the specified sample to this bin.
     # Method is protected since we do not check the consistency of our code
     # and networkID with sample.created_at and sample.networkID.
-    self.temperature += sample.temperature
-    self.lighting += sample.lighting
-    self.artificial += sample.artificial
-    self.lightFactor += sample.lightFactor
-    self.power += sample.power
-    self.powerFactor += sample.powerFactor
-    self.complexity += sample.complexity
+    self.temperatureSum += sample.temperature
+    self.lightingSum += sample.lighting
+    self.artificialSum += sample.artificial
+    self.lightFactorSum += sample.lightFactor
+    self.powerSum += sample.power
+    self.powerFactorSum += sample.powerFactor
+    self.complexitySum += sample.complexity
     self.binCount += 1
   end
 
