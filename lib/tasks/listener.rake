@@ -6,6 +6,11 @@ namespace :listener do
   task :status do
     puts HubListener.instance.status
   end
+
+  desc "Asserts that a hub listener is not running"
+  task :not_running do
+    HubListener.instance.not_running
+  end
   
   desc "Starts a new background hub listener process"
   task :start => :environment do

@@ -39,6 +39,11 @@ class HubListener
     end
   end
   
+  # Fails if a listener is currently running
+  def not_running
+    raise "hub listener running as PID #{@pid}" if @pid
+  end
+  
   # Starts a new hub listener.
   def start(options={})
     raise "hub listener already running as PID #{@pid}" if @pid
