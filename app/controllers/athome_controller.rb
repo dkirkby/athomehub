@@ -163,8 +163,7 @@ protected
   end
 
   def valid_window
-    # set window parameter defaults
-    @index = 0
+    # set the default zoom level
     @zoom = 3
     # define the zoom levels: (formats are for DateTime.strftime)
     # label, seconds, label format, tick format, # ticks, index
@@ -181,97 +180,34 @@ protected
     # do we have a zoom value to use?
     if params.has_key? 'zoom' then
       # is it a decimal integer?
-      if !!(params['zoom'] =~ @@decimalInteger) then 
-        @zoom = params['zoom'].to_i
-        # clip an out of range zoom that is otherwise a valid integer
-        if @zoom < 0 then
-          @zoom = 0
-          flash.now[:notice] = "Using minimum allowed zoom=#{@zoom}."
-        elsif @zoom >= @zoomLevels.length then
-          @zoom = @zoomLevels.length-1
-          flash.now[:notice] = "Using maximum allowed zoom=#{@zoom}."
+      if !!(params['zoom'] =~ @@nonNegativeInteger) then
+        zoom = params['zoom'].to_i
+        begin
+          size = BinnedSample.size zoom
+          @zoom = zoom
+        rescue
+          flash.now[:notice] = "Out of range zoom=#{zoom}. Using zoom=#{@zoom}."
         end
       else
-        flash.now[:notice] = "Invalid parameter zoom=\'#{params['zoom']}\'. Using zoom=\'#{@zoom}\' instead."
+        flash.now[:notice] = "Invalid zoom=\'#{params['zoom']}\'. Using zoom=#{@zoom}."
       end
     end
     # do we have an index value to use?
     if params.has_key? 'index' then
-      # is it a decimal integer?
-      if !!(params['index'] =~ @@decimalInteger) then
+      case params['index']
+      when @@nonNegativeInteger then
         @index = params['index'].to_i
+      when 'last' then
+        @index = BinnedSample.window(@at,@zoom)
+      when 'first' then
+        @index = 0
       else
-        flash.now[:notice] = "Invalid parameter index=\'#{params['index']}\'. Using index=\'#{@index}\' instead."
+        @index = BinnedSample.window(@at,@zoom)
+        flash.now[:notice] = "Invalid index=\'#{params['index']}\'. Using index=\'#{@index}\'."
       end
-    end
-    # check for a commit parameter that requests a newer/older index
-    case params['commit']
-    when 'Newer' then
-      if @index == 0 then
-        flash.now[:notice] = "Already displaying newest data. Request ignored."
-      else
-        @index -= 1
-      end
-    when 'Older'
-      if @index == -1 then
-        flash.now[:notice] = "Already displaying oldest data. Request ignored."
-      else
-        @index += 1
-      end
-    when 'Newest'
-      @index = 0
-    when 'Oldest'
-      @index = -1
-    when nil,'Update'
-      # no adjustment to index requested
     else
-      flash.now[:notice] = "Ignoring invalid parameter commit=\`#{params['commit']}\`."
-    end
-    # calculate the half-window size in seconds
-    interval = 0.5*@zoomLevels[@zoom][1]
-    # calculate the local timezone offset in seconds
-    @tz_offset = @at.localtime.utc_offset
-    # calculate the timestamp (secs since epoch) corresponding to the window
-    # midpoint with index=0
-    midpoint_now = interval*((@at.to_i + @tz_offset)/interval).floor - @tz_offset
-    # determine the valid index range
-    oldest_sample = Sample.find(:first,:order=>'id ASC',
-      :conditions=>['networkID = ?',@config.networkID],:readonly=>true)
-    if oldest_sample then
-      @max_index = ((midpoint_now - oldest_sample.created_at.to_i)/interval).ceil
-      # check for an out of range index
-      if @index > @max_index then
-        flash.now[:notice] = "Requested index=#{@index} is out of range. Using index=#{@max_index}."
-        @index = @max_index
-      elsif @index < -@max_index-1 then
-        flash.now[:notice] = "Requested index=#{@index} is out of range. Using index=#{-@max_index-1}."
-        @index = -@max_index-1
-      end
-      # calculate midpoint of the indexed window
-      if @index >= 0 then
-        midpoint = midpoint_now - @index*interval
-      else
-        midpoint = midpoint_now - (@max_index+@index+1)*interval
-      end
-      # flag if the requested index is the oldest/newest allowed
-      @newest = true if @index == 0 || @index == -@max_index-1
-      @oldest = true if @index == -1 || @index == @max_index
-    else
-      @index = 0
-      flash.now[:notice] = 'No samples have been recorded for this device.'
-    end
-    # calculate the UTC timestamp range corresponding to the selected window
-    @mid_at = Time.at(midpoint).utc
-    @end_at = Time.at(midpoint+interval).utc
-    @begin_at = Time.at(midpoint-interval).utc
-    # calculate display labels for this window
-    label_format,tick_format,num_ticks = @zoomLevels[@zoom][2..4]
-    @label = @mid_at.localtime.to_datetime.strftime label_format
-    @tick_labels = [ ]
-    delta = 2*interval/(num_ticks-1)
-    num_ticks.times do |tick|
-      tick_at = @begin_at + tick*delta
-      @tick_labels << tick_at.localtime.to_datetime.strftime(tick_format)
+      # default to showing the most recent window at this zoom level
+      @index = BinnedSample.window(@at,@zoom)
     end
   end
 

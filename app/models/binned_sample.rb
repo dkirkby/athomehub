@@ -2,17 +2,14 @@ class BinnedSample < ActiveRecord::Base
   
   include Measured
 
-  # window size by zoom level
-  @@window_size = [
-    2.minutes, 10.minutes, 1.hour, 6.hours, 1.day, 1.week, 4.weeks, 16.weeks ]
-
   # bin size by zoom level: must divide evenly into half of the window size
   # and the bin size of the next zoom level.
   @@bin_size = [
     10.seconds, 30.seconds, 3.minutes, 15.minutes, 1.hour, 6.hours, 1.day, 1.week ]
 
-  # number of bins per half window by zoom level
-  @@bins_per_half_window = @@window_size.zip(@@bin_size).map {|wb| wb[0]/(2*wb[1]) }
+  # window size by zoom level
+  @@window_half_size = [
+    1.minute, 5.minutes, 30.minutes, 3.hours, 12.hours, 84.hours, 2.weeks, 8.weeks ]
 
   def temperature
     temperatureSum/binCount if binCount > 0
@@ -88,6 +85,14 @@ class BinnedSample < ActiveRecord::Base
     bin_index = self.elapsed(at)/@@bin_size[zoom_level]
     # Combine the zoom level and bin index into a single 32-bit code
     return (zoom_level << 28) | bin_index
+  end
+  
+  def self.window(at,zoom_level)
+    raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
+    # the -1 below puts the specified time in the right half of the full window
+    window_index = self.elapsed(at)/@@window_half_size[zoom_level] - 1
+    # calcuate the bin index of the left-most bin in the full window
+    # bin_index = window_index*@@bin_size[zoom_level]/@@window_half_size[zoom_level]
   end
   
   # Accumulates one new sample at all zoom levels simultaneously.

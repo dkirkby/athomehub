@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
 
 protected
 
-  @@decimalInteger = Regexp.compile("^(0|-?[1-9][0-9]*)$")
+  @@nonNegativeInteger = Regexp.compile("^(0|[1-9][0-9]*)$")
 
   # Validates input params['n'] and uses it to set @n
   def valid_n
@@ -95,7 +95,7 @@ protected
     @profile = nil
     if params.has_key? 'nid' then
       # is it a decimal integer?
-      if !!(params['nid'] =~ @@decimalInteger) then
+      if !!(params['nid'] =~ @@nonNegativeInteger) then
         nid = params['nid'].to_i
         # is it in range?
         if nid < 0 || nid > 255 then
