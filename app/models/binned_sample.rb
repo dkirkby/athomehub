@@ -225,6 +225,11 @@ protected
     return at + 3600
   end
 
+  # An infinite float16 lighting or power value is saved in the Sample
+  # table using database NULL and read back as ruby nil. Translate it
+  # to the value below for the purposes of binning.
+  @@float16_inf = 32768
+
   def self.new_for_sample(code,sample)
     # Returns a new bin for the specified code containing one sample.
     # Method is protected since we do not check the consistency of code
@@ -233,10 +238,10 @@ protected
       :binCode => code,
       :networkID => sample.networkID,
       :temperatureSum => sample.temperature,
-      :lightingSum => sample.lighting,
+      :lightingSum => (sample.lighting or @@float16_inf),
       :artificialSum => sample.artificial,
       :lightFactorSum => sample.lightFactor,
-      :powerSum => sample.power,
+      :powerSum => (sample.power or @@float16_inf),
       :powerFactorSum => sample.powerFactor,
       :complexitySum => sample.complexity,
       :binCount => 1
@@ -248,10 +253,10 @@ protected
     # Method is protected since we do not check the consistency of our code
     # and networkID with sample.created_at and sample.networkID.
     self.temperatureSum += sample.temperature
-    self.lightingSum += sample.lighting
+    self.lightingSum += (sample.lighting or @@float16_inf)
     self.artificialSum += sample.artificial
     self.lightFactorSum += sample.lightFactor
-    self.powerSum += sample.power
+    self.powerSum += (sample.power or @@float16_inf)
     self.powerFactorSum += sample.powerFactor
     self.complexitySum += sample.complexity
     self.binCount += 1
