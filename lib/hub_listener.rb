@@ -296,7 +296,7 @@ protected
     end
     # Finally, write the sample values we received, translating
     # float infinity to database NULL.
-    Sample.create({
+    s = Sample.create({
       :networkID=>networkID,
       :lighting=>(lighting.infinite? ? nil : lighting),
       :artificial=>sampleData[1],
@@ -306,6 +306,8 @@ protected
       :complexity=>sampleData[5],
       :temperature=>sampleData[6]
     })
+    # Accumulate this sample in our BinnedSamples
+    BinnedSample.accumulate s
   end
 
   # Handles a buffer dump message.
