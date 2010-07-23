@@ -140,7 +140,7 @@ class BinnedSample < ActiveRecord::Base
             code = bin(at,zoom_level)
             accumulators[zoom_level] = new_for_sample(code,sample)
             # auto-save bins at larger zoom levels?
-            auto_save = (zoom_level >= 3)
+            auto_save = (zoom_level >= 1)
           end
         else
           # accumulate this sample (using send to call protected from class method)
