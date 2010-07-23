@@ -61,7 +61,7 @@ class BinnedSample < ActiveRecord::Base
       zoom_level = (binCode >> 28)
       bin_index = (binCode & 0x0fffffff)
       size = @@bin_size[zoom_level]
-      begin_at = self.at(bin_index*size)
+      begin_at = BinnedSample.at(bin_index*size)
       end_at = begin_at + size
       Range.new(begin_at,end_at,true) # [begin,end)      
     end
