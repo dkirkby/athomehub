@@ -8,20 +8,11 @@ class BinnedSample < ActiveRecord::Base
 
   # bin size by zoom level: must divide evenly into half of the window size
   # and the bin size of the next zoom level.
-  ##
-  ##?? How to handle the alignment of bins bigger than one hour with respect to
-  ##?? daylight saving or other time zone shifts by a number hours ??
-  ##
   @@bin_size = [
     10.seconds, 30.seconds, 3.minutes, 15.minutes, 1.hour, 6.hours, 1.day, 1.week ]
 
   # number of bins per half window by zoom level
   @@bins_per_half_window = @@window_size.zip(@@bin_size).map {|wb| wb[0]/(2*wb[1]) }
-
-  # epoch for calculating bin indices: determines the natural alignment of bins
-  # and so should be naturally aligned in local (non-DST) time. The epoch must
-  # be chronoloogically before the first bin that might ever be used.
-  @@epoch = Time.local(2010).to_i
 
   def temperature
     temperatureSum/binCount if binCount > 0
@@ -60,7 +51,7 @@ class BinnedSample < ActiveRecord::Base
     # network ID and timestamp. This method does NOT test if the sample
     # has already been accumulated in this bin.
     self.networkID == sample.networkID and
-      self.interval.include? sample.created_at.to_i
+      self.interval.include? sample.created_at
   end
 
   def interval
@@ -70,11 +61,8 @@ class BinnedSample < ActiveRecord::Base
       zoom_level = (binCode >> 28)
       bin_index = (binCode & 0x0fffffff)
       size = @@bin_size[zoom_level]
-      # calculate the number of seconds elapsed since the epoch
-      begin_at = @@epoch + bin_index*size
-      # correct for DST if necessary (since the epoch is non-DST)
-      ##begin_at -= 3600 if Time.at(begin_at).dst?
-      end_at = begin_at + size.to_i
+      begin_at = self.at(bin_index*size)
+      end_at = begin_at + size
       Range.new(begin_at,end_at,true) # [begin,end)      
     end
   end
@@ -82,14 +70,7 @@ class BinnedSample < ActiveRecord::Base
   def self.bin(at,zoom_level)
     # Returns the bin code corresponding to the specified time.
     raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
-    # Calculate the number of seconds elapsed since the epoch.
-    elapsed = at.to_i - @@epoch
-    # Spring forward if we are on daylight savings: this will create
-    # an hour gap in the spring and map two hours of samples into a
-    # one-hour bin in the fall.
-    ##elapsed += 3600 if at.dst?
-    # Integer division by the zoom level's bin size in seconds give the bin index
-    bin_index = elapsed/@@bin_size[zoom_level]
+    bin_index = self.elapsed(at)/@@bin_size[zoom_level]
     # Combine the zoom level and bin index into a single 32-bit code
     return (zoom_level << 28) | bin_index
   end
@@ -115,7 +96,7 @@ class BinnedSample < ActiveRecord::Base
       end
     else
       # loop over the active bins for this networkID
-      at = sample.created_at.to_i
+      at = sample.created_at
       spanned = false
       accumulators = @@accumulators[netID]
       accumulators.each_index do |zoom_level|
@@ -133,7 +114,7 @@ class BinnedSample < ActiveRecord::Base
             # save the active bin
             bin.save
             # create a new bin containing only this sample
-            code = bin(sample.created_at,zoom_level)
+            code = bin(at,zoom_level)
             accumulators[zoom_level] = new_for_sample(code,sample)
           end
         else
@@ -147,11 +128,69 @@ class BinnedSample < ActiveRecord::Base
 
 protected
 
-  # Tabulate the US daylight savings times for each year (not valid in AZ,HI)
-  @@dst_ranges = [
-      [Time.local(2010,3,14,2),Time.local(2010,11,7,2)],
-      [Time.local(2011,3,13,2),Time.local(2011,11,6,2)]
-    ]
+  # epoch for calculating bin indices: determines the natural alignment of bins
+  # and so should be naturally aligned in local (non-DST) time. The epoch must
+  # be chronoloogically before the first bin that might ever be used.
+  @@epoch = Time.local(2010).to_i
+
+  # Tabulate the US daylight savings times for each year
+  @@dst_ranges = Time.local(2010,3,14,2).isdst ?
+    [
+      Range.new(Time.local(2010,3,14,2),Time.local(2010,11,7,2),true),
+      Range.new(Time.local(2011,3,13,2),Time.local(2011,11,6,2),true)
+    ] :
+    [ ] # no daylight savings in AZ, HI
+    
+  # Returns the number of seconds elapsed since the epoch with adjustment for
+  # daylight savings so that elapsed/3600 is correctly aligned when daylight
+  # savings is in effect (this introduces a one hour gap in the spring and
+  # maps two hours onto one in the fall). Specifically:
+  #
+  #   BinnedSample.elapsed(Time.local(2010,3,14,1)+0.hour)/3600%24 == 1
+  #   BinnedSample.elapsed(Time.local(2010,3,14,1)+1.hour)/3600%24 == 3
+  #   BinnedSample.elapsed(Time.local(2010,3,14,3))/3600%24 == 3
+  #
+  #   BinnedSample.elapsed(Time.local(2010,11,7,3)-0.hour)/3600%24 == 3
+  #   BinnedSample.elapsed(Time.local(2010,11,7,3)-1.hour)/3600%24 == 2
+  #   BinnedSample.elapsed(Time.local(2010,11,7,3)-2.hour)/3600%24 == 2
+  #   BinnedSample.elapsed(Time.local(2010,11,7,3)-3.hour)/3600%24 == 1
+  #   BinnedSample.elapsed(Time.local(2010,11,7,1))/3600%24 == 1
+  #   
+  def self.elapsed(at)
+    elapsed = at.to_i - @@epoch
+    @@dst_ranges.each do |range|
+      return elapsed+3600 if range.include? at
+      # quit now if all remaining ranges are in the future
+      last if at <= range.end
+    end
+    return elapsed
+  end
+  
+  # Returns the Time corresponding to the specified number of elapsed seconds
+  # calculated according to self.elapsed. Note that self.elapsed is not
+  # invertible during the one-hour "fall back" DST change over so the
+  # algorithm used here maps 1-3am onto 1-2am, creating a hole from 2-3am.
+  # Specifically, the elapsed times calculated above correspond to:
+  #
+  #   Sun Mar 14 01:00:00 -0800 2010
+  #   Sun Mar 14 03:00:00 -0700 2010
+  #   Sun Mar 14 03:00:00 -0700 2010
+  #
+  #   Sun Nov 07 03:00:00 -0800 2010
+  #   Sun Nov 07 01:00:00 -0800 2010
+  #   Sun Nov 07 01:00:00 -0800 2010
+  #   Sun Nov 07 01:00:00 -0700 2010
+  #   Sun Nov 07 01:00:00 -0700 2010
+  #
+  def self.at(elapsed)
+    at = Time.at(@@epoch + elapsed - 3600)
+    @@dst_ranges.each do |range|
+      return at if range.include? at
+      # quit now if all remaining ranges are in the future
+      last if at <= range.end
+    end
+    return at + 3600
+  end
 
   def self.new_for_sample(code,sample)
     # Returns a new bin for the specified code containing one sample.
