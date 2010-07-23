@@ -29,6 +29,9 @@ protected
     end
   end
   
+  @@ival_units = {
+    'w'=>'weeks','d'=>'days','h'=>'hours','m'=>'minutes','s'=>'seconds'}
+  
   # Validates inputs params['ival'] and optional params['end'] and uses
   # them to set @ival to the number of seconds in the requested interval,
   # and @begin_at and @end_at to Time objects that span the interval.
@@ -45,10 +48,10 @@ protected
     if params.has_key? 'ival' then
       # must be of the form <number><unit> where number can be decimal
       # and valid units are d(ays),h(ours),m(inutes) and s(seconds)
-      parsed = /^([0-9]+(?:.[0-9]+)?)([dhms])$/.match(params['ival'])
+      parsed = /^([0-9]+(?:.[0-9]+)?)([wdhms])$/.match(params['ival'])
       if parsed then
         value = parsed[1].to_f
-        unit = {'d'=>'days','h'=>'hours','m'=>'minutes','s'=>'seconds'}[parsed[2]]
+        unit = @@ival_units[parsed[2]]
         @ival = value.method(unit).call
         # check for an interval < 1 second, which is below our resolution
         if @ival < 1.second then
