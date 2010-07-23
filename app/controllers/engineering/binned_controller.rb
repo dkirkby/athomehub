@@ -13,7 +13,6 @@ class Engineering::BinnedController < Engineering::ApplicationController
       :powerFactor => [ ],
       :complexity => [ ],
     }
-    tz_offset = @at.localtime.utc_offset
     # loop over zoom levels
     BinnedSample.zoom_levels.times do |zoom_level|
       # find the range of codes corresponding to the requested interval
@@ -32,7 +31,7 @@ class Engineering::BinnedController < Engineering::ApplicationController
         ival = bin.interval
         midpt = ival.begin + bin_size/2
         next unless midpt >= @begin_at and midpt < @end_at
-        tval << 1e3*(midpt.to_i + tz_offset)
+        tval << 1e3*(midpt.to_i + midpt.utc_offset)
         temp << bin.temperature
         light << bin.lighting
         art << bin.artificial
