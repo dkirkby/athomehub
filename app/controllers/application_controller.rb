@@ -84,14 +84,15 @@ protected
     end
   end
   
-  # Validates input params['nid'] and sets @config. Value represents the
-  # networkID of a configured device. The selected @config depends on the
-  # value of @at and represents the configuration that was valid at the time.
-  # Sets @config = nil if no valid selection was made. Sets a flash error
-  # message if an invalid selection was made but is silent if no selection
-  # was made.
+  # Validates input params['nid'] and sets @config and @profile. Value represents
+  # the networkID of a configured device with a registered profile. The selected
+  # @config and @profile depend on the value of @at and represent the settings that
+  # were valid at the time. Sets @config = @profile = nil if no valid selection was
+  # made. Sets a flash error message if an invalid selection was made but is silent
+  # if no selection was made.
   def optional_nid
     @config = nil
+    @profile = nil
     if params.has_key? 'nid' then
       # is it a decimal integer?
       if !!(params['nid'] =~ @@decimalInteger) then
@@ -106,6 +107,8 @@ protected
             error_msg = "No device registered with nid=#{nid} at #{@at}."
           elsif not @config.enabled then
             error_msg = "Device registered with nid=#{nid} is disabled at #{@at}."
+          else
+            @profile = DeviceProfile.for_networkID(nid,@at).last
           end
         end
       else
