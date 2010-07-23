@@ -19,6 +19,7 @@ class Engineering::BinnedController < Engineering::ApplicationController
       # find the range of codes corresponding to the requested interval
       first_code = BinnedSample.bin(@begin_at,zoom_level)
       last_code = BinnedSample.bin(@end_at,zoom_level)
+      bin_size = BinnedSample.size(zoom_level)
       # don't include zoom levels with too many bins
       next if last_code - first_code > 300
       # initialize arrays for plot values
@@ -29,7 +30,7 @@ class Engineering::BinnedController < Engineering::ApplicationController
       binned.each do |bin|
         # save the interval midpoint as this bin's timestamp
         ival = bin.interval
-        midpt = Time.at(0.5*(ival.begin + ival.end))
+        midpt = ival.begin + bin_size/2
         next unless midpt >= @begin_at and midpt < @end_at
         tval << 1e3*(midpt.to_i + tz_offset)
         temp << bin.temperature
@@ -41,7 +42,7 @@ class Engineering::BinnedController < Engineering::ApplicationController
         cmplx << bin.complexity
       end
       next unless tval.length > 0
-      label = "Zoom #{zoom_level}"
+      label = "Zoom-#{zoom_level} #{BinnedSample.size_as_words(zoom_level)}"
       @binnedPlots[:temperature] << { :data => tval.zip(temp), :label => label }
       @binnedPlots[:lighting] << { :data => tval.zip(light), :label => label }
       @binnedPlots[:artificial] << { :data => tval.zip(art), :label => label }

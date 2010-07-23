@@ -67,6 +67,21 @@ class BinnedSample < ActiveRecord::Base
     end
   end
 
+  def self.size(zoom_level)
+    # Returns the bin size in seconds at the specified zoom level
+    raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
+    @@bin_size[zoom_level]
+  end
+
+  def self.size_as_words(zoom_level)
+    size = BinnedSample.size(zoom_level)
+    return "#{size/604800}w" if size.modulo(604800) == 0
+    return "#{size/86400}d" if size.modulo(86400) == 0
+    return "#{size/3600}h" if size.modulo(3600) == 0
+    return "#{size/60}m" if size.modulo(60) == 0
+    return "#{size}s"
+  end
+
   def self.bin(at,zoom_level)
     # Returns the bin code corresponding to the specified time.
     raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
@@ -74,7 +89,7 @@ class BinnedSample < ActiveRecord::Base
     # Combine the zoom level and bin index into a single 32-bit code
     return (zoom_level << 28) | bin_index
   end
-
+  
   def self.accumulate(sample)
     # Accumulates one new sample at all zoom levels simultaneously.
     @@last_id = { } unless defined? @@last_id
@@ -129,9 +144,10 @@ class BinnedSample < ActiveRecord::Base
 protected
 
   # epoch for calculating bin indices: determines the natural alignment of bins
-  # and so should be naturally aligned in local (non-DST) time. The epoch must
-  # be chronoloogically before the first bin that might ever be used.
-  @@epoch = Time.local(2010).to_i
+  # and so should be naturally aligned in local (non-DST) time, i.e., midnight
+  # on a Sunday. The epoch must be chronoloogically before the first bin that
+  # might ever be used.
+  @@epoch = Time.local(2010,1,3).to_i # Sun Jan 03 00:00:00 2010
 
   # Tabulate the US daylight savings times for each year
   @@dst_ranges = Time.local(2010,3,14,2).isdst ?
