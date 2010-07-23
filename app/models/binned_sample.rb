@@ -118,6 +118,7 @@ class BinnedSample < ActiveRecord::Base
       # loop over the active bins for this networkID
       at = sample.created_at
       spanned = false
+      auto_save = false
       accumulators = @@accumulators[netID]
       accumulators.each_index do |zoom_level|
         bin = accumulators[zoom_level]
@@ -127,6 +128,8 @@ class BinnedSample < ActiveRecord::Base
           if at < bin.interval.end then
             # accumulate this sample (using send to call protected from class method)
             bin.send :add_sample,sample
+            # periodic auto-save?
+            bin.save if auto_save
             # the active bins at all larger zoom levels must, by construction,
             # span this sample
             spanned = true
@@ -136,10 +139,14 @@ class BinnedSample < ActiveRecord::Base
             # create a new bin containing only this sample
             code = bin(at,zoom_level)
             accumulators[zoom_level] = new_for_sample(code,sample)
+            # auto-save bins at larger zoom levels?
+            auto_save = (zoom_level >= 3)
           end
         else
           # accumulate this sample (using send to call protected from class method)
           bin.send :add_sample,sample
+          # periodic auto-save?
+          bin.save if auto_save
         end
       end
     end
