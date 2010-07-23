@@ -1,26 +1,14 @@
 -content_for :head do
 	=javascript_include_tag 'excanvas','flot'
+
 #content
 	#header
-		&= @config ? @config.location : "Invalid Device ID"
+		&= @profile ? @profile.description : "(Unknown Location)"
 	#body
 		#datetime
 			%span#date= format_date @at
 			%span#time= format_time @at
-		%table#detail.graph-me
-			%tr
-				%th When
-				%th Offset
-				%th Temp
-				%th Light
-				%th Power
-			-@binned.each do |b|
-				%tr
-					%td=b[:when]
-					%td=b[:offset]
-					%td=sprintf "%.3f",b[:temperature]
-					%td=sprintf "%.1f",b[:lighting]
-					%td=sprintf "%.2f",b[:power]
+		%p Graphs go here...
 		#footer
 			#ticks
 				-@tick_labels.each do |label|

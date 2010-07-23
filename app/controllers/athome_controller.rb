@@ -73,33 +73,6 @@ class AthomeController < ApplicationController
   end
   
   def detail
-    # retrieve all samples for the requested device within the requested window
-    @samples = Sample.find(:all,
-      :conditions=>['networkID = ? and created_at > ? and created_at <= ?',
-      @config.networkID,@begin_at,@end_at],:readonly=>true)
-    # downsample
-    @binned = [ ]
-    nbins = 12
-    binsize = (@end_at.to_f - @begin_at.to_f)/nbins
-    offset_origin = @begin_at.to_f
-    nbins.times do |k|
-      midpt = @begin_at.to_f + (k+0.5)*binsize
-      nsamples,temperature,lighting,power = 0,0.0,0.0,0.0
-      @samples.each do |s|
-        next unless (s.created_at.to_f - midpt).abs < binsize/2
-        nsamples += 1
-        temperature += (s.temperature or 0)
-        lighting += (s.lighting2 or 0)
-        power += (s.power or 0)
-      end
-      @binned << {
-        :when=> Time.at(midpt).localtime,
-        :offset=> midpt - offset_origin,
-        :lighting=> lighting/nsamples,
-        :temperature=> temperature/(100*nsamples),
-        :power=> power/(10*nsamples)
-      } if nsamples > 0
-    end
     @note = new_note
   end
   
