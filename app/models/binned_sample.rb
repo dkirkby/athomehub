@@ -90,10 +90,15 @@ class BinnedSample < ActiveRecord::Base
     return (zoom_level << 28) | bin_index
   end
   
+  # Accumulates one new sample at all zoom levels simultaneously.
   def self.accumulate(sample)
-    # Accumulates one new sample at all zoom levels simultaneously.
-    @@last_id = { } unless defined? @@last_id
-    @@accumulators = { } unless defined? @@accumulators
+    # first-time initialization
+    if not defined? @@accumulators then
+      @@last_id = { }
+      @@accumulators = { }
+      at_exit { BinnedSample.flush }
+    end
+    # have we seen this network ID yet?
     netID = sample.networkID
     if @@last_id.has_key? netID then
       # samples must be passed to this method in ascending ID order.
@@ -139,6 +144,18 @@ class BinnedSample < ActiveRecord::Base
       end
     end
     return
+  end
+  
+  def self.flush
+    # flushes accumulation bins in memory
+    puts "Flushing BinnedSamples in memory..."
+    @@accumulators.each do |netID,bins|
+      puts "Flushing #{bins.length} bins for network ID #{netID}"
+      bins.each do |bin|
+        bin.save
+      end
+    end
+    @@accumulators = { }
   end
 
 protected
