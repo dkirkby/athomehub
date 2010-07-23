@@ -46,6 +46,9 @@ module Measured
   def displayPower
     # select a precision based on the value and append "W" for Watts
     case power
+    when nil
+      # this can happen if the device reports float16 infinity
+      display = "&mdash;"
     when 0..0.003
       display = "0W"
     when 0.003..0.03
