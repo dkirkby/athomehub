@@ -9,7 +9,10 @@ namespace :binned do
   desc 'Deletes and rebuilds the binned sample data'
   task :rebuild => :delete do
     puts "Rebuilding BinnedSample records from #{Sample.count} Sample records..."
-    Sample.all.each {|s| BinnedSample.accumulate(s) }
+    Sample.all.each do |s|
+      BinnedSample.accumulate s
+      puts "Binned sample ID #{s.id}" if 0 == s.id.modulo(1000)
+    end
     puts "Created #{BinnedSample.count} BinnedSample records"
   end
 

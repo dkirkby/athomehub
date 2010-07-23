@@ -19,8 +19,9 @@ class BinnedSample < ActiveRecord::Base
   @@bins_per_half_window = @@window_size.zip(@@bin_size).map {|wb| wb[0]/(2*wb[1]) }
 
   # epoch for calculating bin indices: determines the natural alignment of bins
-  # and must be chronoloogically before the first bin that might ever be used.
-  @@epoch = Time.utc(2010).to_i
+  # and so should be naturally aligned in local (non-DST) time. The epoch must
+  # be chronoloogically before the first bin that might ever be used.
+  @@epoch = Time.local(2010).to_i
 
   def temperature
     temperatureSum/binCount if binCount > 0
@@ -54,19 +55,6 @@ class BinnedSample < ActiveRecord::Base
     @@bin_size.length
   end
   
-  def interval
-    # Returns a non-exclusive range [a,b) of UTC timestamps corresponding
-    # to this bin's time interval. Implemented with caching.
-    @interval ||= begin
-      zoom_level = (binCode >> 28)
-      bin_index = (binCode & 0x0fffffff)
-      size = @@bin_size[zoom_level]
-      begin_at = (@@epoch + bin_index*size).to_i
-      end_at = begin_at + size.to_i
-      Range.new(begin_at,end_at,true) # [begin,end)      
-    end
-  end
-
   def span?(sample)
     # Tests if the specified sample falls within this bin based on its
     # network ID and timestamp. This method does NOT test if the sample
@@ -75,27 +63,37 @@ class BinnedSample < ActiveRecord::Base
       self.interval.include? sample.created_at.to_i
   end
 
+  def interval
+    # Returns a non-exclusive range [a,b) of UTC timestamps corresponding
+    # to this bin's time interval. Implemented with caching.
+    @interval ||= begin
+      zoom_level = (binCode >> 28)
+      bin_index = (binCode & 0x0fffffff)
+      size = @@bin_size[zoom_level]
+      # calculate the number of seconds elapsed since the epoch
+      begin_at = @@epoch + bin_index*size
+      # correct for DST if necessary (since the epoch is non-DST)
+      ##begin_at -= 3600 if Time.at(begin_at).dst?
+      end_at = begin_at + size.to_i
+      Range.new(begin_at,end_at,true) # [begin,end)      
+    end
+  end
+
   def self.bin(at,zoom_level)
     # Returns the bin code corresponding to the specified time.
     raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
-    bin_index = (at.utc.to_i - @@epoch)/@@bin_size[zoom_level]
+    # Calculate the number of seconds elapsed since the epoch.
+    elapsed = at.to_i - @@epoch
+    # Spring forward if we are on daylight savings: this will create
+    # an hour gap in the spring and map two hours of samples into a
+    # one-hour bin in the fall.
+    ##elapsed += 3600 if at.dst?
+    # Integer division by the zoom level's bin size in seconds give the bin index
+    bin_index = elapsed/@@bin_size[zoom_level]
+    # Combine the zoom level and bin index into a single 32-bit code
     return (zoom_level << 28) | bin_index
   end
 
-  def self.window(window_index,zoom_level)
-    # Returns the bin code corresponding to the first bin of the indexed window.
-    raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
-    # Successive windows overlap by 50%.
-    return (zoom_level << 28) | window_index*@@bins_per_half_window[zoom_level]
-  end
-  
-  def self.time(code)
-    # Returns the UTC time corresponding to the specified bin code
-    zoom_level = (code >> 28)
-    bin_index = (code & 0x0fffffff)
-    Time.at(@@epoch + bin_index*@@bin_size[zoom_level]).utc
-  end
-  
   def self.accumulate(sample)
     # Accumulates one new sample at all zoom levels simultaneously.
     @@last_id = { } unless defined? @@last_id
@@ -148,6 +146,12 @@ class BinnedSample < ActiveRecord::Base
   end
 
 protected
+
+  # Tabulate the US daylight savings times for each year (not valid in AZ,HI)
+  @@dst_ranges = [
+      [Time.local(2010,3,14,2),Time.local(2010,11,7,2)],
+      [Time.local(2011,3,13,2),Time.local(2011,11,6,2)]
+    ]
 
   def self.new_for_sample(code,sample)
     # Returns a new bin for the specified code containing one sample.
