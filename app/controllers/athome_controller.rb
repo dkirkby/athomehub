@@ -81,11 +81,52 @@ class AthomeController < ApplicationController
     else
       @description = 'Unknown Device'
     end
+    # prepare a new note
+    @note = new_note
     # look up the binned data for this device in the requested window
     @binned = BinnedSample.for_window(@zoom,@index).
       find_all_by_networkID(@config.networkID)
-    # prepare a new note
-    @note = new_note
+    return unless @binned
+    midpt_offset = @bin_size/2
+    # is the timezone offset constant over this window? (it might not be if
+    # the window spans a DST adjustment and we are assuming that the largest
+    # window cannot span two DST adjustments)
+    tz_offset_varies = false
+    tz_offset = @binned.first.interval.begin.utc_offset
+    if @binned.last.interval.end.utc_offset == tz_offset then
+      midpt_offset += tz_offset
+    else
+      tz_offset_varies = true
+    end
+    # build arrays of t,y values to plot
+    tval,temp,light,pwr = [ ],[ ],[ ],[ ]
+    @binned.each do |bin|
+      # save the interval midpoint as this bin's timestamp
+      ival = bin.interval
+      midpt = ival.begin + midpt_offset
+      # adjust for time zone bin by bin? (because of a DST boundary)
+      midpt += midpt.utc_offset if tz_offset_varies
+      # convert seconds since epoch to millisecs for javascript
+      tval << 1e3*midpt.to_i
+      temp << bin.theTemperature
+      light << bin.lighting
+      pwr << bin.power
+    end
+    # build plots to display
+    @binnedPlots = {
+      :temperature => {
+        :data => tval.zip(temp),
+        :label => "Temperature (&deg;#{ATHOME['temperature_units']})"
+      },
+      :lighting => {
+        :data => tval.zip(light),
+        :label => "Lighting"
+      },
+      :power => {
+        :data => tval.zip(pwr),
+        :label => "Power Consumption (W)"
+      }
+    }
   end
   
   def create_note
@@ -195,8 +236,8 @@ protected
       if !!(params['zoom'] =~ @@nonNegativeInteger) then
         zoom = params['zoom'].to_i
         begin
-          size = BinnedSample.size zoom
-          @size_as_words = BinnedSample.size_as_words zoom
+          @bin_size = BinnedSample.size zoom
+          @bin_size_as_words = BinnedSample.size_as_words zoom
           @zoom = zoom
         rescue
           flash.now[:notice] = "Out of range zoom=#{zoom}. Using zoom=#{@zoom}."

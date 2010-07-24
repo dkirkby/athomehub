@@ -1,6 +1,9 @@
 -content_for :head do
 	=javascript_include_tag 'excanvas','flot'
 
+:javascript
+	binnedPlots = #{@binnedPlots.to_json}
+
 #content
 	#header
 		&= @description
@@ -21,7 +24,7 @@
 			%span Newer
 			&raquo;
 			%span Newest
-		%p="id=#{@config.networkID}, index=#{@index}, zoom=#{@zoom}, size=#{@size_as_words}, n=#{@binned.length}"
+		%p="id=#{@config.networkID}, index=#{@index}, zoom=#{@zoom}, size=#{@bin_size_as_words}, n=#{@binned.length}"
 	%ul#navigation
 		%li home
 		%li=link_to "help"
