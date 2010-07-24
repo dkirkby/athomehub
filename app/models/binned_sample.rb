@@ -11,9 +11,25 @@ class BinnedSample < ActiveRecord::Base
   @@window_half_size = [
     1.minute, 5.minutes, 30.minutes, 3.hours, 12.hours, 84.hours, 2.weeks, 8.weeks ]
 
+  # find all binned samples at the specified zoom level in increasing time order
   named_scope :for_zoom, lambda { |zoom_level|
     base = (zoom_level<<28)
-    { :conditions => [ 'binCode >= ? and binCode <= ?',base,(base|0x0fffffff) ] }
+    {
+      :order => 'binCode ASC',
+      :conditions => [ 'binCode >= ? and binCode <= ?',base,(base|0x0fffffff) ]
+    }
+  }
+
+  # find all binned samples in the specified window in increasing time order
+  named_scope :for_window, lambda { |zoom_level,window_index|
+    raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
+    bins_per_half_window = @@window_half_size[zoom_level]/@@bin_size[zoom_level]
+    begin_code = (zoom_level<<28) | (window_index*bins_per_half_window)
+    end_code = begin_code + 2*bins_per_half_window - 1
+    {
+      :order => 'binCode ASC',
+      :conditions => ['binCode >= ? and binCode <= ?',begin_code,end_code]
+    }
   }
 
   def temperature

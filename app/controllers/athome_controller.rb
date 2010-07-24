@@ -73,6 +73,7 @@ class AthomeController < ApplicationController
   end
   
   def detail
+    # describe this device
     if @profile then
       @description = @profile.description
     elsif @config then
@@ -80,6 +81,10 @@ class AthomeController < ApplicationController
     else
       @description = 'Unknown Device'
     end
+    # look up the binned data for this device in the requested window
+    @binned = BinnedSample.for_window(@zoom,@index).
+      find_all_by_networkID(@config.networkID)
+    # prepare a new note
     @note = new_note
   end
   
