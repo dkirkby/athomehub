@@ -3,7 +3,7 @@
 
 #content
 	#header
-		&= @profile ? @profile.description : "(Unknown Location)"
+		&= @description
 	#body
 		#datetime
 			%span#date= format_date @at

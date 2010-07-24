@@ -73,6 +73,13 @@ class AthomeController < ApplicationController
   end
   
   def detail
+    if @profile then
+      @description = @profile.description
+    elsif @config then
+      @description = @template.format_serialNumber @config.serialNumber
+    else
+      @description = 'Unknown Device'
+    end
     @note = new_note
   end
   
