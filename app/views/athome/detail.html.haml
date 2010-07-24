@@ -12,9 +12,12 @@
 		#datetime
 			%span#date= format_date @at
 			%span#time= format_time @at
-		#temperature.plot
-		#lighting.plot
-		#power.plot
+		.frame
+			#temperature.plot
+		.frame
+			#lighting.plot
+		.frame
+			#power.plot
 		#footer
 			%span Oldest
 			&laquo;

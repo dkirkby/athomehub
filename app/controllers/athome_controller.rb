@@ -124,8 +124,8 @@ class AthomeController < ApplicationController
     commonOptions = {
       :xaxis=>{ :mode=>"time", :min=>leftEdge, :max=>rightEdge },
       :series=> {
-        :lines=> {:show=>true},
-        :points=>{:show=>true,:radius=>4,:fill=>false}
+        :lines=>{ :show=>true },
+        :points=>{ :show=>true,:radius=>4,:fill=>false }
       }
     }
     label_width = 45
