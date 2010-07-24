@@ -2,7 +2,8 @@
 	=javascript_include_tag 'excanvas','flot'
 
 :javascript
-	binnedPlots = #{@binnedPlots.to_json}
+	plotData = #{@plotData.to_json}
+	plotOptions = #{@plotOptions.to_json}
 
 #content
 	#header

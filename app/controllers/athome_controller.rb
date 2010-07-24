@@ -118,7 +118,26 @@ class AthomeController < ApplicationController
       :lighting => "Lighting",
       :power => "Power Consumption (W)"
     }
-    @binnedPlots = {
+    leftEdge = 1e3*(@window_interval.begin.to_i + @window_interval.begin.utc_offset)
+    rightEdge = 1e3*(@window_interval.end.to_i + @window_interval.end.utc_offset)
+    commonOptions = {
+      :xaxis=>{ :mode=>"time", :min=>leftEdge, :max=>rightEdge },
+      :series=> {
+        :lines=> {:show=>true},
+        :points=>{:show=>true,:radius=>4,:fill=>false}
+      }
+    }
+    @plotOptions = {
+      :temperature => commonOptions.merge({        
+      }),
+      :lighting => commonOptions.merge({
+        :yaxis=>{:min=>0}
+      }),
+      :power => commonOptions.merge({
+        :yaxis=>{:min=>0}
+      })
+    }
+    @plotData = {
       :temperature => [{
         :data => tval.zip(temp)
       }],
@@ -265,6 +284,8 @@ protected
       # default to showing the most recent window at this zoom level
       @index = BinnedSample.window(@at,@zoom)
     end
+    # lookup the timestamps corresponding to this window
+    @window_interval = BinnedSample.window_interval(@zoom,@index)
   end
 
 end

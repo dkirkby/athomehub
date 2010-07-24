@@ -84,6 +84,17 @@ class BinnedSample < ActiveRecord::Base
       Range.new(begin_at,end_at,true) # [begin,end)      
     end
   end
+  
+  def self.window_interval(zoom_level,window_index)
+    # Returns the range [a,b) of UTC timestamps corresponding to the
+    # specified window.
+    raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
+    size = @@bin_size[zoom_level]
+    bins_per_half_window = @@window_half_size[zoom_level]/size
+    begin_at_bin = window_index*bins_per_half_window*size
+    end_at_bin= begin_at_bin + 2*bins_per_half_window*size
+    Range.new(BinnedSample.at(begin_at_bin),BinnedSample.at(end_at_bin),true)
+  end
 
   def self.size(zoom_level)
     # Returns the bin size in seconds at the specified zoom level

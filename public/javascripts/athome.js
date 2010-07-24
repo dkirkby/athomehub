@@ -40,12 +40,8 @@ function enableLiveUpdates() {
 
 function displayGraphs() {
   /* display any binned plots on this page */
-  var binnedPlotOptions = {
-    xaxis: { mode:"time" },
-    series:{ lines:{ show: true}, points:{ show:true,radius:4,fill:false } }
-  };
   $('.plot').each(function(index) {
-    $.plot($('#'+this.id),binnedPlots[this.id],binnedPlotOptions);
+    $.plot($('#'+this.id),plotData[this.id],plotOptions[this.id]);
   });
 }
 
