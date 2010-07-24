@@ -129,12 +129,19 @@ class AthomeController < ApplicationController
       }
     }
     @plotOptions = {
-      :temperature => commonOptions.merge({        
+      :temperature => commonOptions.merge({
+        # round temperature limits to whole degrees and ensure that at 1deg is shown
+        :yaxis=>{
+          :min=> (temp.min.floor if temp.min),
+          :max=> (temp.max.ceil if temp.max)
+        }
       }),
       :lighting => commonOptions.merge({
+        # lighting axis always starts at zero
         :yaxis=>{:min=>0}
       }),
       :power => commonOptions.merge({
+        # power axis always starts at zero
         :yaxis=>{:min=>0}
       })
     }
