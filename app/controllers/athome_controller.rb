@@ -184,6 +184,7 @@ protected
         zoom = params['zoom'].to_i
         begin
           size = BinnedSample.size zoom
+          @size_as_words = BinnedSample.size_as_words zoom
           @zoom = zoom
         rescue
           flash.now[:notice] = "Out of range zoom=#{zoom}. Using zoom=#{@zoom}."
@@ -200,7 +201,7 @@ protected
       when 'last' then
         @index = BinnedSample.window(@at,@zoom)
       when 'first' then
-        @index = 0
+        @index = defined?(@config) ? BinnedSample.first(@config.networkID,@zoom) : 0
       else
         @index = BinnedSample.window(@at,@zoom)
         flash.now[:notice] = "Invalid index=\'#{params['index']}\'. Using index=\'#{@index}\'."

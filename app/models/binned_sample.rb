@@ -11,6 +11,11 @@ class BinnedSample < ActiveRecord::Base
   @@window_half_size = [
     1.minute, 5.minutes, 30.minutes, 3.hours, 12.hours, 84.hours, 2.weeks, 8.weeks ]
 
+  named_scope :for_zoom, lambda { |zoom_level|
+    base = (zoom_level<<28)
+    { :conditions => [ 'binCode >= ? and binCode <= ?',base,(base|0x0fffffff) ] }
+  }
+
   def temperature
     temperatureSum/binCount if binCount > 0
   end
@@ -93,6 +98,15 @@ class BinnedSample < ActiveRecord::Base
     window_index = self.elapsed(at)/@@window_half_size[zoom_level] - 1
     # calcuate the bin index of the left-most bin in the full window
     # bin_index = window_index*@@bin_size[zoom_level]/@@window_half_size[zoom_level]
+  end
+  
+  def self.first(nid,zoom_level)
+    raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
+    # find the first bin with data for nid at the specified zoom level
+    bin = for_zoom(zoom_level).find_by_networkID(nid)
+    return 0 unless bin
+    # return the corresponding window index
+    ((bin.binCode & 0x0fffffff)*@@bin_size[zoom_level])/@@window_half_size[zoom_level]
   end
   
   # Accumulates one new sample at all zoom levels simultaneously.
