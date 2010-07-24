@@ -86,17 +86,18 @@ class AthomeController < ApplicationController
     # look up the binned data for this device in the requested window
     @binned = BinnedSample.for_window(@zoom,@index).
       find_all_by_networkID(@config.networkID)
-    return unless @binned
-    midpt_offset = @bin_size/2
     # is the timezone offset constant over this window? (it might not be if
     # the window spans a DST adjustment and we are assuming that the largest
     # window cannot span two DST adjustments)
+    midpt_offset = @bin_size/2
     tz_offset_varies = false
-    tz_offset = @binned.first.interval.begin.utc_offset
-    if @binned.last.interval.end.utc_offset == tz_offset then
-      midpt_offset += tz_offset
-    else
-      tz_offset_varies = true
+    if @binned.length > 0 then
+      tz_offset = @binned.first.interval.begin.utc_offset
+      if @binned.last.interval.end.utc_offset == tz_offset then
+        midpt_offset += tz_offset
+      else
+        tz_offset_varies = true
+      end
     end
     # build arrays of t,y values to plot
     tval,temp,light,pwr = [ ],[ ],[ ],[ ]
@@ -257,8 +258,7 @@ protected
       if !!(params['zoom'] =~ @@nonNegativeInteger) then
         zoom = params['zoom'].to_i
         begin
-          @bin_size = BinnedSample.size zoom
-          @bin_size_as_words = BinnedSample.size_as_words zoom
+          BinnedSample.size zoom # will fail unless zoom is in range
           @zoom = zoom
         rescue
           flash.now[:notice] = "Out of range zoom=#{zoom}. Using zoom=#{@zoom}."
@@ -267,6 +267,8 @@ protected
         flash.now[:notice] = "Invalid zoom=\'#{params['zoom']}\'. Using zoom=#{@zoom}."
       end
     end
+    @bin_size = BinnedSample.size @zoom
+    @bin_size_as_words = BinnedSample.size_as_words @zoom
     # do we have an index value to use?
     if params.has_key? 'index' then
       case params['index']
