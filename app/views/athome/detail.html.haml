@@ -11,7 +11,9 @@
 		#datetime
 			%span#date= format_date @at
 			%span#time= format_time @at
-		%p Graphs go here...
+		#temperature.plot
+		#lighting.plot
+		#power.plot
 		#footer
 			%span Oldest
 			&laquo;

@@ -113,19 +113,21 @@ class AthomeController < ApplicationController
       pwr << bin.power
     end
     # build plots to display
+    @plotLabels = {
+      :temperature => "Temperature (&deg;#{ATHOME['temperature_units']})",
+      :lighting => "Lighting",
+      :power => "Power Consumption (W)"
+    }
     @binnedPlots = {
-      :temperature => {
-        :data => tval.zip(temp),
-        :label => "Temperature (&deg;#{ATHOME['temperature_units']})"
-      },
-      :lighting => {
-        :data => tval.zip(light),
-        :label => "Lighting"
-      },
-      :power => {
-        :data => tval.zip(pwr),
-        :label => "Power Consumption (W)"
-      }
+      :temperature => [{
+        :data => tval.zip(temp)
+      }],
+      :lighting => [{
+        :data => tval.zip(light)
+      }],
+      :power => [{
+        :data => tval.zip(pwr)
+      }]
     }
   end
   
