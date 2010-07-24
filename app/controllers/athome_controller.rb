@@ -128,21 +128,24 @@ class AthomeController < ApplicationController
         :points=>{:show=>true,:radius=>4,:fill=>false}
       }
     }
+    label_width = 45
     @plotOptions = {
       :temperature => commonOptions.merge({
         # round temperature limits to whole degrees and ensure that at 1deg is shown
         :yaxis=>{
+          :labelWidth=>label_width,
           :min=> (temp.min.floor if temp.min),
           :max=> (temp.max.ceil if temp.max)
         }
       }),
       :lighting => commonOptions.merge({
         # lighting axis always starts at zero
-        :yaxis=>{:min=>0}
+        :yaxis=>{ :labelWidth=>label_width, :min=>0 }
       }),
       :power => commonOptions.merge({
         # power axis always starts at zero
-        :yaxis=>{:min=>0}
+        :yaxis=>{ :labelWidth=>label_width, :min=>0 },
+        :lines=>{ :fill=>true, :fillColor=>'rgba(200,200,200,0.5)' }
       })
     }
     @plotData = {
