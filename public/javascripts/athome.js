@@ -38,6 +38,10 @@ function enableLiveUpdates() {
   }
 }
 
+function updatePlot(response) {
+  alert("got it!");
+}
+
 function displayGraphs() {
   /* display any binned plots on this page */
   $('.plot').each(function(index) {
@@ -45,6 +49,10 @@ function displayGraphs() {
     $.plot($(this),plotData[this.id],plotOptions[this.id]);
     // display a title below the plot
     $(this).after('<div class="title">' + plotTitles[this.id] + '</div>');
+  });
+  /* attach ajax actions to the window navigation labels */
+  $("#oldest").click(function() {
+    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom,index:'first'},updatePlot);
   });
 }
 

@@ -1,7 +1,7 @@
 class AthomeController < ApplicationController
 
-  before_filter :valid_nid,:only=>:detail
-  before_filter :valid_window,:only=>:detail
+  before_filter :valid_nid,:only=>[:detail,:replot]
+  before_filter :valid_window,:only=>[:detail,:replot]
 
   def index
     @samples = [ ]
@@ -163,6 +163,11 @@ class AthomeController < ApplicationController
         :data => tval.zip(pwr)
       }]
     }
+  end
+  
+  def replot
+    response = { }
+    render :json => response
   end
   
   def create_note
