@@ -26,13 +26,13 @@
 			#power.plot
 			.title
 		#footer
-			%span#oldest Oldest &laquo;
-			%span#older Older &lsaquo;
+			%a#oldest Oldest &laquo;
+			%a#older Older &lsaquo;
 			%span#zoom
-				%span#zoom-in Zoom In
-				%span#zoom-out Zoom Out
-			%span#newer &rsaquo; Newer
-			%span#newest &raquo; Newest
+				%a#zoom-in Zoom In
+				%a#zoom-out Zoom Out
+			%a#newer &rsaquo; Newer
+			%a#newest &raquo; Newest
 		-#%p="id=#{@config.networkID}, index=#{@index}, zoom=#{@zoom}, size=#{@bin_size_as_words}, n=#{@binned.length}"
 	%ul#navigation
 		%li=link_to "home", :action=>:index

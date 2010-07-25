@@ -76,10 +76,10 @@ function displayPlots() {
     jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom,index:index+1},updatePlot);
   });
   $("#zoom-in").click(function() {
-    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom+1,index:'first'},updatePlot);
+    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom-1,index:'first'},updatePlot);
   });
   $("#zoom-out").click(function() {
-    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom-1,index:'first'},updatePlot);
+    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom+1,index:'first'},updatePlot);
   });
 }
 
