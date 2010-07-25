@@ -49,11 +49,38 @@ function updatePlot(response) {
   index = response.index;
   zoom_in = response.zoom_in;
   zoom_out = response.zoom_out;
+  updateControls();
   // update the plots
   $('.plot').each(function(index) {
     $.plot($(this),response.data[this.id],response.options[this.id]);
     $(this).siblings('.title').html(response.titles[this.id]);
   });
+}
+
+function updateControls() {
+  // disable zoom in if we are already at the limit
+  if(zoom_in == index) {
+    $("#zoom-in").addClass('disabled');
+  }
+  else {
+    $("#zoom-in").removeClass('disabled');    
+  }  
+  // disable zoom out if we are already at the limit
+  if(zoom_out == index) {
+    $("#zoom-out").addClass('disabled');
+  }
+  else {
+    $("#zoom-out").removeClass('disabled');    
+  }  
+}
+
+function requestPlotUpdate(clickable,options) {
+  if(!$(clickable).hasClass('disabled')) {
+    jQuery.getJSON("/athome/replot",options,updatePlot);
+  }
+  else {
+    alert("sorry!");
+  }
 }
 
 function displayPlots() {
@@ -66,23 +93,24 @@ function displayPlots() {
   });
   /* attach ajax actions to the window navigation labels */
   $("#oldest").click(function() {
-    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom,index:'first'},updatePlot);
+    requestPlotUpdate(this,{nid:nid,zoom:zoom,index:'first'});
   });
   $("#newest").click(function() {
-    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom,index:'last'},updatePlot);
+    requestPlotUpdate(this,{nid:nid,zoom:zoom,index:'last'});
   });
   $("#older").click(function() {
-    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom,index:index-1},updatePlot);
+    requestPlotUpdate(this,{nid:nid,zoom:zoom,index:index-1});
   });
   $("#newer").click(function() {
-    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom,index:index+1},updatePlot);
+    requestPlotUpdate(this,{nid:nid,zoom:zoom,index:index+1});
   });
   $("#zoom-in").click(function() {
-    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom-1,index:zoom_in},updatePlot);
+    requestPlotUpdate(this,{nid:nid,zoom:zoom-1,index:zoom_in});
   });
   $("#zoom-out").click(function() {
-    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom+1,index:zoom_out},updatePlot);
+    requestPlotUpdate(this,{nid:nid,zoom:zoom+1,index:zoom_out});
   });
+  updateControls();
 }
 
 // Updates the note form found on all athome views to enable javascript behaviors
