@@ -114,7 +114,7 @@ class AthomeController < ApplicationController
       pwr << bin.power
     end
     # build plots to display
-    @plotLabels = {
+    @plotTitles = {
       :temperature => "Temperature (&deg;#{ATHOME['temperature_units']})",
       :lighting => "Lighting",
       :power => "Power Consumption (W)"

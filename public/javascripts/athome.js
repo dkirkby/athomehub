@@ -41,7 +41,10 @@ function enableLiveUpdates() {
 function displayGraphs() {
   /* display any binned plots on this page */
   $('.plot').each(function(index) {
-    $.plot($('#'+this.id),plotData[this.id],plotOptions[this.id]);
+    // render the plot using the flot library
+    $.plot($(this),plotData[this.id],plotOptions[this.id]);
+    // display a title below the plot
+    $(this).after('<div class="title">' + plotTitles[this.id] + '</div>');
   });
 }
 
