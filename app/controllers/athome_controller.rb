@@ -204,11 +204,10 @@ def make_plots
     pwr << bin.power
   end
   # prepare plot titles
-  window_title = BinnedSample.window_as_words @zoom,@index
   @plotTitles = {
-    :temperature => "Temperature (&deg;#{ATHOME['temperature_units']}) for #{window_title}",
-    :lighting => "Lighting for #{window_title}",
-    :power => "Power Consumption (Watts) for #{window_title}"
+    :temperature => "Temperature (&deg;#{ATHOME['temperature_units']}) for #{@window_title}",
+    :lighting => "Lighting for #{@window_title}",
+    :power => "Power Consumption (Watts) for #{@window_title}"
   }
   # prepare plotting options
   commonOptions = {
@@ -309,8 +308,8 @@ end
       # default to showing the most recent window at this zoom level
       @index = BinnedSample.window(@at,@zoom)
     end
-    # lookup this window's timestamp and zooming info
-    @window_begin,@window_end,@zoom_in,@zoom_out =
+    # lookup this window's timestamp range and zooming info
+    @window_title,@window_begin,@window_end,@zoom_in,@zoom_out =
       BinnedSample.window_info(@zoom,@index)
   end
 

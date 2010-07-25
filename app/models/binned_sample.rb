@@ -90,21 +90,24 @@ class BinnedSample < ActiveRecord::Base
   end
   
   def self.window_info(zoom_level,window_index)
-    # Returns the range [a,b) of UTC timestamps corresponding to the
-    # specified window and the indices of windows centered on this one
-    # at zoom levels +/-1 (or the original window_index if this zoom
-    # level is already the min/max allowed)
+    # Calculate the range [a,b) of UTC timestamps corresponding to the
+    # specified window.
     raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
     size = @@bin_size[zoom_level]
     half_window = @@window_half_size[zoom_level]
-    begin_at = window_index*half_window
-    midpt_at = begin_at + half_window
-    end_at= begin_at + 2*half_window
+    midpt_elapsed = (window_index+1)*half_window
+    begin_at = BinnedSample.at(midpt_elapsed-half_window)
+    end_at= BinnedSample.at(midpt_elapsed + half_window)
+    # Calculate the indices of windows centered on this one
+    # at zoom levels +/-1 (or the original window_index if this zoom
+    # level is already the min/max allowed)
     zoom_in = (zoom_level > 0) ?
-      midpt_at/@@window_half_size[zoom_level-1]-1 : window_index
+      midpt_elapsed/@@window_half_size[zoom_level-1]-1 : window_index
     zoom_out = (zoom_level < 7) ?
-      midpt_at/@@window_half_size[zoom_level+1]-1 : window_index
-    return [BinnedSample.at(begin_at),BinnedSample.at(end_at),zoom_in,zoom_out]
+      midpt_elapsed/@@window_half_size[zoom_level+1]-1 : window_index
+    # Prepare a formatted label describing this window's timespan
+    title = Time.range_as_string(begin_at,end_at)
+    return [title,begin_at,end_at,zoom_in,zoom_out]
   end
 
   def self.size(zoom_level)
@@ -122,28 +125,6 @@ class BinnedSample < ActiveRecord::Base
     return "#{size}s"
   end
   
-  def self.window_as_words(zoom_level,window_index)
-    raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
-    size = @@bin_size[zoom_level]
-    half_window = @@window_half_size[zoom_level]
-    begin_elapsed = window_index*half_window
-    begin_at = BinnedSample.at(begin_elapsed)
-    midpt_at = BinnedSample.at(begin_elapsed + half_window)
-    end_at= BinnedSample.at(begin_elapsed + 2*half_window)
-    sprintf "%s&nbsp;&ndash;&nbsp;%s %s",
-      BinnedSample.strftime(begin_at,@@endpt_format[zoom_level]),
-      BinnedSample.strftime(end_at,@@endpt_format[zoom_level]),
-      BinnedSample.strftime(midpt_at,"%a %e %b %Y")
-  end
-
-  def self.strftime(at,format)
-    # converts a Time to a DateTime ignoring usecs
-    # see http://stackoverflow.com/questions/279769/convert-to-from-datetime-and-time-in-ruby
-    offset = Rational(at.utc_offset,86400)
-    dt = DateTime.new(at.year,at.month,at.day,at.hour,at.min,at.sec,offset)
-    dt.strftime format
-  end
-
   def self.bin(at,zoom_level)
     # Returns the bin code corresponding to the specified time.
     raise 'Zoom level must be 0-7' unless (0..7) === zoom_level

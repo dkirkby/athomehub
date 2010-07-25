@@ -78,9 +78,6 @@ function requestPlotUpdate(clickable,options) {
   if(!$(clickable).hasClass('disabled')) {
     jQuery.getJSON("/athome/replot",options,updatePlot);
   }
-  else {
-    alert("sorry!");
-  }
 }
 
 function displayPlots() {
