@@ -2,12 +2,12 @@
 	=javascript_include_tag 'excanvas','flot'
 
 :javascript
-	plotData = #{@plotData.to_json}
-	plotOptions = #{@plotOptions.to_json}
-	plotTitles = #{@plotTitles.to_json}
-	zoom = #{@zoom}
-	index = #{@index}
-	nid = #{@config.networkID}
+	plotData = #{@plotData.to_json};
+	plotOptions = #{@plotOptions.to_json};
+	plotTitles = #{@plotTitles.to_json};
+	zoom = #{@zoom};
+	index = #{@index};
+	nid = #{@config.networkID};
 
 #content
 	#header
@@ -18,10 +18,13 @@
 			%span#time= format_time @at
 		.frame
 			#temperature.plot
+			.title
 		.frame
 			#lighting.plot
+			.title
 		.frame
 			#power.plot
+			.title
 		#footer
 			%span#oldest Oldest &laquo;
 			%span#older Older &lsaquo;

@@ -123,7 +123,7 @@ class BinnedSample < ActiveRecord::Base
     begin_at = BinnedSample.at(begin_elapsed)
     midpt_at = BinnedSample.at(begin_elapsed + half_window)
     end_at= BinnedSample.at(begin_elapsed + 2*half_window)
-    sprintf "%s&mdash;%s %s",
+    sprintf "%s&nbsp;&ndash;&nbsp;%s %s",
       BinnedSample.strftime(begin_at,@@endpt_format[zoom_level]),
       BinnedSample.strftime(end_at,@@endpt_format[zoom_level]),
       BinnedSample.strftime(midpt_at,"%a %e %b %Y")

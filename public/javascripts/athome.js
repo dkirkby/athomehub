@@ -2,7 +2,7 @@
 
 $(document).ready(function(){
   enableLiveUpdates();
-  displayGraphs();
+  displayPlots();
   updateNoteForm();
 });
 
@@ -39,20 +39,47 @@ function enableLiveUpdates() {
 }
 
 function updatePlot(response) {
-  alert("got it!");
+  // update our date and time display
+  $('#date').html(response.date);
+  $('#time').html(response.time);
+  // update the timestamp associated with a new note
+  $('#note_view_at').val(response.view_at);
+  // update the window globals
+  zoom = response.zoom;
+  index = response.index;
+  // update the plots
+  $('.plot').each(function(index) {
+    $.plot($(this),response.data[this.id],response.options[this.id]);
+    $(this).siblings('.title').html(response.titles[this.id]);
+  });
 }
 
-function displayGraphs() {
+function displayPlots() {
   /* display any binned plots on this page */
   $('.plot').each(function(index) {
     // render the plot using the flot library
     $.plot($(this),plotData[this.id],plotOptions[this.id]);
     // display a title below the plot
-    $(this).after('<div class="title">' + plotTitles[this.id] + '</div>');
+    $(this).siblings('.title').html(plotTitles[this.id]);
   });
   /* attach ajax actions to the window navigation labels */
   $("#oldest").click(function() {
     jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom,index:'first'},updatePlot);
+  });
+  $("#newest").click(function() {
+    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom,index:'last'},updatePlot);
+  });
+  $("#older").click(function() {
+    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom,index:index-1},updatePlot);
+  });
+  $("#newer").click(function() {
+    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom,index:index+1},updatePlot);
+  });
+  $("#zoom-in").click(function() {
+    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom+1,index:'first'},updatePlot);
+  });
+  $("#zoom-out").click(function() {
+    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom-1,index:'first'},updatePlot);
   });
 }
 

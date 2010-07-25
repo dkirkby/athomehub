@@ -83,90 +83,20 @@ class AthomeController < ApplicationController
     end
     # prepare a new note
     @note = new_note
-    # look up the binned data for this device in the requested window
-    @binned = BinnedSample.for_window(@zoom,@index).
-      find_all_by_networkID(@config.networkID)
-    # is the timezone offset constant over this window? (it might not be if
-    # the window spans a DST adjustment and we are assuming that the largest
-    # window cannot span two DST adjustments)
-    midpt_offset = @bin_size/2
-    tz_offset_varies = false
-    if @binned.length > 0 then
-      tz_offset = @binned.first.interval.begin.utc_offset
-      if @binned.last.interval.end.utc_offset == tz_offset then
-        midpt_offset += tz_offset
-      else
-        tz_offset_varies = true
-      end
-    end
-    # build arrays of t,y values to plot
-    tval,temp,light,pwr = [ ],[ ],[ ],[ ]
-    @binned.each do |bin|
-      # save the interval midpoint as this bin's timestamp
-      ival = bin.interval
-      midpt = ival.begin + midpt_offset
-      # adjust for time zone bin by bin? (because of a DST boundary)
-      midpt += midpt.utc_offset if tz_offset_varies
-      # convert seconds since epoch to millisecs for javascript
-      tval << 1e3*midpt.to_i
-      temp << bin.theTemperature
-      light << bin.lighting
-      pwr << bin.power
-    end
-    # build plots to display
-    window_title = BinnedSample.window_as_words @zoom,@index
-    @plotTitles = {
-      :temperature => "Temperature (&deg;#{ATHOME['temperature_units']}) for #{window_title}",
-      :lighting => "Lighting for #{window_title}",
-      :power => "Power Consumption (Watts) for #{window_title}"
-    }
-    leftEdge = 1e3*(@window_interval.begin.to_i + @window_interval.begin.utc_offset)
-    rightEdge = 1e3*(@window_interval.end.to_i + @window_interval.end.utc_offset)
-    commonOptions = {
-      :xaxis=>{
-        :mode=>"time", :min=>leftEdge, :max=>rightEdge,
-        :minTickSize=> [30,"second"]
-      },
-      :series=> {
-        :lines=>{ :show=>true },
-        :points=>{ :show=>true,:radius=>4,:fill=>false }
-      }
-    }
-    label_width = 45
-    @plotOptions = {
-      :temperature => commonOptions.merge({
-        # round temperature limits to whole degrees and ensure that at 1deg is shown
-        :yaxis=>{
-          :labelWidth=>label_width,
-          :min=> (temp.min.floor if temp.min),
-          :max=> (temp.max.ceil if temp.max)
-        }
-      }),
-      :lighting => commonOptions.merge({
-        # lighting axis always starts at zero
-        :yaxis=>{ :labelWidth=>label_width, :min=>0 }
-      }),
-      :power => commonOptions.merge({
-        # power axis always starts at zero
-        :yaxis=>{ :labelWidth=>label_width, :min=>0 },
-        :lines=>{ :fill=>true, :fillColor=>'rgba(200,200,200,0.5)' }
-      })
-    }
-    @plotData = {
-      :temperature => [{
-        :data => tval.zip(temp)
-      }],
-      :lighting => [{
-        :data => tval.zip(light)
-      }],
-      :power => [{
-        :data => tval.zip(pwr)
-      }]
-    }
+    # prepare the plots
+    make_plots
   end
-  
+
   def replot
-    response = { }
+    make_plots
+    note = Note.new(:view_at=>@at)
+    response = {
+      :view_at => note.view_at.to_param,
+      :date => @template.format_date(@at),
+      :time => @template.format_time(@at),
+      :data => @plotData, :titles => @plotTitles, :options => @plotOptions,
+      :zoom => @zoom, :index => @index
+    }
     render :json => response
   end
   
@@ -239,6 +169,90 @@ class AthomeController < ApplicationController
   end
   
 protected
+
+def make_plots
+  # look up the binned data for this device in the requested window
+  @binned = BinnedSample.for_window(@zoom,@index).
+    find_all_by_networkID(@config.networkID)
+  # is the timezone offset constant over this window? (it might not be if
+  # the window spans a DST adjustment and we are assuming that the largest
+  # window cannot span two DST adjustments)
+  midpt_offset = @bin_size/2
+  tz_offset_varies = false
+  if @binned.length > 0 then
+    tz_offset = @binned.first.interval.begin.utc_offset
+    if @binned.last.interval.end.utc_offset == tz_offset then
+      midpt_offset += tz_offset
+    else
+      tz_offset_varies = true
+    end
+  end
+  # build arrays of t,y values to plot
+  tval,temp,light,pwr = [ ],[ ],[ ],[ ]
+  @binned.each do |bin|
+    # save the interval midpoint as this bin's timestamp
+    ival = bin.interval
+    midpt = ival.begin + midpt_offset
+    # adjust for time zone bin by bin? (because of a DST boundary)
+    midpt += midpt.utc_offset if tz_offset_varies
+    # convert seconds since epoch to millisecs for javascript
+    tval << 1e3*midpt.to_i
+    temp << bin.theTemperature
+    light << bin.lighting
+    pwr << bin.power
+  end
+  # build plots to display
+  window_title = BinnedSample.window_as_words @zoom,@index
+  @plotTitles = {
+    :temperature => "Temperature (&deg;#{ATHOME['temperature_units']}) for #{window_title}",
+    :lighting => "Lighting for #{window_title}",
+    :power => "Power Consumption (Watts) for #{window_title}"
+  }
+  leftEdge = 1e3*(@window_interval.begin.to_i + @window_interval.begin.utc_offset)
+  rightEdge = 1e3*(@window_interval.end.to_i + @window_interval.end.utc_offset)
+  commonOptions = {
+    :xaxis=>{
+      :mode=>"time", :min=>leftEdge, :max=>rightEdge,
+      :minTickSize=> [30,"second"]
+    },
+    :series=> {
+      :lines=>{ :show=>true },
+      :points=>{ :show=>true,:radius=>4,:fill=>false }
+    }
+  }
+  label_width = 45
+  @plotOptions = {
+    :temperature => commonOptions.merge({
+      # round temperature limits to whole degrees and ensure that at 1deg is shown
+      :yaxis=>{
+        :labelWidth=>label_width,
+        :min=> (temp.min.floor if temp.min),
+        :max=> (temp.max.ceil if temp.max)
+      }
+    }),
+    :lighting => commonOptions.merge({
+      # lighting axis always starts at zero
+      :yaxis=>{ :labelWidth=>label_width, :min=>0 }
+    }),
+    :power => commonOptions.merge({
+      # power axis always starts at zero
+      :yaxis=>{ :labelWidth=>label_width, :min=>0 },
+      :lines=>{ :fill=>true, :fillColor=>'rgba(200,200,200,0.5)' }
+    })
+  }
+  @plotData = {
+    :temperature => [{
+      :data => tval.zip(temp)
+    }],
+    :lighting => [{
+      :data => tval.zip(light)
+    }],
+    :power => [{
+      :data => tval.zip(pwr)
+    }]
+  }
+end
+
 
   # Prepares an empty new note or retrieves note-id if specified
   def new_note
