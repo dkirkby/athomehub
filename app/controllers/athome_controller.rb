@@ -212,7 +212,7 @@ def make_plots
   commonOptions = {
     :xaxis=>{
       :mode=>"time", :min=>leftEdge, :max=>rightEdge,
-      :minTickSize=> [1,"minute"]
+      :minTickSize=> [1,"minute"], :timeformat=>@bin_format
     },
     :series=> {
       :lines=>{ :show=>true },
@@ -308,7 +308,7 @@ end
       @index = BinnedSample.window(@at,@zoom)
     end
     # lookup this window's timestamp range and zooming info
-    @window_title,@window_begin,@window_end,@zoom_in,@zoom_out =
+    @window_title,@bin_format,@window_begin,@window_end,@zoom_in,@zoom_out =
       BinnedSample.window_info(@zoom,@index)
   end
 

@@ -11,8 +11,9 @@ class BinnedSample < ActiveRecord::Base
   @@window_half_size = [
     150.seconds, 450.seconds, 30.minutes, 3.hours, 12.hours, 84.hours, 2.weeks, 10.weeks ]
     
-  @@endpt_format = [
-    "%l:%M%P","%l:%M%P","%l:%M%P","%l%P","%a %l%P","%a %l%P","%a %l%P","%a %l%P"
+  # bin formats (passed to javascript flot library)
+  @@bin_format = [
+    "%h:%M%p","%h:%M%p","%h:%M%p","%h:%M%p","%h%p","%d-%b","%d-%b","%d-%b"
   ]
 
   # find all binned samples at the specified zoom level in increasing time order
@@ -107,7 +108,9 @@ class BinnedSample < ActiveRecord::Base
       midpt_elapsed/@@window_half_size[zoom_level+1]-1 : window_index
     # Prepare a formatted label describing this window's timespan
     title = Time.range_as_string(begin_at,end_at,' &ndash; ')
-    return [title,begin_at,end_at,zoom_in,zoom_out]
+    # Lookup the flot format to use for time axis labels
+    format = @@bin_format[zoom_level]
+    return [title,format,begin_at,end_at,zoom_in,zoom_out]
   end
 
   def self.size(zoom_level)
