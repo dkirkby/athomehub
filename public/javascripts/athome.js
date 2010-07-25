@@ -52,7 +52,6 @@ function updatePlot(response) {
   // update the plots
   $('.plot').each(function(index) {
     $.plot($(this),response.data[this.id],response.options[this.id]);
-    $(this).siblings('.title').html(response.titles[this.id]);
   });
 }
 
@@ -79,6 +78,8 @@ function requestPlotUpdate(clickable,options) {
   }
 }
 
+var lastClick = null;
+
 function displayPlots() {
   /* display any binned plots on this page */
   $('.plot').each(function(index) {
@@ -86,6 +87,23 @@ function displayPlots() {
     $.plot($(this),plotData[this.id],plotOptions[this.id]);
     // display a title below the plot
     $(this).siblings('.title').html(plotTitles[this.id]);
+    // bind a hover event handler
+    $(this).bind("plothover", function (event, pos, item) {
+      if(item) {
+        if(item.datapoint != lastClick) {
+          $('#data-label').remove();
+          lastClick = item.datapoint;
+          $('<div id="data-label" class="popup">' +
+            dataLabels[this.id][item.dataIndex] + '</div>').css({
+            top: item.pageY - 35, left: item.pageX - 20
+          }).appendTo("body");
+        }
+      }
+      else {
+        $('#data-label').remove();
+        lastClick = null;
+      }
+    });
   });
   /* attach ajax actions to the window navigation labels */
   $("#oldest").click(function() {

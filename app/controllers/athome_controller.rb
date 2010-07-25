@@ -93,7 +93,7 @@ class AthomeController < ApplicationController
     response = {
       :title => @window_title,
       :view_at => note.view_at.to_param,
-      :data => @plotData, :titles => @plotTitles, :options => @plotOptions,
+      :data => @plotData, :options => @plotOptions,
       :zoom => @zoom, :index => @index,
       :zoom_in => @zoom_in, :zoom_out => @zoom_out
     }
@@ -190,6 +190,7 @@ def make_plots
   end
   # build arrays of t,y values to plot
   tval,temp,light,pwr = [ ],[ ],[ ],[ ]
+  temp_labels,light_labels,pwr_labels = [ ],[ ],[ ]
   @binned.each do |bin|
     # save the interval midpoint as this bin's timestamp
     ival = bin.interval
@@ -199,14 +200,23 @@ def make_plots
     # convert seconds since epoch to millisecs for javascript
     tval << 1e3*midpt.to_i
     temp << bin.theTemperature
+    temp_labels << bin.displayTemperature
     light << bin.lighting
+    light_labels << sprintf("%.1f",bin.lighting)
     pwr << bin.power
+    pwr_labels << "#{bin.displayPower[:content]}, #{bin.displayCost[:content]}"
   end
   # prepare plot titles
   @plotTitles = {
     :temperature => "Temperature (&deg;#{ATHOME['temperature_units']})",
     :lighting => "Lighting",
     :power => "Power Consumption (Watts)"
+  }
+  # prepare datapoint labels
+  @dataLabels = {
+    :temperature => temp_labels,
+    :lighting => light_labels,
+    :power => pwr_labels
   }
   # prepare plotting options
   commonOptions = {
@@ -217,6 +227,9 @@ def make_plots
     :series=> {
       :lines=>{ :show=>true },
       :points=>{ :show=>true,:radius=>4,:fill=>false }
+    },
+    :grid => {
+      :hoverable=> true
     }
   }
   label_width = 45
