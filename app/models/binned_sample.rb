@@ -32,7 +32,7 @@ class BinnedSample < ActiveRecord::Base
     end_code = begin_code + 2*bins_per_half_window - 1
     {
       :order => 'binCode ASC',
-      :conditions => ['binCode >= ? and binCode <= ?',begin_code,end_code]
+      :conditions => ['binCode >= ? and binCode <= ?',begin_code-1,end_code+1]
     }
   }
 
