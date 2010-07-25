@@ -10,6 +10,14 @@ class BinnedSample < ActiveRecord::Base
   # window size by zoom level
   @@window_half_size = [
     1.minute, 5.minutes, 30.minutes, 3.hours, 12.hours, 84.hours, 2.weeks, 8.weeks ]
+    
+  @@endpt_format = [
+    "%I:%M%p","%I:%M%p","%I:%M%p","%I%p","%a %I%p","%a %I%p","%a %I%p","%a %I%p"
+  ]
+  @@midpt_format = [
+    "%a %d %b %Y","%a %d %b %Y","%a %d %b %Y","%a %d %b %Y",
+    "%a %d %b %Y","%a %d %b %Y","%a %d %b %Y","%a %d %b %Y"
+  ]
 
   # find all binned samples at the specified zoom level in increasing time order
   named_scope :for_zoom, lambda { |zoom_level|
@@ -90,10 +98,10 @@ class BinnedSample < ActiveRecord::Base
     # specified window.
     raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
     size = @@bin_size[zoom_level]
-    bins_per_half_window = @@window_half_size[zoom_level]/size
-    begin_at_bin = window_index*bins_per_half_window*size
-    end_at_bin= begin_at_bin + 2*bins_per_half_window*size
-    Range.new(BinnedSample.at(begin_at_bin),BinnedSample.at(end_at_bin),true)
+    half_window = @@window_half_size[zoom_level]
+    begin_at = window_index*half_window
+    end_at= begin_at + 2*half_window
+    Range.new(BinnedSample.at(begin_at),BinnedSample.at(end_at),true)
   end
 
   def self.size(zoom_level)
@@ -109,6 +117,20 @@ class BinnedSample < ActiveRecord::Base
     return "#{size/3600}h" if size.modulo(3600) == 0
     return "#{size/60}m" if size.modulo(60) == 0
     return "#{size}s"
+  end
+  
+  def self.window_as_words(zoom_level,window_index)
+    raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
+    size = @@bin_size[zoom_level]
+    half_window = @@window_half_size[zoom_level]
+    begin_elapsed = window_index*half_window
+    begin_at = BinnedSample.at(begin_elapsed)
+    midpt_at = BinnedSample.at(begin_elapsed + half_window)
+    end_at= BinnedSample.at(begin_elapsed + 2*half_window)
+    sprintf "%s&mdash;%s %s",
+      begin_at.strftime(@@endpt_format[zoom_level]),
+      end_at.strftime(@@endpt_format[zoom_level]),
+      midpt_at.strftime(@@midpt_format[zoom_level])
   end
 
   def self.bin(at,zoom_level)

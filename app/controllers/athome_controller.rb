@@ -114,15 +114,19 @@ class AthomeController < ApplicationController
       pwr << bin.power
     end
     # build plots to display
+    window_title = BinnedSample.window_as_words @zoom,@index
     @plotTitles = {
-      :temperature => "Temperature (&deg;#{ATHOME['temperature_units']})",
-      :lighting => "Lighting",
-      :power => "Power Consumption (W)"
+      :temperature => "Temperature (&deg;#{ATHOME['temperature_units']}) for #{window_title}",
+      :lighting => "Lighting for #{window_title}",
+      :power => "Power Consumption (Watts) for #{window_title}"
     }
     leftEdge = 1e3*(@window_interval.begin.to_i + @window_interval.begin.utc_offset)
     rightEdge = 1e3*(@window_interval.end.to_i + @window_interval.end.utc_offset)
     commonOptions = {
-      :xaxis=>{ :mode=>"time", :min=>leftEdge, :max=>rightEdge },
+      :xaxis=>{
+        :mode=>"time", :min=>leftEdge, :max=>rightEdge,
+        :minTickSize=> [30,"second"]
+      },
       :series=> {
         :lines=>{ :show=>true },
         :points=>{ :show=>true,:radius=>4,:fill=>false }
