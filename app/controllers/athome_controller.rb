@@ -91,9 +91,8 @@ class AthomeController < ApplicationController
     make_plots
     note = Note.new(:view_at=>@at)
     response = {
+      :title => @window_title,
       :view_at => note.view_at.to_param,
-      :date => @template.format_date(@at),
-      :time => @template.format_time(@at),
       :data => @plotData, :titles => @plotTitles, :options => @plotOptions,
       :zoom => @zoom, :index => @index,
       :zoom_in => @zoom_in, :zoom_out => @zoom_out
@@ -205,15 +204,15 @@ def make_plots
   end
   # prepare plot titles
   @plotTitles = {
-    :temperature => "Temperature (&deg;#{ATHOME['temperature_units']}) for #{@window_title}",
-    :lighting => "Lighting for #{@window_title}",
-    :power => "Power Consumption (Watts) for #{@window_title}"
+    :temperature => "Temperature (&deg;#{ATHOME['temperature_units']})",
+    :lighting => "Lighting",
+    :power => "Power Consumption (Watts)"
   }
   # prepare plotting options
   commonOptions = {
     :xaxis=>{
       :mode=>"time", :min=>leftEdge, :max=>rightEdge,
-      :minTickSize=> [30,"second"]
+      :minTickSize=> [1,"minute"]
     },
     :series=> {
       :lines=>{ :show=>true },

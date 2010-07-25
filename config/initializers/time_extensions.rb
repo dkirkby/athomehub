@@ -44,13 +44,18 @@ class Time
       label2 = f2[0..2].join
     end
     # split the day-month-year into common and per-endpoint labels
-    if (t1.yday == t2.yday) and (t1.year == t2.year) then
+    if ((t1.yday == t2.yday) and (t1.year == t2.year)) or
+      ((label2 == @@_hour_aliases[0]) and (t2.to_i - t1.to_i < 86400)) then
       # range fits within one day
       common = f1[4..7].join ' '
       # do both endpoints have the same am/pm?
-      if (f1[3] == f2[3]) then
+      if (f1[3] == f2[3]) and
+        not @@_hour_aliases.include? label1 and
+        not @@_hour_aliases.include? label2 then
         return "#{label1}#{dash}#{label2}#{f1[3]} on #{common}"
       else
+        f1[3] = '' if @@_hour_aliases.include? label1
+        f2[3] = '' if @@_hour_aliases.include? label2
         return "#{label1}#{f1[3]}#{dash}#{label2}#{f2[3]} on #{common}"
       end
     end

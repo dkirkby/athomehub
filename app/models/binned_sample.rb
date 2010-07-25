@@ -9,7 +9,7 @@ class BinnedSample < ActiveRecord::Base
 
   # window size by zoom level
   @@window_half_size = [
-    1.minute, 5.minutes, 30.minutes, 3.hours, 12.hours, 84.hours, 2.weeks, 8.weeks ]
+    150.seconds, 450.seconds, 30.minutes, 3.hours, 12.hours, 84.hours, 2.weeks, 10.weeks ]
     
   @@endpt_format = [
     "%l:%M%P","%l:%M%P","%l:%M%P","%l%P","%a %l%P","%a %l%P","%a %l%P","%a %l%P"
@@ -106,7 +106,7 @@ class BinnedSample < ActiveRecord::Base
     zoom_out = (zoom_level < 7) ?
       midpt_elapsed/@@window_half_size[zoom_level+1]-1 : window_index
     # Prepare a formatted label describing this window's timespan
-    title = Time.range_as_string(begin_at,end_at)
+    title = Time.range_as_string(begin_at,end_at,' &ndash; ')
     return [title,begin_at,end_at,zoom_in,zoom_out]
   end
 

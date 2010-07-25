@@ -15,9 +15,7 @@
 	#header
 		&= @description
 	#body
-		#datetime
-			%span#date= format_date @at
-			%span#time= format_time @at
+		#datetime= @window_title
 		.frame
 			#temperature.plot
 			.title

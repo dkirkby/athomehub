@@ -39,9 +39,8 @@ function enableLiveUpdates() {
 }
 
 function updatePlot(response) {
-  // update our date and time display
-  $('#date').html(response.date);
-  $('#time').html(response.time);
+  // update the window title
+  $('#datetime').html(response.title);
   // update the timestamp associated with a new note
   $('#note_view_at').val(response.view_at);
   // update the navigation globals
