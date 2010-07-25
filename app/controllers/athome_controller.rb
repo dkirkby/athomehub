@@ -95,7 +95,8 @@ class AthomeController < ApplicationController
       :date => @template.format_date(@at),
       :time => @template.format_time(@at),
       :data => @plotData, :titles => @plotTitles, :options => @plotOptions,
-      :zoom => @zoom, :index => @index
+      :zoom => @zoom, :index => @index,
+      :zoom_in => @zoom_in, :zoom_out => @zoom_out
     }
     render :json => response
   end
@@ -179,13 +180,14 @@ def make_plots
   # window cannot span two DST adjustments)
   midpt_offset = @bin_size/2
   tz_offset_varies = false
-  if @binned.length > 0 then
-    tz_offset = @binned.first.interval.begin.utc_offset
-    if @binned.last.interval.end.utc_offset == tz_offset then
-      midpt_offset += tz_offset
-    else
-      tz_offset_varies = true
-    end
+  tz_offset = @window_begin.utc_offset
+  leftEdge = 1e3*(@window_begin.to_i + tz_offset)
+  if @window_end.utc_offset == tz_offset then
+    midpt_offset += tz_offset
+    rightEdge = 1e3*(@window_end.to_i + tz_offset)
+  else
+    tz_offset_varies = true
+    rightEdge = 1e3*(@window_end.to_i + @window_end.utc_offset)
   end
   # build arrays of t,y values to plot
   tval,temp,light,pwr = [ ],[ ],[ ],[ ]
@@ -201,15 +203,14 @@ def make_plots
     light << bin.lighting
     pwr << bin.power
   end
-  # build plots to display
+  # prepare plot titles
   window_title = BinnedSample.window_as_words @zoom,@index
   @plotTitles = {
     :temperature => "Temperature (&deg;#{ATHOME['temperature_units']}) for #{window_title}",
     :lighting => "Lighting for #{window_title}",
     :power => "Power Consumption (Watts) for #{window_title}"
   }
-  leftEdge = 1e3*(@window_interval.begin.to_i + @window_interval.begin.utc_offset)
-  rightEdge = 1e3*(@window_interval.end.to_i + @window_interval.end.utc_offset)
+  # prepare plotting options
   commonOptions = {
     :xaxis=>{
       :mode=>"time", :min=>leftEdge, :max=>rightEdge,
@@ -240,6 +241,7 @@ def make_plots
       :lines=>{ :fill=>true, :fillColor=>'rgba(200,200,200,0.5)' }
     })
   }
+  # prepare the plots from the arrays built above
   @plotData = {
     :temperature => [{
       :data => tval.zip(temp)
@@ -273,18 +275,6 @@ end
   def valid_window
     # set the default zoom level
     @zoom = 3
-    # define the zoom levels: (formats are for DateTime.strftime)
-    # label, seconds, label format, tick format, # ticks, index
-    @zoomLevels = [
-      ['2 minutes',      120, "%l:%M%P %a %e %B", ":%M:%S", 5, 0],
-      ['10 minutes',     600, "%l:%M%P %a %e %B", "%l:%M", 11, 1],
-      ['1 hour',        3600, "%l:%M%P %a %e %B", "%l:%M", 7, 2],
-      ['6 hours',      21600, "%l%P %a %e %B", "%l%P", 7, 3],
-      ['1 day',        86400, "%l%P %a %e %B", "%l%P", 5, 4],
-      ['1 week',      604800, "%a %e %B %Y", "%l%P-%a", 15, 5],
-      ['4 weeks',    2419200, "%e %B %Y", "%d-%b", 5, 6],
-      ['16 weeks',   9676800, "%e %B %Y", "%d-%b", 5, 7]
-    ]
     # do we have a zoom value to use?
     if params.has_key? 'zoom' then
       # is it a decimal integer?
@@ -319,8 +309,9 @@ end
       # default to showing the most recent window at this zoom level
       @index = BinnedSample.window(@at,@zoom)
     end
-    # lookup the timestamps corresponding to this window
-    @window_interval = BinnedSample.window_interval(@zoom,@index)
+    # lookup this window's timestamp and zooming info
+    @window_begin,@window_end,@zoom_in,@zoom_out =
+      BinnedSample.window_info(@zoom,@index)
   end
 
 end

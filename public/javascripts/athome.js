@@ -44,9 +44,11 @@ function updatePlot(response) {
   $('#time').html(response.time);
   // update the timestamp associated with a new note
   $('#note_view_at').val(response.view_at);
-  // update the window globals
+  // update the navigation globals
   zoom = response.zoom;
   index = response.index;
+  zoom_in = response.zoom_in;
+  zoom_out = response.zoom_out;
   // update the plots
   $('.plot').each(function(index) {
     $.plot($(this),response.data[this.id],response.options[this.id]);
@@ -76,10 +78,10 @@ function displayPlots() {
     jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom,index:index+1},updatePlot);
   });
   $("#zoom-in").click(function() {
-    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom-1,index:'first'},updatePlot);
+    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom-1,index:zoom_in},updatePlot);
   });
   $("#zoom-out").click(function() {
-    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom+1,index:'first'},updatePlot);
+    jQuery.getJSON("/athome/replot",{nid:nid,zoom:zoom+1,index:zoom_out},updatePlot);
   });
 }
 

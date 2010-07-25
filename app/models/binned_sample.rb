@@ -89,15 +89,22 @@ class BinnedSample < ActiveRecord::Base
     end
   end
   
-  def self.window_interval(zoom_level,window_index)
+  def self.window_info(zoom_level,window_index)
     # Returns the range [a,b) of UTC timestamps corresponding to the
-    # specified window.
+    # specified window and the indices of windows centered on this one
+    # at zoom levels +/-1 (or the original window_index if this zoom
+    # level is already the min/max allowed)
     raise 'Zoom level must be 0-7' unless (0..7) === zoom_level
     size = @@bin_size[zoom_level]
     half_window = @@window_half_size[zoom_level]
     begin_at = window_index*half_window
+    midpt_at = begin_at + half_window
     end_at= begin_at + 2*half_window
-    Range.new(BinnedSample.at(begin_at),BinnedSample.at(end_at),true)
+    zoom_in = (zoom_level > 0) ?
+      midpt_at/@@window_half_size[zoom_level-1]-1 : window_index
+    zoom_out = (zoom_level < 7) ?
+      midpt_at/@@window_half_size[zoom_level+1]-1 : window_index
+    return [BinnedSample.at(begin_at),BinnedSample.at(end_at),zoom_in,zoom_out]
   end
 
   def self.size(zoom_level)
