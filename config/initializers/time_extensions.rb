@@ -30,6 +30,7 @@ class Time
     # create the format building blocks for each endpoint
     f1 = t1.fields_as_strings
     f2 = t2.fields_as_strings
+    midnight = @@_hour_aliases[0]
     # strip off seconds and minutes if the are common to both endpoints and zero
     if (t1.sec == 0) and (t2.sec == 0) then
       if (t1.min == 0) and (t2.min == 0) then
@@ -45,7 +46,7 @@ class Time
     end
     # split the day-month-year into common and per-endpoint labels
     if ((t1.yday == t2.yday) and (t1.year == t2.year)) or
-      ((label2 == @@_hour_aliases[0]) and (t2.to_i - t1.to_i < 86400)) then
+      ((label2 == midnight) and (t2 - t1 < 1.day)) then
       # range fits within one day
       common = f1[4..7].join ' '
       # do both endpoints have the same am/pm?
@@ -62,8 +63,13 @@ class Time
     # if we get here, the range spans a day boundary
     label1 += f1[3] unless @@_hour_aliases.include? label1
     label2 += f2[3] unless @@_hour_aliases.include? label2
-    label1 += ' '
-    label2 += ' '
+    # drop the times if both are midnight and the span is more than a week
+    if (label1 == midnight) and (label2 == midnight) and (t2 - t1 > 1.week) then
+      label1,label2 = '',''
+    else
+      label1 += ' '
+      label2 += ' '
+    end
     if (t1.month == t2.month) and (t1.year == t2.year) then
       # range fits within one month
       if (t2.yday - t1.yday > 7) then
