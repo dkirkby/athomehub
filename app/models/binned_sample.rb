@@ -12,11 +12,7 @@ class BinnedSample < ActiveRecord::Base
     1.minute, 5.minutes, 30.minutes, 3.hours, 12.hours, 84.hours, 2.weeks, 8.weeks ]
     
   @@endpt_format = [
-    "%I:%M%p","%I:%M%p","%I:%M%p","%I%p","%a %I%p","%a %I%p","%a %I%p","%a %I%p"
-  ]
-  @@midpt_format = [
-    "%a %d %b %Y","%a %d %b %Y","%a %d %b %Y","%a %d %b %Y",
-    "%a %d %b %Y","%a %d %b %Y","%a %d %b %Y","%a %d %b %Y"
+    "%l:%M%P","%l:%M%P","%l:%M%P","%l%P","%a %l%P","%a %l%P","%a %l%P","%a %l%P"
   ]
 
   # find all binned samples at the specified zoom level in increasing time order
@@ -128,9 +124,17 @@ class BinnedSample < ActiveRecord::Base
     midpt_at = BinnedSample.at(begin_elapsed + half_window)
     end_at= BinnedSample.at(begin_elapsed + 2*half_window)
     sprintf "%s&mdash;%s %s",
-      begin_at.strftime(@@endpt_format[zoom_level]),
-      end_at.strftime(@@endpt_format[zoom_level]),
-      midpt_at.strftime(@@midpt_format[zoom_level])
+      BinnedSample.strftime(begin_at,@@endpt_format[zoom_level]),
+      BinnedSample.strftime(end_at,@@endpt_format[zoom_level]),
+      BinnedSample.strftime(midpt_at,"%a %e %b %Y")
+  end
+
+  def self.strftime(at,format)
+    # converts a Time to a DateTime ignoring usecs
+    # see http://stackoverflow.com/questions/279769/convert-to-from-datetime-and-time-in-ruby
+    offset = Rational(at.utc_offset,86400)
+    dt = DateTime.new(at.year,at.month,at.day,at.hour,at.min,at.sec,offset)
+    dt.strftime format
   end
 
   def self.bin(at,zoom_level)
