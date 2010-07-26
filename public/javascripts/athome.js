@@ -58,19 +58,11 @@ function updatePlot(response) {
 
 function updateControls() {
   // disable zoom in if we are already at the limit
-  if(zoom_in == index) {
-    $("#zoom-in").addClass('disabled');
-  }
-  else {
-    $("#zoom-in").removeClass('disabled');    
-  }  
+  $("#zoom-in").toggleClass('disabled',(zoom_in == index));
   // disable zoom out if we are already at the limit
-  if(zoom_out == index) {
-    $("#zoom-out").addClass('disabled');
-  }
-  else {
-    $("#zoom-out").removeClass('disabled');    
-  }
+  $("#zoom-out").toggleClass('disabled',(zoom_out == index));
+  // disable older if we are already at the minimum index
+  $("#older").toggleClass('disabled',(index == 0));
   // add our window parameters to the note form
   $('#note_view').val('detail?nid='+nid+'&zoom='+zoom+'&index='+index);
 }
