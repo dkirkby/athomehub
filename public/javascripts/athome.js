@@ -50,6 +50,7 @@ function updatePlot(response) {
   zoom_out = response.zoom_out;
   updateControls();
   // update the plots
+  dataLabels = response.labels;
   $('.plot').each(function(index) {
     $.plot($(this),response.data[this.id],response.options[this.id]);
   });

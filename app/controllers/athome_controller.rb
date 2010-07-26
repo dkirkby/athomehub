@@ -93,7 +93,7 @@ class AthomeController < ApplicationController
     response = {
       :title => @window_title,
       :view_at => note.view_at.to_param,
-      :data => @plotData, :options => @plotOptions,
+      :data => @plotData, :labels => @dataLabels, :options => @plotOptions,
       :zoom => @zoom, :index => @index,
       :zoom_in => @zoom_in, :zoom_out => @zoom_out
     }
@@ -191,6 +191,7 @@ def make_plots
   # build arrays of t,y values to plot
   tval,temp,light,pwr = [ ],[ ],[ ],[ ]
   temp_labels,light_labels,pwr_labels = [ ],[ ],[ ]
+  pwr_colors = [ ]
   @binned.each do |bin|
     # save the interval midpoint as this bin's timestamp
     ival = bin.interval
@@ -205,6 +206,7 @@ def make_plots
     light_labels << sprintf("%.1f",bin.lighting)
     pwr << bin.power
     pwr_labels << "#{bin.displayPower[:content]}, #{bin.displayCost[:content]}"
+    pwr_colors << @template.rgb_to_hex(@template.hsb_to_rgb(bin.colorPower))
   end
   # prepare plot titles
   @plotTitles = {
@@ -225,8 +227,8 @@ def make_plots
       :minTickSize=> [1,"minute"], :timeformat=>@bin_format
     },
     :series=> {
-      :lines=>{ :show=>true },
-      :points=>{ :show=>true,:radius=>4,:fill=>false }
+      :lines=>{ :show=>true,:linewidth=>2 },
+      :points=>{ :show=>true,:radius=>4,:fill=>true,:linewidth=>1 }
     },
     :grid => {
       :hoverable=> true
@@ -253,15 +255,16 @@ def make_plots
     })
   }
   # prepare the plots from the arrays built above
+  plot_color = 'rgba(150,150,150,0.5)'
   @plotData = {
     :temperature => [{
-      :data => tval.zip(temp)
+      :data => tval.zip(temp), :color=>plot_color
     }],
     :lighting => [{
-      :data => tval.zip(light)
+      :data => tval.zip(light), :color=>plot_color
     }],
     :power => [{
-      :data => tval.zip(pwr)
+      :data => tval.zip(pwr), :color=>plot_color, :pointColors=>pwr_colors
     }]
   }
 end
