@@ -70,7 +70,9 @@ function updateControls() {
   }
   else {
     $("#zoom-out").removeClass('disabled');    
-  }  
+  }
+  // add our window parameters to the note form
+  $('#note_view').val('detail?nid='+nid+'&zoom='+zoom+'&index='+index);
 }
 
 function requestPlotUpdate(clickable,options) {
