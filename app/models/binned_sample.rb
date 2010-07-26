@@ -162,7 +162,7 @@ class BinnedSample < ActiveRecord::Base
   end
   
   # Accumulates one new sample at all zoom levels simultaneously.
-  def self.accumulate(sample)
+  def self.accumulate(sample,auto_save_enabled=true)
     # first-time initialization
     if not defined? @@accumulators then
       @@last_id = { }
@@ -211,7 +211,7 @@ class BinnedSample < ActiveRecord::Base
             code = bin(at,zoom_level)
             accumulators[zoom_level] = new_for_sample(code,sample)
             # auto-save bins at larger zoom levels?
-            auto_save = (zoom_level >= 1)
+            auto_save = (zoom_level >= 1) and auto_save_enabled
           end
         else
           # accumulate this sample (using send to call protected from class method)
