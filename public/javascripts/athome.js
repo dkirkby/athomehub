@@ -121,6 +121,10 @@ function displayPlots() {
       requestPlotUpdate(this,{nid:nid,zoom:zoom+1,index:zoom_out});
     });
     updateControls();
+    // double clicking on the header creates/updates a tooltip with debug info
+    $('#header').dblclick(function() {
+      $(this).attr('title',"nid="+nid+",zoom="+zoom+",index="+index);
+    });
   }
 }
 

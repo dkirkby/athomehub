@@ -135,5 +135,47 @@ protected
       end
     end
   end
+  
+  def valid_window
+    # set the default zoom level
+    @zoom = 3
+    # do we have a zoom value to use?
+    if params.has_key? 'zoom' then
+      # is it a decimal integer?
+      if !!(params['zoom'] =~ @@nonNegativeInteger) then
+        zoom = params['zoom'].to_i
+        begin
+          BinnedSample.size zoom # will fail unless zoom is in range
+          @zoom = zoom
+        rescue
+          flash.now[:notice] = "Out of range zoom=#{zoom}. Using zoom=#{@zoom}."
+        end
+      else
+        flash.now[:notice] = "Invalid zoom=\'#{params['zoom']}\'. Using zoom=#{@zoom}."
+      end
+    end
+    @bin_size = BinnedSample.size @zoom
+    @bin_size_as_words = BinnedSample.size_as_words @zoom
+    # do we have an index value to use?
+    if params.has_key? 'index' then
+      case params['index']
+      when @@nonNegativeInteger then
+        @index = params['index'].to_i
+      when 'last' then
+        @index = BinnedSample.window(@at,@zoom)
+      when 'first' then
+        @index = defined?(@config) ? BinnedSample.first(@config.networkID,@zoom) : 0
+      else
+        @index = BinnedSample.window(@at,@zoom)
+        flash.now[:notice] = "Invalid index=\'#{params['index']}\'. Using index=\'#{@index}\'."
+      end
+    else
+      # default to showing the most recent window at this zoom level
+      @index = BinnedSample.window(@at,@zoom)
+    end
+    # lookup this window's timestamp range and zooming info
+    @window_title,@bin_format,@window_begin,@window_end,@zoom_in,@zoom_out =
+      BinnedSample.window_info(@zoom,@index)
+  end
 
 end

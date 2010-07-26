@@ -1,9 +1,22 @@
 class Engineering::BinnedController < Engineering::ApplicationController
 
-  before_filter :valid_ival
   before_filter :valid_nid
+  before_filter :valid_ival,:only=>:bydate
+  before_filter :valid_window,:only=>:window
+
+  def window
+    @begin_at = @window_begin
+    @end_at = @window_end
+    make_plots
+  end
 
   def bydate
+    make_plots
+  end
+    
+protected
+
+  def make_plots
     @binnedPlots = {
       :temperature => [ ],
       :lighting => [ ],
