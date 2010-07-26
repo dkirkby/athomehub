@@ -100,26 +100,28 @@ function displayPlots() {
       }
     });
   });
-  /* attach ajax actions to the window navigation labels */
-  $("#oldest").click(function() {
-    requestPlotUpdate(this,{nid:nid,zoom:zoom,index:'first'});
-  });
-  $("#newest").click(function() {
-    requestPlotUpdate(this,{nid:nid,zoom:zoom,index:'last'});
-  });
-  $("#older").click(function() {
-    requestPlotUpdate(this,{nid:nid,zoom:zoom,index:index-1});
-  });
-  $("#newer").click(function() {
-    requestPlotUpdate(this,{nid:nid,zoom:zoom,index:index+1});
-  });
-  $("#zoom-in").click(function() {
-    requestPlotUpdate(this,{nid:nid,zoom:zoom-1,index:zoom_in});
-  });
-  $("#zoom-out").click(function() {
-    requestPlotUpdate(this,{nid:nid,zoom:zoom+1,index:zoom_out});
-  });
-  updateControls();
+  if($("#oldest").length > 0) {
+    /* attach ajax actions to the window navigation labels */
+    $("#oldest").click(function() {
+      requestPlotUpdate(this,{nid:nid,zoom:zoom,index:'first'});
+    });
+    $("#newest").click(function() {
+      requestPlotUpdate(this,{nid:nid,zoom:zoom,index:'last'});
+    });
+    $("#older").click(function() {
+      requestPlotUpdate(this,{nid:nid,zoom:zoom,index:index-1});
+    });
+    $("#newer").click(function() {
+      requestPlotUpdate(this,{nid:nid,zoom:zoom,index:index+1});
+    });
+    $("#zoom-in").click(function() {
+      requestPlotUpdate(this,{nid:nid,zoom:zoom-1,index:zoom_in});
+    });
+    $("#zoom-out").click(function() {
+      requestPlotUpdate(this,{nid:nid,zoom:zoom+1,index:zoom_out});
+    });
+    updateControls();
+  }
 }
 
 // Updates the note form found on all athome views to enable javascript behaviors
