@@ -128,6 +128,7 @@ protected
       error_msg = "Missing required nid parameter."
       @config = DeviceConfig.latest(@at).first(:conditions=>'enabled=TRUE')
       if @config then
+        @profile = DeviceProfile.for_networkID(@config.networkID,@at).last
         flash.now[:notice] = error_msg + " Using nid=#{@config.networkID} instead."
       else
         flash.now[:notice] = error_msg + " Aborting with no devices configured."

@@ -227,8 +227,8 @@ def make_plots
       :minTickSize=> [1,"minute"], :timeformat=>@bin_format
     },
     :series=> {
-      :lines=>{ :show=>true,:linewidth=>2 },
-      :points=>{ :show=>true,:radius=>4,:fill=>true,:linewidth=>1 }
+      :lines=>{ :show=>true,:lineWidth=>3 },
+      :points=>{ :show=>true,:radius=>5,:fill=>true,:lineWidth=>0 }
     },
     :grid => {
       :hoverable=> true
@@ -250,8 +250,7 @@ def make_plots
     }),
     :power => commonOptions.merge({
       # power axis always starts at zero
-      :yaxis=>{ :labelWidth=>label_width, :min=>0 },
-      :lines=>{ :fill=>true, :fillColor=>'rgba(200,200,200,0.5)' }
+      :yaxis=>{ :labelWidth=>label_width, :min=>0 }
     })
   }
   # prepare the plots from the arrays built above
@@ -264,7 +263,8 @@ def make_plots
       :data => tval.zip(light), :color=>plot_color
     }],
     :power => [{
-      :data => tval.zip(pwr), :color=>plot_color, :pointColors=>pwr_colors
+      :data => tval.zip(pwr), :color=>plot_color, :pointColors=>pwr_colors,
+      :lines=>{ :fill=>true, :fillColor=>'rgba(200,200,200,0.5)' }
     }]
   }
 end

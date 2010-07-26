@@ -20,7 +20,7 @@ class DeviceProfile < ActiveRecord::Base
   # time which defaults to now. Usage is similar to DeviceConfig.for_networkID.
   named_scope :for_networkID, lambda { |*args|
     {
-      :order => 'display_order ASC',
+      :order => 'id ASC',
       :conditions => (args.length > 1) ?
         [ 'networkID = ? and created_at <= ?',args.first,args.last ] :
         [ 'networkID = ?',args.first ],
