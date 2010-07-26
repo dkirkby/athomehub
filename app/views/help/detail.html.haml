@@ -3,4 +3,27 @@
 %p
 	Clicking on a smartstrip location on the
 	=link_to "home page", :controller=>:athome, :action=>:index
-	leads to a detailed display of the location's past readings.
+	displays interactive graphs of the past readings at this location.
+	
+%p
+	The initial view shows recent readings in a six hour window. Use the "home" link
+	to return to the dashboard view of all locations or the navigation controls below
+	the graphs to view older data or to zoom in or out.
+	
+%p
+	Each point on a graph represents an average reading during an interval that varies
+	from 30 seconds to one week, depending on the zoom level being displayed. Move
+	the mouse pointer over a graph point to display its value.
+	
+%p
+	The power graph displays the energy consumption rate in
+	=link_to "Watts.", :action=>:units
+	Move the mouse pointer over a power graph point to display its equivalent 24-hour
+	cost. The area below the power graph is shaded since it is the amount of shaded area
+	that measures to your energy use and bill.
+	
+%p
+	Use the note area below the graphs to enter any questions or observations about
+	the information being displayed or the web page itself that you would like to record
+	for the research team. The software will capture the graphs you are viewing when
+	you submit a note so feel free to refer to them as you write.
