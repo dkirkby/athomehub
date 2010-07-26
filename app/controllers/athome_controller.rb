@@ -118,157 +118,106 @@ class AthomeController < ApplicationController
     end
   end
   
-  # Defines a replacement Sample class for demonstrating and testing
-  class DemoSample
-    def initialize(fields)
-      @fields = fields
-    end
-    def temperature
-      return @fields[:temperature]
-    end
-    def lighting
-      return @fields[:lighting]
-    end
-    def artificial
-      return @fields[:artificial]
-    end
-    def power
-      return @fields[:power]
-    end
-    def cost
-      return @fields[:cost]
-    end
-    def location
-      return @fields[:location]
-    end
-  end
-
-  # Returns fake data for demonstration and UI prototyping
-  def demo
-    # Declare some sample data
-    @samples = [
-      DemoSample.new({:location=>"Kitchen",
-        :temperature=>7441,:lighting=>74,:artificial=>43,:power=>  52,:cost=>1.731}),
-      DemoSample.new({:location=>"Family Room",
-        :temperature=>7361,:lighting=>74,:artificial=>43,:power=>1856,:cost=>4.121}),
-      DemoSample.new({:location=>"Dylan's Room",
-        :temperature=>7811,:lighting=>74,:artificial=>43,:power=> 642,:cost=>0.171}),
-      DemoSample.new({:location=>"Downstairs Bathroom",
-        :temperature=>7291,:lighting=>74,:artificial=>43,:power=>  13,:cost=>0.060}),
-      DemoSample.new({:location=>"Kids Bathroom",
-        :temperature=>7751,:lighting=>74,:artificial=>43,:power=>   0,:cost=>1.840}),
-      DemoSample.new({:location=>"Helen's Room",
-        :temperature=>8141,:lighting=>74,:artificial=>43,:power=> 874,:cost=>0.693}),
-      DemoSample.new({:location=>"Master Bedroom",
-        :temperature=>8021,:lighting=>74,:artificial=>43,:power=>  38,:cost=>1.875}),
-      DemoSample.new({:location=>"Master Bathroom",
-        :temperature=>7871,:lighting=>74,:artificial=>43,:power=>   0,:cost=>0.876})
-    ]
-    @note = new_note
-    render :action=>"index"
-  end
-  
 protected
 
-def make_plots
-  # look up the binned data for this device in the requested window
-  @binned = BinnedSample.for_window(@zoom,@index).
-    find_all_by_networkID(@config.networkID)
-  # is the timezone offset constant over this window? (it might not be if
-  # the window spans a DST adjustment and we are assuming that the largest
-  # window cannot span two DST adjustments)
-  midpt_offset = @bin_size/2
-  tz_offset_varies = false
-  tz_offset = @window_begin.utc_offset
-  leftEdge = 1e3*(@window_begin.to_i + tz_offset)
-  if @window_end.utc_offset == tz_offset then
-    midpt_offset += tz_offset
-    rightEdge = 1e3*(@window_end.to_i + tz_offset)
-  else
-    tz_offset_varies = true
-    rightEdge = 1e3*(@window_end.to_i + @window_end.utc_offset)
-  end
-  # build arrays of t,y values to plot
-  tval,temp,light,pwr = [ ],[ ],[ ],[ ]
-  temp_labels,light_labels,pwr_labels = [ ],[ ],[ ]
-  pwr_colors = [ ]
-  @binned.each do |bin|
-    # save the interval midpoint as this bin's timestamp
-    ival = bin.interval
-    midpt = ival.begin + midpt_offset
-    # adjust for time zone bin by bin? (because of a DST boundary)
-    midpt += midpt.utc_offset if tz_offset_varies
-    # convert seconds since epoch to millisecs for javascript
-    tval << 1e3*midpt.to_i
-    temp << bin.theTemperature
-    temp_labels << bin.displayTemperature
-    light << bin.lighting
-    light_labels << sprintf("%.1f",bin.lighting)
-    pwr << bin.power
-    pwr_labels << "#{bin.displayPower[:content]}, #{bin.displayCost[:content]}"
-    pwr_colors << @template.rgb_to_hex(@template.hsb_to_rgb(bin.colorPower))
-  end
-  # prepare plot titles
-  @plotTitles = {
-    :temperature => "Temperature (&deg;#{ATHOME['temperature_units']})",
-    :lighting => "Lighting",
-    :power => "Power Consumption (Watts)"
-  }
-  # prepare datapoint labels
-  @dataLabels = {
-    :temperature => temp_labels,
-    :lighting => light_labels,
-    :power => pwr_labels
-  }
-  # prepare plotting options
-  commonOptions = {
-    :xaxis=>{
-      :mode=>"time", :min=>leftEdge, :max=>rightEdge,
-      :minTickSize=> [1,"minute"], :timeformat=>@bin_format
-    },
-    :series=> {
-      :lines=>{ :show=>true,:lineWidth=>3 },
-      :points=>{ :show=>true,:radius=>5,:fill=>true,:lineWidth=>0 }
-    },
-    :grid => {
-      :hoverable=> true
+  def make_plots
+    # look up the binned data for this device in the requested window
+    @binned = BinnedSample.for_window(@zoom,@index).
+      find_all_by_networkID(@config.networkID)
+    # is the timezone offset constant over this window? (it might not be if
+    # the window spans a DST adjustment and we are assuming that the largest
+    # window cannot span two DST adjustments)
+    midpt_offset = @bin_size/2
+    tz_offset_varies = false
+    tz_offset = @window_begin.utc_offset
+    leftEdge = 1e3*(@window_begin.to_i + tz_offset)
+    if @window_end.utc_offset == tz_offset then
+      midpt_offset += tz_offset
+      rightEdge = 1e3*(@window_end.to_i + tz_offset)
+    else
+      tz_offset_varies = true
+      rightEdge = 1e3*(@window_end.to_i + @window_end.utc_offset)
+    end
+    # build arrays of t,y values to plot
+    tval,temp,light,pwr = [ ],[ ],[ ],[ ]
+    temp_labels,light_labels,pwr_labels = [ ],[ ],[ ]
+    pwr_colors = [ ]
+    @binned.each do |bin|
+      # save the interval midpoint as this bin's timestamp
+      ival = bin.interval
+      midpt = ival.begin + midpt_offset
+      # adjust for time zone bin by bin? (because of a DST boundary)
+      midpt += midpt.utc_offset if tz_offset_varies
+      # convert seconds since epoch to millisecs for javascript
+      tval << 1e3*midpt.to_i
+      temp << bin.theTemperature
+      temp_labels << bin.displayTemperature
+      light << bin.lighting
+      light_labels << sprintf("%.1f",bin.lighting)
+      pwr << bin.power
+      pwr_labels << "#{bin.displayPower[:content]}, #{bin.displayCost[:content]}"
+      pwr_colors << @template.rgb_to_hex(@template.hsb_to_rgb(bin.colorPower))
+    end
+    # prepare plot titles
+    @plotTitles = {
+      :temperature => "Temperature (&deg;#{ATHOME['temperature_units']})",
+      :lighting => "Lighting",
+      :power => "Power Consumption (Watts)"
     }
-  }
-  label_width = 45
-  @plotOptions = {
-    :temperature => commonOptions.merge({
-      # round temperature limits to whole degrees and ensure that at 1deg is shown
-      :yaxis=>{
-        :labelWidth=>label_width,
-        :min=> (temp.min.floor if temp.min),
-        :max=> (temp.max.ceil if temp.max)
+    # prepare datapoint labels
+    @dataLabels = {
+      :temperature => temp_labels,
+      :lighting => light_labels,
+      :power => pwr_labels
+    }
+    # prepare plotting options
+    commonOptions = {
+      :xaxis=>{
+        :mode=>"time", :min=>leftEdge, :max=>rightEdge,
+        :minTickSize=> [1,"minute"], :timeformat=>@bin_format
+      },
+      :series=> {
+        :lines=>{ :show=>true,:lineWidth=>3 },
+        :points=>{ :show=>true,:radius=>5,:fill=>true,:lineWidth=>0 }
+      },
+      :grid => {
+        :hoverable=> true
       }
-    }),
-    :lighting => commonOptions.merge({
-      # lighting axis always starts at zero
-      :yaxis=>{ :labelWidth=>label_width, :min=>0 }
-    }),
-    :power => commonOptions.merge({
-      # power axis always starts at zero
-      :yaxis=>{ :labelWidth=>label_width, :min=>0 }
-    })
-  }
-  # prepare the plots from the arrays built above
-  plot_color = 'rgba(150,150,150,0.5)'
-  @plotData = {
-    :temperature => [{
-      :data => tval.zip(temp), :color=>plot_color
-    }],
-    :lighting => [{
-      :data => tval.zip(light), :color=>plot_color
-    }],
-    :power => [{
-      :data => tval.zip(pwr), :color=>plot_color, :pointColors=>pwr_colors,
-      :lines=>{ :fill=>true, :fillColor=>'rgba(200,200,200,0.5)' }
-    }]
-  }
-end
-
+    }
+    label_width = 45
+    @plotOptions = {
+      :temperature => commonOptions.merge({
+        # round temperature limits to whole degrees and ensure that at 1deg is shown
+        :yaxis=>{
+          :labelWidth=>label_width,
+          :min=> (temp.min.floor if temp.min),
+          :max=> (temp.max.ceil if temp.max)
+        }
+      }),
+      :lighting => commonOptions.merge({
+        # lighting axis always starts at zero
+        :yaxis=>{ :labelWidth=>label_width, :min=>0 }
+      }),
+      :power => commonOptions.merge({
+        # power axis always starts at zero
+        :yaxis=>{ :labelWidth=>label_width, :min=>0 }
+      })
+    }
+    # prepare the plots from the arrays built above
+    plot_color = 'rgba(150,150,150,0.5)'
+    @plotData = {
+      :temperature => [{
+        :data => tval.zip(temp), :color=>plot_color
+      }],
+      :lighting => [{
+        :data => tval.zip(light), :color=>plot_color
+      }],
+      :power => [{
+        :data => tval.zip(pwr), :color=>plot_color, :pointColors=>pwr_colors,
+        :lines=>{ :fill=>true, :fillColor=>'rgba(200,200,200,0.5)' }
+      }]
+    }
+  end
 
   # Prepares an empty new note or retrieves note-id if specified
   def new_note
