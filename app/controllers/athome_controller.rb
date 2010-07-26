@@ -156,7 +156,8 @@ protected
       light_labels << sprintf("%.1f",bin.lighting)
       pwr << bin.power
       pwr_labels << "#{bin.displayPower[:content]}, #{bin.displayCost[:content]}"
-      pwr_colors << @template.rgb_to_hex(@template.hsb_to_rgb(bin.colorPower))
+      color = @template.rgb_to_hex(@template.hsb_to_rgb(bin.colorPower))
+      pwr_colors << color
     end
     # prepare plot titles
     @plotTitles = {

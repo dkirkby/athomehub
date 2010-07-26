@@ -1538,7 +1538,8 @@
 
                     placeholderID = placeholder.attr('id');
                     if (fillStyle && ('pointColors' in series)) {
-                      ctx.fillStyle = series.pointColors[i];
+                      // the index i takes steps of ps
+                      ctx.fillStyle = series.pointColors[i/ps];
                       ctx.fill();
                     }
                     else if (fillStyle) {
