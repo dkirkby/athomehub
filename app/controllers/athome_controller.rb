@@ -175,7 +175,7 @@ protected
     commonOptions = {
       :xaxis=>{
         :mode=>"time", :min=>leftEdge, :max=>rightEdge,
-        :minTickSize=> [1,"minute"], :timeformat=>@bin_format
+        :minTickSize=> @min_ticks, :timeformat=>@bin_format
       },
       :series=> {
         :lines=>{ :show=>true,:lineWidth=>3 },
@@ -185,7 +185,7 @@ protected
         :hoverable=> true
       }
     }
-    label_width = 45
+    label_width = 35
     @plotOptions = {
       :temperature => commonOptions.merge({
         # round temperature limits to whole degrees and ensure that at 1deg is shown

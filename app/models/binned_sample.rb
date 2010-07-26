@@ -9,11 +9,17 @@ class BinnedSample < ActiveRecord::Base
 
   # window size by zoom level
   @@window_half_size = [
-    150.seconds, 450.seconds, 30.minutes, 3.hours, 12.hours, 84.hours, 2.weeks, 10.weeks ]
+    2.minutes, 10.minutes, 30.minutes, 3.hours, 12.hours, 84.hours, 2.weeks, 10.weeks ]
     
   # bin formats (passed to javascript flot library)
   @@bin_format = [
-    "%h:%M%p","%h:%M%p","%h:%M%p","%h:%M%p","%h%p","%d-%b","%d-%b","%d-%b"
+    "%h:%M%p","%h:%M%p","%h:%M%p","%h%p","%h%p","%d-%b","%d-%b","%d-%b"
+  ]
+  
+  # minimum plot tick spacing (passed to javascript flot library)
+  @@min_tick_size = [
+    [1,"minute"],[5,"minute"],[10,"minute"],[1,"hour"],
+    [4,"hour"],[1,"day"],[4,"day"],[7,"day"]
   ]
 
   # find all binned samples at the specified zoom level in increasing time order
@@ -110,7 +116,9 @@ class BinnedSample < ActiveRecord::Base
     title = Time.range_as_string(begin_at,end_at,' &ndash; ')
     # Lookup the flot format to use for time axis labels
     format = @@bin_format[zoom_level]
-    return [title,format,begin_at,end_at,zoom_in,zoom_out]
+    # Lookup the minimum tick size to use for the time axis labels
+    min_ticks = @@min_tick_size[zoom_level]
+    return [title,format,min_ticks,begin_at,end_at,zoom_in,zoom_out]
   end
 
   def self.size(zoom_level)

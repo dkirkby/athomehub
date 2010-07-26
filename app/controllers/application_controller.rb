@@ -138,7 +138,7 @@ protected
   
   def valid_window
     # set the default zoom level
-    @zoom = 3
+    @zoom = 2
     # do we have a zoom value to use?
     if params.has_key? 'zoom' then
       # is it a decimal integer?
@@ -174,8 +174,8 @@ protected
       @index = BinnedSample.window(@at,@zoom)
     end
     # lookup this window's timestamp range and zooming info
-    @window_title,@bin_format,@window_begin,@window_end,@zoom_in,@zoom_out =
-      BinnedSample.window_info(@zoom,@index)
+    @window_title,@bin_format,@min_ticks,@window_begin,@window_end,
+      @zoom_in,@zoom_out = BinnedSample.window_info(@zoom,@index)
   end
 
 end
