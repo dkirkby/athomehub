@@ -17,15 +17,18 @@
 		&= @description
 	#body
 		#datetime= @window_title
-		.frame
-			#temperature.plot
-			.title
-		.frame
-			#lighting.plot
-			.title
-		.frame
-			#power.plot
-			.title
+		-if ATHOME['display_temperature']
+			.frame
+				#temperature.plot
+				.title
+		-if ATHOME['display_lighting']
+			.frame
+				#lighting.plot
+				.title
+		-if ATHOME['display_power']
+			.frame
+				#power.plot
+				.title
 		#footer
 			%a#oldest Oldest &laquo;
 			%a#older Older &lsaquo;
