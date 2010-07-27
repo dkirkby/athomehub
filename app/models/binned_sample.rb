@@ -85,16 +85,21 @@ class BinnedSample < ActiveRecord::Base
       self.interval.include? sample.created_at
   end
 
+  def self.interval_for_code(code)
+    # Returns a non-exclusive range [a,b) of Times corresponding
+    # to the specified bin's time interval.
+    zoom_level = (code >> 28)
+    bin_index = (code & 0x0fffffff)
+    size = @@bin_size[zoom_level]
+    begin_at = BinnedSample.at(bin_index*size)
+    Range.new(begin_at,begin_at+size,true) # [begin,end)    
+  end
+
   def interval
-    # Returns a non-exclusive range [a,b) of UTC timestamps corresponding
+    # Returns a non-exclusive range [a,b) of Times corresponding
     # to this bin's time interval. Implemented with caching.
     @interval ||= begin
-      zoom_level = (binCode >> 28)
-      bin_index = (binCode & 0x0fffffff)
-      size = @@bin_size[zoom_level]
-      begin_at = BinnedSample.at(bin_index*size)
-      end_at = begin_at + size
-      Range.new(begin_at,end_at,true) # [begin,end)      
+      BinnedSample.interval_for_code(self.binCode)
     end
   end
   
@@ -173,6 +178,16 @@ class BinnedSample < ActiveRecord::Base
       self.powerFactorSum,
       self.complexitySum
     ]
+  end
+  
+  def values_from_array!(values)
+    self.temperatureSum,
+    self.lightingSum,
+    self.artificialSum,
+    self.lightFactorSum,
+    self.powerSum,
+    self.powerFactorSum,
+    self.complexitySum = values
   end
   
   # Accumulates one new sample at all zoom levels simultaneously.
