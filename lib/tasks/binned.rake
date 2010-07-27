@@ -24,12 +24,25 @@ namespace :binned do
 
   desc 'Profiles the accumulation of a small batch of sample data'
   task :profile => :delete do
+
     batch_size = 1000
     batch_number = 10
-    Sample.find(:all,:order=>'id ASC',
-      :offset=>batch_number*batch_size,:limit=>batch_size).each do |s|
-      BinnedSample.accumulate(s,false)
-    end    
+
+    require 'ruby-prof'
+    result = RubyProf.profile do
+      Sample.find(:all,:order=>'id ASC',
+        :offset=>batch_number*batch_size,:limit=>batch_size).each do |s|
+        BinnedSample.accumulate(s,false)
+      end
+    end
+    # print an html call graph to a temporary file
+    output = File.new('/tmp/profile.html','w')
+    printer = RubyProf::GraphHtmlPrinter.new(result)
+    printer.print output
+    output.close
+    # print a flat summary to stdout
+    printer = RubyProf::FlatPrinter.new(result)
+    printer.print STDOUT, :min_percent=>1
   end
 
 end
