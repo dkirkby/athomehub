@@ -13,7 +13,7 @@ namespace :binned do
     batch_count = count/batch_size
     puts "Rebuilding from #{count} Sample records in batches of #{batch_size}..."
     batch_count.times do |batch_number|
-      Sample.find(:all,:order=>'id ASC',
+      Sample.find(:all,:order=>'id ASC',:readonly=>true,
         :offset=>batch_number*batch_size,:limit=>batch_size).each do |s|
         BinnedSample.accumulate(s,false)
       end
@@ -30,7 +30,7 @@ namespace :binned do
 
     require 'ruby-prof'
     result = RubyProf.profile do
-      Sample.find(:all,:order=>'id ASC',
+      Sample.find(:all,:order=>'id ASC',:readonly=>true,
         :offset=>batch_number*batch_size,:limit=>batch_size).each do |s|
         BinnedSample.accumulate(s,false)
       end
