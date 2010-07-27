@@ -2,6 +2,8 @@ class BinnedSample < ActiveRecord::Base
   
   include Measured
 
+  before_save :save_bins
+
   # bin size by zoom level: must divide evenly into half of the window size
   # and the bin size of the next zoom level.
   @@bin_size = [
@@ -303,41 +305,33 @@ protected
     return at + 3600
   end
 
-  # An infinite float16 lighting or power value is saved in the Sample
-  # table using database NULL and read back as ruby nil. Translate it
-  # to the value below for the purposes of binning.
-  @@float16_inf = 32768
-
   def self.new_for_sample(code,sample)
     # Returns a new bin for the specified code containing one sample.
     # Method is protected since we do not check the consistency of code
     # and sample.created_at.
-    new({
-      :binCode => code,
-      :networkID => sample.networkID,
-      :temperatureSum => sample.temperature,
-      :lightingSum => (sample.lighting or @@float16_inf),
-      :artificialSum => sample.artificial,
-      :lightFactorSum => sample.lightFactor,
-      :powerSum => (sample.power or @@float16_inf),
-      :powerFactorSum => sample.powerFactor,
-      :complexitySum => sample.complexity,
-      :binCount => 1
-    })
+    new_bin = new({:binCode => code,:networkID => sample.networkID})
+    new_bin.send :first_sample,sample
+    return new_bin
   end
 
+  def first_sample(sample)
+    @_bins = sample.values_as_hash
+    @_count = 1
+  end
+  
   def add_sample(sample)
-    # Adds the specified sample to this bin.
-    # Method is protected since we do not check the consistency of our code
-    # and networkID with sample.created_at and sample.networkID.
-    self.temperatureSum += sample.temperature
-    self.lightingSum += (sample.lighting or @@float16_inf)
-    self.artificialSum += sample.artificial
-    self.lightFactorSum += sample.lightFactor
-    self.powerSum += (sample.power or @@float16_inf)
-    self.powerFactorSum += sample.powerFactor
-    self.complexitySum += sample.complexity
-    self.binCount += 1
+    sample_values = sample.values_as_hash
+    @_bins.each do |key,value|
+      @_bins[key] += sample_values[key]
+    end
+    @_count += 1
+  end
+  
+  def save_bins
+    @_bins.each do |key,value|
+      self[key] = value
+    end
+    self[:binCount] = @_count
   end
 
 end

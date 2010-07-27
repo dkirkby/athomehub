@@ -18,4 +18,23 @@ class Sample < ActiveRecord::Base
     }
   }
 
+  def values_as_hash
+    {
+      :temperatureSum => self.temperature,
+      :lightingSum => (self.lighting or @@float16_inf),
+      :artificialSum => self.artificial,
+      :lightFactorSum => self.lightFactor,
+      :powerSum => (self.power or @@float16_inf),
+      :powerFactorSum => self.powerFactor,
+      :complexitySum => self.complexity
+    }
+  end
+  
+protected
+
+  # An infinite float16 lighting or power value is saved in the Sample
+  # table using database NULL and read back as ruby nil. Translate it
+  # to the value below.
+  @@float16_inf = 32768
+
 end
