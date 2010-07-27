@@ -30,9 +30,11 @@ namespace :binned do
 
     require 'ruby-prof'
     result = RubyProf.profile do
-      Sample.find(:all,:order=>'id ASC',:readonly=>true,
-        :offset=>batch_number*batch_size,:limit=>batch_size).each do |s|
-        BinnedSample.accumulate(s,false)
+      ActiveRecord::Base.transaction do
+        Sample.find(:all,:order=>'id ASC',:readonly=>true,
+          :offset=>batch_number*batch_size,:limit=>batch_size).each do |s|
+          BinnedSample.accumulate(s,false)
+        end
       end
     end
     # print an html call graph to a temporary file
