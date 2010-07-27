@@ -163,6 +163,18 @@ class BinnedSample < ActiveRecord::Base
     ((bin.binCode & 0x0fffffff)*@@bin_size[zoom_level])/@@window_half_size[zoom_level]
   end
   
+  def values_as_array
+    [
+      self.temperatureSum,
+      self.lightingSum,
+      self.artificialSum,
+      self.lightFactorSum,
+      self.powerSum,
+      self.powerFactorSum,
+      self.complexitySum
+    ]
+  end
+  
   # Accumulates one new sample at all zoom levels simultaneously.
   def self.accumulate(sample,auto_save_enabled=true)
     # first-time initialization

@@ -18,16 +18,16 @@ class Sample < ActiveRecord::Base
     }
   }
 
-  def values_as_hash
-    {
-      :temperatureSum => self.temperature,
-      :lightingSum => (self.lighting or @@float16_inf),
-      :artificialSum => self.artificial,
-      :lightFactorSum => self.lightFactor,
-      :powerSum => (self.power or @@float16_inf),
-      :powerFactorSum => self.powerFactor,
-      :complexitySum => self.complexity
-    }
+  def values_as_array
+    [
+      self.temperature,
+      (self.lighting or @@float16_inf),
+      self.artificial,
+      self.lightFactor,
+      (self.power or @@float16_inf),
+      self.powerFactor,
+      self.complexity
+    ]
   end
   
 protected
