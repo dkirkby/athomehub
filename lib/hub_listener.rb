@@ -306,8 +306,8 @@ protected
       :complexity=>sampleData[5],
       :temperature=>sampleData[6]
     })
-    # Accumulate this sample in our BinnedSamples
-    BinnedSample.accumulate s
+    # Accumulate this sample in our BinnedSample accumulators
+    Accumulator.accumulate s
   end
 
   # Handles a buffer dump message.
