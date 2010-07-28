@@ -113,26 +113,31 @@ class Accumulator
       end_code = BinnedSample.bin(interval.end,level)
       deleted = BinnedSample.delete_all([
         'binCode >= ? and binCode < ?',begin_code,end_code])
-      puts "Deleted #{deleted} bins at level #{level}"
+      puts "Deleted #{sprintf '%5d',deleted} bins at level #{level} with " +
+        "codes [#{sprintf '%08x',begin_code},#{sprintf '%08x',end_code})"
     end
     # use a custom save action
     row_data = [ ]
     Accumulator.save_with do |netID,bin,code,count,values|
-      raise "Internal error: rebuild found existing bin?" if bin
+      raise "Internal error: rebuild found existing bin for " +
+        "#{bin.interval.inspect} with code #{sprintf '%08x',bin.binCode}" if bin
       row_data << "(#{netID},#{code},#{count},#{values.join(',')})"
     end
     # loop over samples in this interval in batches (to limit memory usage)
     count = 0
     batch_number = 0
-    batch_sql = "INSERT INTO binned_samples (networkID,binCode,binCount,"+
-      "temperatureSum,lightingSum,artificialSum,lightFactorSum,"+
-      "powerSum,powerFactorSum,complexitySum) VALUES "
+    batch_sql = "INSERT INTO binned_samples (networkID,binCode,binCount," +
+      BinnedSample.array_order.join(',') + ") VALUES "
     begin
       samples = Sample.find(:all,:order=>'id ASC',:readonly=>true,
         :offset=>batch_number*batch_size,:limit=>batch_size,:conditions=>[
-        'created_at >= ? and created_at < ?',interval.begin,interval.end])
+        'created_at >= ? and created_at < ?',interval.begin.utc,interval.end.utc])
       # accumulate the samples in this batch
-      samples.each { |s| Accumulator.accumulate s }
+      samples.each do |s|
+        raise "Sample outside of interval at #{s.created_at.localtime}" unless
+          interval.include? s.created_at
+        Accumulator.accumulate s
+      end
       # write out all of the new bins finished so far
       BinnedSample.connection.execute batch_sql+row_data.join(',')
       row_data.clear

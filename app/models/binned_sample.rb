@@ -166,6 +166,18 @@ class BinnedSample < ActiveRecord::Base
     ((bin.binCode & 0x0fffffff)*@@bin_size[zoom_level])/@@window_half_size[zoom_level]
   end
   
+  def self.array_order
+    [
+      :temperatureSum,
+      :lightingSum,
+      :artificialSum,
+      :lightFactorSum,
+      :powerSum,
+      :powerFactorSum,
+      :complexitySum
+    ]
+  end
+  
   def values_as_array
     [
       self.temperatureSum,
