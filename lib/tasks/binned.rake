@@ -7,19 +7,10 @@ namespace :binned do
   end
 
   desc 'Deletes and rebuilds the binned sample data'
-  task :rebuild => :delete do
-    count = Sample.count
-    batch_size = 1000
-    batch_count = count/batch_size
-    puts "Rebuilding from #{count} Sample records in batches of #{batch_size}..."
-    batch_count.times do |batch_number|
-      Sample.find(:all,:order=>'id ASC',:readonly=>true,
-        :offset=>batch_number*batch_size,:limit=>batch_size).each do |s|
-        BinnedSample.accumulate(s,false)
-      end
-      puts "Finished batch #{batch_number+1} of #{batch_count}"
-    end
-    puts "Created #{BinnedSample.count} BinnedSample records"
+  task :rebuild, [:weeks_ago] => :environment do |t,args|
+    raise 'usage is binned:rebuild[w] where w=number of weeks ago to rebuild' unless
+      args[:weeks_ago] and args[:weeks_ago].to_i >= 0
+    Accumulator.rebuild(args[:weeks_ago].to_i.weeks.ago)
   end
 
   desc 'Profiles the accumulation of a small batch of sample data'
