@@ -32,11 +32,11 @@ class Accumulator
   def add(sample)
     raise 'Samples must be accumulated in time order' unless sample.id > @last_id
     @last_id = sample.id
-    return
     # which bin boundaries does this sample cross, if any?
+    at = sample.created_at
     @@levels.times do |level|
-      code = BinnedSample.bin(@at,level)
-      break(level) if code==@codes[level]
+      code = BinnedSample.bin(at,level)
+      break if code==@codes[level]
       # save the bin at this level and fold its contents into its containing bin
       save_and_fold level
       # update this bin's code
@@ -55,10 +55,28 @@ class Accumulator
     end
   end
 
+  # this default save action can be replaced via save_with below
+  @@default_save = Proc.new do |netID,bin,code,count,values|
+    bin = BinnedSample.new(:networkID=>netID,:binCode=>code) unless bin
+    bin.binCount = count
+    bin.values_from_array! values
+    bin.save
+  end
+  
+  @@save = @@default_save
+  
+  def self.save_with(&action)
+    if block_given? then
+      @@save = action
+    else
+      @@save = @@default_save
+    end
+  end
+  
   def save_and_fold(level)
     raise 'Cannot save empty bin' unless @counts[level] > 0
-    save @pending[level],@codes[level],@counts[level],@bins[level]
-    # add this bin to its containing bin at the next level, if there is one
+    @@save.call @networkID,@pending[level],@codes[level],@counts[level],@bins[level]
+    # fold this bin into its containing bin at the next level, if there is one
     nlevel = level + 1
     if nlevel < @@levels then
       @counts[nlevel] += @counts[level]
@@ -69,14 +87,7 @@ class Accumulator
     @bins[level].map! {0}
     @pending[level]= nil
   end
-  
-  def save(bin,code,count,values)
-    bin = BinnedSample.new(:networkID=>@networkID,:binCode=>code) unless bin
-    bin.binCount = count
-    bin.values_from_array! values
-    bin.save
-  end
-  
+
   @@accumulators = { }
 
   def self.accumulate(sample)
@@ -104,18 +115,34 @@ class Accumulator
         'binCode >= ? and binCode < ?',begin_code,end_code])
       puts "Deleted #{deleted} bins at level #{level}"
     end
+    # use a custom save action
+    row_data = [ ]
+    Accumulator.save_with do |netID,bin,code,count,values|
+      raise "Internal error: rebuild found existing bin?" if bin
+      row_data << "(#{netID},#{code},#{count},#{values.join(',')})"
+    end
     # loop over samples in this interval in batches (to limit memory usage)
-    batch_number = 0
     count = 0
+    batch_number = 0
+    batch_sql = "INSERT INTO binned_samples (networkID,binCode,binCount,"+
+      "temperatureSum,lightingSum,artificialSum,lightFactorSum,"+
+      "powerSum,powerFactorSum,complexitySum) VALUES "
     begin
       samples = Sample.find(:all,:order=>'id ASC',:readonly=>true,
         :offset=>batch_number*batch_size,:limit=>batch_size,:conditions=>[
         'created_at >= ? and created_at < ?',interval.begin,interval.end])
+      # accumulate the samples in this batch
       samples.each { |s| Accumulator.accumulate s }
+      # write out all of the new bins finished so far
+      BinnedSample.connection.execute batch_sql+row_data.join(',')
+      row_data.clear
+      # get ready for the next batch
       count += samples.length
       batch_number += 1
       puts "Binned #{count} samples after batch #{batch_number}"
     end until samples.length < batch_size
+    # restore save action
+    Accumulator.save_with
   end
   
 end

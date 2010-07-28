@@ -2,8 +2,6 @@ class BinnedSample < ActiveRecord::Base
   
   include Measured
 
-  before_save :save_bins
-
   # bin size by zoom level: must divide evenly into half of the window size
   # and the bin size of the next zoom level.
   @@bin_size = [

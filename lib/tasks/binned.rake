@@ -23,20 +23,9 @@ namespace :binned do
   end
 
   desc 'Profiles the accumulation of a small batch of sample data'
-  task :profile => :delete do
-
-    batch_size = 1000
-    batch_number = 10
-
+  task :profile => :environment do
     require 'ruby-prof'
-    result = RubyProf.profile do
-      ActiveRecord::Base.transaction do
-        Sample.find(:all,:order=>'id ASC',:readonly=>true,
-          :offset=>batch_number*batch_size,:limit=>batch_size).each do |s|
-          BinnedSample.accumulate(s,false)
-        end
-      end
-    end
+    result = RubyProf.profile { Accumulator.rebuild(1.week.ago) }
     # print an html call graph to a temporary file
     output = File.new('/tmp/profile.html','w')
     printer = RubyProf::GraphHtmlPrinter.new(result)
