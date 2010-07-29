@@ -1,13 +1,12 @@
 class Accumulator
   
-  @@fields = Sample.new.values_as_array.length
   @@levels = BinnedSample.zoom_levels
 
   class Level
 
     @@fields = Sample.new.values_as_array.length
 
-    attr_reader :code,:count,:bins,:pending
+    attr_reader :code,:count,:bins
 
     def initialize(netID,level)
       @netID = netID
@@ -24,10 +23,9 @@ class Accumulator
 
     def synch(code,bin=nil)
       @code = code
-      if bin then
-        @counts = bin.binCount
-        @bins = bin.values_as_array
-      end
+      return unless bin
+      @count = bin.binCount
+      @bins = bin.values_as_array
       @pending = bin
     end
     
@@ -36,24 +34,28 @@ class Accumulator
       @@fields.times {|k| @bins[k] += bins[k] }
     end
     
-    def save(bin,partial=false)
-      bin = BinnedSample.new(:networkID=>@netID,:binCode=>@code) unless bin
-      bin.binCount = @count
-      bin.values_from_array! @bins
-      bin.save
-      @pending = bin if partial
+    def save(partial=false)
+      # create a new bin unless we have an existing one to update
+      @pending = BinnedSample.new(:networkID=>@netID,:binCode=>@code) unless @pending
+      # transfer our accumulated data to the bin
+      @pending.binCount = @count
+      @pending.values_from_array! @bins
+      # save the bin now
+      @pending.save
+      # remember this bin if this was a partial update
+      @pending = nil unless partial
+    end
+    
+    def debug_save(partial=false)
+     puts "Saving #{sprintf '%08x',@code} with #{sprintf '%6d',@count} entries " +
+      " (#{partial})"
     end
 
   end
 
   def initialize(networkID)
     @networkID = networkID
-    @codes = Array.new(@@levels)
-    @counts = Array.new(@@levels) {0}
-    @bins = Array.new(@@levels) do |level|
-      Array.new(@@fields) {0}
-    end
-    @pending = Array.new(@@levels)
+    @level_acc = Array.new(@@levels) { |level| Level.new(networkID,level) }
     @last_id = -1
     @bin_boundary = nil
     at_exit { self.flush }
@@ -62,16 +64,13 @@ class Accumulator
   # Pre-loads any bins already in the database at the specified time.
   def synch(at)
     @@levels.times do |level|
-      @codes[level] = BinnedSample.bin(at,level)
+      code = BinnedSample.bin(at,level)
       bin = BinnedSample.find(:first,
-        :conditions=>['networkID=? and binCode=?',@networkID,@codes[level]])
-      next unless bin
-      @counts[level] = bin.binCount
-      @bins[level] = bin.values_as_array
-      @pending[level] = bin
+        :conditions=>['networkID=? and binCode=?',@networkID,code])      
+      @level_acc[level].synch code,bin
     end
     # initialize the level-0 bin boundary
-    @bin_boundary = BinnedSample.interval_for_code(@codes[0]).end.to_i
+    @bin_boundary = BinnedSample.interval_for_code(@level_acc[0].code).end.to_i
   end
   
   def fold(from_level)
@@ -83,21 +82,12 @@ class Accumulator
       # fold into all enclosing bins so that auto-saved bins are up to date
       to_level = @@levels - 1
     end
-    count = @counts[from_level]
-    bins = @bins[from_level]
+    count = @level_acc[from_level].count
+    bins = @level_acc[from_level].bins
     (from_level+1).upto(to_level) do |level|
       ##puts "folding #{count} from level #{from_level} to #{level}"
-      @counts[level] += count
-      @@fields.times {|k| @bins[level][k] += bins[k] }
+      @level_acc[level].add(count,bins)
     end
-  end
-  
-  def reset(level,code=nil)
-    # resets the bin at the specified level
-    @codes[level] = code
-    @counts[level] = 0
-    @bins[level].map! {0}
-    @pending[level]= nil    
   end
   
   # periodically auto-save levels above this threshold
@@ -115,37 +105,36 @@ class Accumulator
       # which bin boundaries does this sample cross?
       crossing_depth = @@levels.times do |level|
         code = BinnedSample.bin(at,level)
-        break(level) if code==@codes[level]
+        break(level) if code==@level_acc[level].code
         # save this bin now
-        save level
+        @level_acc[level].save
         # fold this bin's contents into its enclosing bins
         fold level
         # reset this bin to track a new interval
-        reset level,code
+        @level_acc[level].reset code
       end
       # auto-save bins at levels >= crossing_depth when ever a bin
       # at level >= @@auto_save_threshold rolls over
       if crossing_depth > @@auto_save_threshold and crossing_depth < @@levels-1 then
         crossing_depth.upto(@@levels-1) do |level|
-          @pending[level] = save(level,true)
+          @level_acc[level].save true
         end
       end
       # update the level-0 bin boundary
-      @bin_boundary = BinnedSample.interval_for_code(@codes[0]).end.to_i
+      @bin_boundary = BinnedSample.interval_for_code(@level_acc[0].code).end.to_i
     end
     # add this sample to our level-0 bin
     values = sample.values_as_array
-    @@fields.times {|k| @bins[0][k] += values[k] }
-    @counts[0] += 1
+    @level_acc[0].add(1,values)
   end
   
   def flush
     puts "flushing accumulator for network ID #{@networkID}"
     @@levels.times do |level|
-      if @counts[level] > 0 then
-        save level
+      if @level_acc[level].count > 0 then
+        @level_acc[level].save
         fold level
-        reset level
+        @level_acc[level].reset
       end
     end
     @last_id = -1
@@ -163,27 +152,6 @@ class Accumulator
     bin.values_from_array! values
     bin.save
     bin
-  end
-
-  @@debug_save = Proc.new do |netID,partial,bin,code,count,values|
-    puts "Saving #{sprintf '%08x',code} with #{sprintf '%6d',count} entries (#{partial})"
-    nil
-  end
-  
-  @@save = @@default_save
-  
-  def self.save_with(&action)
-    if block_given? then
-      @@save = action
-    else
-      @@save = @@default_save
-    end
-  end
-  
-  def save(level,partial=false)
-    raise 'Cannot save empty bin!' if @counts[level] <= 0
-    @@save.call @networkID,partial,@pending[level],
-      @codes[level],@counts[level],@bins[level]
   end
 
   @@accumulators = { }
@@ -224,18 +192,26 @@ class Accumulator
       total += deleted
     end
     puts "Deleted a total of #{total} BinnedSample records"
-    # use a custom save action
-    total = 0
-    row_data = [ ]
-    Accumulator.save_with do |netID,partial,bin,code,count,values|
-      # ignore auto-save requests for partially filled bins
-      raise "Internal error: rebuild found existing bin for " +
-        "#{bin.interval.inspect} with code #{sprintf '%08x',bin.binCode}" if bin
-      if not partial
-        row_data << "(#{netID},#{code},#{count},#{values.join(',')})"
-        total += 1
+    # modify the Level class to use a custom save action
+    ::Accumulator::Level.class_eval do
+      @@rebuild_total = 0
+      @@rebuild_row_data = [ ]
+      alias original_save save
+      def save(partial=false)
+        raise "Internal Error: found existing bin " +
+          "#{sprintf '%08x',@pending.binCode}" if @pending
+        return if partial
+        @@rebuild_row_data << "(#{@netID},#{@code},#{@count},#{@bins.join(',')})"
+        @@rebuild_total += 1
       end
-      nil
+      def self.rebuild_total
+        @@rebuild_total
+      end
+      def self.rebuild_row_data
+        data_string = @@rebuild_row_data.join(',')
+        @@rebuild_row_data.clear
+        return data_string
+      end
     end
     # loop over samples in this interval in batches (to limit memory usage)
     count = 0
@@ -255,17 +231,17 @@ class Accumulator
       # flush the bins in memory if this is the last batch
       Accumulator.flush_all if samples.length < batch_size
       # write out all of the new bins finished so far
-      BinnedSample.connection.execute batch_sql+row_data.join(',')
-      row_data.clear
+      BinnedSample.connection.execute batch_sql+Level.rebuild_row_data
       # get ready for the next batch
       count += samples.length
       batch_number += 1
       puts "Binned #{count} samples after batch #{batch_number}"
     end until samples.length < batch_size
-    puts "Created a total of #{total} BinnedSample records"
-    # restore save action
-    Accumulator.save_with
-    return
+    puts "Created a total of #{Level.rebuild_total} BinnedSample records"
+    # restore the Level class
+    ::Accumulator::Level.class_eval do
+      alias save original_save
+    end
   end
   
   def self.validate(at)
