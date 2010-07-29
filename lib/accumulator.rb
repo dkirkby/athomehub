@@ -188,8 +188,10 @@ class Accumulator
       # ignore auto-save requests for partially filled bins
       raise "Internal error: rebuild found existing bin for " +
         "#{bin.interval.inspect} with code #{sprintf '%08x',bin.binCode}" if bin
-      row_data << "(#{netID},#{code},#{count},#{values.join(',')})" unless partial
-      total += 1
+      if not partial
+        row_data << "(#{netID},#{code},#{count},#{values.join(',')})"
+        total += 1
+      end
       nil
     end
     # loop over samples in this interval in batches (to limit memory usage)
@@ -220,6 +222,33 @@ class Accumulator
     puts "Created a total of #{total} BinnedSample records"
     # restore save action
     Accumulator.save_with
+    return
+  end
+  
+  def self.validate(at)
+    # find the top-level bin interval containing the specified time
+    top_code = BinnedSample.bin(at,@@levels-1)
+    interval = BinnedSample.interval_for_code(top_code)
+    puts "Validating #{interval}"
+    counts = { }
+    @@levels.times do |level|
+      begin_code = BinnedSample.bin(interval.begin,level)
+      end_code = BinnedSample.bin(interval.end,level)
+      BinnedSample.find(:all,:readonly=>true,:conditions=>[
+        'binCode >= ? and binCode < ?',begin_code,end_code]).each do |bin|
+        netID = bin.networkID
+        counts[netID] = Array.new(@@levels) {0} unless counts.has_key? netID
+        counts[netID][level] += bin.binCount
+      end
+    end
+    counts.each do |netID,level_counts|
+      1.upto(@@levels-1) do |level|
+        next if level_counts[level] == level_counts[0]
+        puts "Found invalid counts for netID #{netID}: #{level_counts.join ','}"
+        break
+      end
+    end
+    nil
   end
   
 end
