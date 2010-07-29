@@ -199,81 +199,6 @@ class BinnedSample < ActiveRecord::Base
     self.powerFactorSum,
     self.complexitySum = values
   end
-  
-  # Accumulates one new sample at all zoom levels simultaneously.
-  def self.accumulate(sample,auto_save_enabled=true)
-    # first-time initialization
-    if not defined? @@accumulators then
-      @@last_id = { }
-      @@accumulators = { }
-      at_exit { BinnedSample.flush }
-    end
-    # have we seen this network ID yet?
-    netID = sample.networkID
-    if @@last_id.has_key? netID then
-      # samples must be passed to this method in ascending ID order.
-      raise "Samples must be accumulated in increasing ID order " +
-        "(#{sample.id} < #{@@last_id[netID]})" unless sample.id > @@last_id[netID]
-    end
-    @@last_id[netID] = sample.id
-    # have we seen this network ID before?
-    if not @@accumulators.has_key?(netID) then
-      # create the accumulators at each zoom level for this network ID
-      at = sample.created_at
-      @@accumulators[netID] = Array.new(@@bin_size.length) do |zoom_level|
-        code = bin(at,zoom_level)
-        find_by_networkID_and_binCode(netID,code) or new_for_sample(code,sample)
-      end
-    else
-      # loop over the active bins for this networkID
-      at = sample.created_at
-      spanned = false
-      auto_save = false
-      accumulators = @@accumulators[netID]
-      accumulators.each_index do |zoom_level|
-        bin = accumulators[zoom_level]
-        if not spanned
-          # this sample did not fit into a smaller zoom level bin so might
-          # not fit into the bin at this zoom level either
-          if at < bin.interval.end then
-            # accumulate this sample (using send to call protected from class method)
-            bin.send :add_sample,sample
-            # periodic auto-save?
-            bin.save if auto_save
-            # the active bins at all larger zoom levels must, by construction,
-            # span this sample
-            spanned = true
-          else
-            # save the active bin
-            bin.save
-            # create a new bin containing only this sample
-            code = bin(at,zoom_level)
-            accumulators[zoom_level] = new_for_sample(code,sample)
-            # auto-save bins at larger zoom levels?
-            auto_save = (zoom_level >= 1) and auto_save_enabled
-          end
-        else
-          # accumulate this sample (using send to call protected from class method)
-          bin.send :add_sample,sample
-          # periodic auto-save?
-          bin.save if auto_save
-        end
-      end
-    end
-    return
-  end
-  
-  def self.flush
-    # flushes accumulation bins in memory
-    puts "Flushing BinnedSamples in memory..."
-    @@accumulators.each do |netID,bins|
-      puts "Flushing #{bins.length} bins for network ID #{netID}"
-      bins.each do |bin|
-        bin.save
-      end
-    end
-    @@accumulators = { }
-  end
 
 protected
 
@@ -340,35 +265,6 @@ protected
       last if at <= range.end
     end
     return at + 3600
-  end
-
-  def self.new_for_sample(code,sample)
-    # Returns a new bin for the specified code containing one sample.
-    # Method is protected since we do not check the consistency of code
-    # and sample.created_at.
-    new_bin = new({:binCode => code,:networkID => sample.networkID})
-    new_bin.send :first_sample,sample
-    return new_bin
-  end
-
-  def first_sample(sample)
-    @_bins = sample.values_as_hash
-    @_count = 1
-  end
-  
-  def add_sample(sample)
-    sample_values = sample.values_as_hash
-    @_bins.each do |key,value|
-      @_bins[key] += sample_values[key]
-    end
-    @_count += 1
-  end
-  
-  def save_bins
-    @_bins.each do |key,value|
-      self[key] = value
-    end
-    self[:binCount] = @_count
   end
 
 end

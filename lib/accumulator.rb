@@ -141,19 +141,6 @@ class Accumulator
     @bin_boundary = nil
   end
 
-  # this default save action can be replaced via save_with below
-  @@default_save = Proc.new do |netID,partial,bin,code,count,values|
-    ##if partial then
-    ##  puts "Old count for partial #{sprintf '%08x',code} is #{bin.binCount}" if bin
-    ##  puts "New count for partial #{sprintf '%08x',code} is #{count}"
-    ##end
-    bin = BinnedSample.new(:networkID=>netID,:binCode=>code) unless bin
-    bin.binCount = count
-    bin.values_from_array! values
-    bin.save
-    bin
-  end
-
   @@accumulators = { }
 
   # This is the main entry point for using an accumulator.
