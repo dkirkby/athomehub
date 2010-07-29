@@ -3,6 +3,49 @@ class Accumulator
   @@fields = Sample.new.values_as_array.length
   @@levels = BinnedSample.zoom_levels
 
+  class Level
+
+    @@fields = Sample.new.values_as_array.length
+
+    attr_reader :code,:count,:bins,:pending
+
+    def initialize(netID,level)
+      @netID = netID
+      @bins = Array.new(@@fields)
+      reset
+    end
+    
+    def reset(code=nil)
+      @code = code
+      @count = 0
+      @bins.map! {0}
+      @pending= nil    
+    end
+
+    def synch(code,bin=nil)
+      @code = code
+      if bin then
+        @counts = bin.binCount
+        @bins = bin.values_as_array
+      end
+      @pending = bin
+    end
+    
+    def add(count,bins)
+      @count += count
+      @@fields.times {|k| @bins[k] += bins[k] }
+    end
+    
+    def save(bin,partial=false)
+      bin = BinnedSample.new(:networkID=>@netID,:binCode=>@code) unless bin
+      bin.binCount = @count
+      bin.values_from_array! @bins
+      bin.save
+      @pending = bin if partial
+    end
+
+  end
+
   def initialize(networkID)
     @networkID = networkID
     @codes = Array.new(@@levels)
