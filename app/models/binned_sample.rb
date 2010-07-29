@@ -208,53 +208,6 @@ protected
   # might ever be used.
   @@epoch = Time.local(2010,1,3).to_i # Sun Jan 03 00:00:00 2010
 
-  # Tabulate the US daylight savings times for each year
-  @@dst_ranges = Time.local(2010,3,14,2).isdst ?
-    [
-      Range.new(Time.local(2010,3,14,2),Time.local(2010,11,7,2),true),
-      Range.new(Time.local(2011,3,13,2),Time.local(2011,11,6,2),true)
-    ] :
-    [ ] # no daylight savings in AZ, HI
-    
-  def self._is_dst?(at)
-    @@dst_ranges.each do |range|
-      return false if at < range.begin
-      return true if at < range.end
-    end
-    return false
-  end
-  
-  def self.is_dst?(at)
-    answer1 = BinnedSample._is_dst? at
-    answer2 = at.localtime.isdst
-    puts "dst discrepancy at #{at}: #{answer1} != #{answer2}" unless answer1 == answer2
-    return answer1
-  end
-
-  def self.benchmark_dst
-    require 'benchmark'
-    begin_at = Time.local(2010,7)
-    end_at = Time.local(2011,7)
-    hours = (end_at - begin_at).to_i/1.hour
-    Benchmark.bm do |x|
-      x.report { hours.times {|hr| BinnedSample.is_dst?(begin_at + hr.hours)} }
-      x.report { hours.times {|hr| (begin_at + hr.hours).localtime.isdst} }      
-      x.report { hours.times {|hr| BinnedSample.is_dst?(begin_at + hr.hours)} }
-      x.report { hours.times {|hr| (begin_at + hr.hours).localtime.isdst} }      
-    end
-  end
-
-  def self.validate_dst
-    begin_at = Time.local(2010)
-    end_at = Time.local(2012)
-    hours = (end_at - begin_at).to_i/1.hour
-    hours.times do |hr|
-      at = begin_at + hr.hours
-      next if BinnedSample.is_dst?(at) == at.isdst
-      puts "BinnedSample.isdst? differs from Time.isdst at #{at}"
-    end
-  end
-
   # Returns the number of seconds elapsed since the epoch with adjustment for
   # daylight savings so that elapsed/3600 is correctly aligned when daylight
   # savings is in effect (this introduces a one hour gap in the spring and
