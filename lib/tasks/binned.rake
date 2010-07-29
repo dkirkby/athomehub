@@ -11,6 +11,7 @@ namespace :binned do
     raise 'usage is binned:rebuild[w] where w=number of weeks ago to rebuild' unless
       args[:weeks_ago] and args[:weeks_ago].to_i >= 0
     Accumulator.rebuild(args[:weeks_ago].to_i.weeks.ago)
+    Accumulator.validate(args[:weeks_ago].to_i.weeks.ago)
   end
 
   desc 'Profiles the accumulation of a small batch of sample data'
