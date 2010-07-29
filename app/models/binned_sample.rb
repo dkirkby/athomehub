@@ -216,6 +216,45 @@ protected
     ] :
     [ ] # no daylight savings in AZ, HI
     
+  def self._is_dst?(at)
+    @@dst_ranges.each do |range|
+      return false if at < range.begin
+      return true if at < range.end
+    end
+    return false
+  end
+  
+  def self.is_dst?(at)
+    answer1 = BinnedSample._is_dst? at
+    answer2 = at.localtime.isdst
+    puts "dst discrepancy at #{at}: #{answer1} != #{answer2}" unless answer1 == answer2
+    return answer1
+  end
+
+  def self.benchmark_dst
+    require 'benchmark'
+    begin_at = Time.local(2010,7)
+    end_at = Time.local(2011,7)
+    hours = (end_at - begin_at).to_i/1.hour
+    Benchmark.bm do |x|
+      x.report { hours.times {|hr| BinnedSample.is_dst?(begin_at + hr.hours)} }
+      x.report { hours.times {|hr| (begin_at + hr.hours).localtime.isdst} }      
+      x.report { hours.times {|hr| BinnedSample.is_dst?(begin_at + hr.hours)} }
+      x.report { hours.times {|hr| (begin_at + hr.hours).localtime.isdst} }      
+    end
+  end
+
+  def self.validate_dst
+    begin_at = Time.local(2010)
+    end_at = Time.local(2012)
+    hours = (end_at - begin_at).to_i/1.hour
+    hours.times do |hr|
+      at = begin_at + hr.hours
+      next if BinnedSample.is_dst?(at) == at.isdst
+      puts "BinnedSample.isdst? differs from Time.isdst at #{at}"
+    end
+  end
+
   # Returns the number of seconds elapsed since the epoch with adjustment for
   # daylight savings so that elapsed/3600 is correctly aligned when daylight
   # savings is in effect (this introduces a one hour gap in the spring and
@@ -233,11 +272,7 @@ protected
   #   
   def self.elapsed(at)
     elapsed = at.to_i - @@epoch
-    @@dst_ranges.each do |range|
-      return elapsed+3600 if range.include? at
-      # quit now if all remaining ranges are in the future
-      last if at <= range.end
-    end
+    elapsed += 3600 if at.localtime.isdst # BinnedSample.is_dst? at
     return elapsed
   end
   
@@ -259,12 +294,8 @@ protected
   #
   def self.at(elapsed)
     at = Time.at(@@epoch + elapsed - 3600)
-    @@dst_ranges.each do |range|
-      return at if range.include? at
-      # quit now if all remaining ranges are in the future
-      last if at <= range.end
-    end
-    return at + 3600
+    at += 3600 unless at.localtime.isdst # BinnedSample.is_dst? at
+    return at
   end
 
 end
