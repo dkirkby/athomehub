@@ -1,3 +1,4 @@
+Thu Jul 29 12:52:10 PDT 2010 david@dk.local More optimization of binned rebuild task
 Mon Jul 26 14:29:01 PDT 2010 david@dk.local Speed up binned sample accumulate for rebuild task
 Mon Jul 26 11:19:20 PDT 2010 david@dk.local Debug power color in detail plots
 Mon Jul 26 09:41:39 PDT 2010 david@dk.local Implement sample binning
