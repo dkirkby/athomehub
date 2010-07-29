@@ -31,6 +31,35 @@ class Accumulator
     @bin_boundary = BinnedSample.interval_for_code(@codes[0]).end.to_i
   end
   
+  def fold(from_level)
+    return if from_level > @@auto_save_threshold or from_level == @@levels-1
+    if from_level < @@auto_save_threshold then
+      # only fold one level up
+      to_level = from_level+1
+    else
+      # fold into all enclosing bins so that auto-saved bins are up to date
+      to_level = @@levels - 1
+    end
+    count = @counts[from_level]
+    bins = @bins[from_level]
+    (from_level+1).upto(to_level) do |level|
+      ##puts "folding #{count} from level #{from_level} to #{level}"
+      @counts[level] += count
+      @@fields.times {|k| @bins[level][k] += bins[k] }
+    end
+  end
+  
+  def reset(level,code=nil)
+    # resets the bin at the specified level
+    @codes[level] = code
+    @counts[level] = 0
+    @bins[level].map! {0}
+    @pending[level]= nil    
+  end
+  
+  # periodically auto-save levels above this threshold
+  @@auto_save_threshold = 1
+  
   # Adds one sample with no check on its networkID.
   def add(sample)
     raise 'Samples must be accumulated in time order' unless sample.id > @last_id
@@ -41,13 +70,22 @@ class Accumulator
     # are we still in the same bins?
     if at.to_i >= @bin_boundary then
       # which bin boundaries does this sample cross?
-      @@levels.times do |level|
+      crossing_depth = @@levels.times do |level|
         code = BinnedSample.bin(at,level)
-        break if code==@codes[level]
-        # save the bin at this level and fold its contents into its containing bin
-        save_and_fold_and_reset level
-        # update this bin's code
-        @codes[level] = code
+        break(level) if code==@codes[level]
+        # save this bin now
+        save level
+        # fold this bin's contents into its enclosing bins
+        fold level
+        # reset this bin to track a new interval
+        reset level,code
+      end
+      # auto-save bins at levels >= crossing_depth when ever a bin
+      # at level >= @@auto_save_threshold rolls over
+      if crossing_depth > @@auto_save_threshold and crossing_depth < @@levels-1 then
+        crossing_depth.upto(@@levels-1) do |level|
+          @pending[level] = save(level,true)
+        end
       end
       # update the level-0 bin boundary
       @bin_boundary = BinnedSample.interval_for_code(@codes[0]).end.to_i
@@ -61,18 +99,32 @@ class Accumulator
   def flush
     puts "flushing accumulator for network ID #{@networkID}"
     @@levels.times do |level|
-      save_and_fold_and_reset(level) if @counts[level] > 0
+      if @counts[level] > 0 then
+        save level
+        fold level
+        reset level
+      end
     end
     @last_id = -1
     @bin_boundary = nil
   end
 
   # this default save action can be replaced via save_with below
-  @@default_save = Proc.new do |netID,bin,code,count,values|
+  @@default_save = Proc.new do |netID,partial,bin,code,count,values|
+    ##if partial then
+    ##  puts "Old count for partial #{sprintf '%08x',code} is #{bin.binCount}" if bin
+    ##  puts "New count for partial #{sprintf '%08x',code} is #{count}"
+    ##end
     bin = BinnedSample.new(:networkID=>netID,:binCode=>code) unless bin
     bin.binCount = count
     bin.values_from_array! values
     bin.save
+    bin
+  end
+
+  @@debug_save = Proc.new do |netID,partial,bin,code,count,values|
+    puts "Saving #{sprintf '%08x',code} with #{sprintf '%6d',count} entries (#{partial})"
+    nil
   end
   
   @@save = @@default_save
@@ -85,20 +137,10 @@ class Accumulator
     end
   end
   
-  def save_and_fold_and_reset(level)
+  def save(level,partial=false)
     raise 'Cannot save empty bin!' if @counts[level] <= 0
-    @@save.call @networkID,@pending[level],@codes[level],@counts[level],@bins[level]
-    # fold this bin into its containing bin at the next level, if there is one
-    nlevel = level + 1
-    if nlevel < @@levels then
-      @counts[nlevel] += @counts[level]
-      @@fields.times {|k| @bins[nlevel][k] += @bins[level][k] }
-    end
-    # reset this bin
-    @codes[level] = nil
-    @counts[level] = 0
-    @bins[level].map! {0}
-    @pending[level]= nil
+    @@save.call @networkID,partial,@pending[level],
+      @codes[level],@counts[level],@bins[level]
   end
 
   @@accumulators = { }
@@ -142,11 +184,13 @@ class Accumulator
     # use a custom save action
     total = 0
     row_data = [ ]
-    Accumulator.save_with do |netID,bin,code,count,values|
-      ##raise "Internal error: rebuild found existing bin for " +
-      ##  "#{bin.interval.inspect} with code #{sprintf '%08x',bin.binCode}" if bin
-      row_data << "(#{netID},#{code},#{count},#{values.join(',')})"
+    Accumulator.save_with do |netID,partial,bin,code,count,values|
+      # ignore auto-save requests for partially filled bins
+      raise "Internal error: rebuild found existing bin for " +
+        "#{bin.interval.inspect} with code #{sprintf '%08x',bin.binCode}" if bin
+      row_data << "(#{netID},#{code},#{count},#{values.join(',')})" unless partial
       total += 1
+      nil
     end
     # loop over samples in this interval in batches (to limit memory usage)
     count = 0
