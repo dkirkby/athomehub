@@ -7,6 +7,47 @@ class Accumulator
     @@fields = Sample.new.values_as_array.length
 
     attr_reader :code,:count,:bins
+    
+    class Integrator
+      
+      def initialize(size,code,history,&hasher)
+        @count_history = Array.new(size)
+        @powerSum_history = Array.new(size)
+        @hasher = hasher
+        @running_count = 0
+        @running_powerSum = 0
+        history.each do |bin|
+          offset = @hasher.call(bin.binCode)
+          add(bin,offset)
+        end
+        @last_code = code
+      end
+
+      def add(bin,offset)
+        count,psum = bin.binCount,bin.powerSum
+        @count_history[offset] = count
+        @powerSum_history[offset] = psum
+        @running_count += count
+        @running_powerSum += psum
+      end
+      
+      def update(bin)
+        @last_code.upto(bin.binCode) do |code|
+          offset = @hasher.call(bin.binCode)
+          next unless @count_history[offset]
+          @running_count -= @count_history[offset]
+          @running_powerSum -= @powerSum_history[offset]
+          @count_history[offset] = nil
+          @powerSum_history[offset] = nil
+        end
+        add(bin,offset)
+      end
+      
+      def power_average
+        @running_count > 0 ? @running_powerSum/@running_count : 0
+      end
+      
+    end
 
     def initialize(netID,level)
       @netID = netID
