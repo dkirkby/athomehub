@@ -15,7 +15,10 @@ class Accumulator
       # conversion from average Watts to kWh used over @@duration
       @@conversion = @@duration/3.6e6
       
-      def initialize(bin_size)
+      @@powerSumIndex = BinnedSample.array_order.index :powerSum
+      
+      def initialize(netID,bin_size)
+        @netID = netID
         # Calculate the number of bins that span the integration interval.
         @nbins,remainder = @@duration.divmod bin_size
         raise 'Invalid integrator bin_size' if @nbins >= 1 and remainder != 0
@@ -35,41 +38,49 @@ class Accumulator
         (code & 0x0fffffff) % @nbins
       end
       
-      def synch(code,history)
-        @last_code = code
+      def synch(code)
+        @last_code = code - 1
         return if @nbins == 0
+        begin_code = code - @nbins
+        history = BinnedSample.find(:all,:readonly=>true,:conditions=>[
+          "networkID = ? and binCode >= ? and binCode <= ?",
+          @netID,begin_code,@last_code])
         history.each do |bin|
-          add(bin,offset(bin.binCode))
+          index = offset(bin.binCode)
+          raise 'Circular buffer collision' if @count_cbuf[index]
+          add(index,bin.binCount,bin.powerSum)
         end
       end
 
-      def add(bin,offset)
-        count,psum = bin.binCount,bin.powerSum
+      def add(offset,count,psum)
         @count_cbuf[offset] = count
         @powerSum_cbuf[offset] = psum
         @running_count += count
         @running_powerSum += psum
       end
       
-      def advance(bin)
-        raise "Advance must move forwards!" unless bin.binCode > @last_code
+      def advance(to_code,count,bins)
+        raise "Advance must move forwards!" unless to_code > @last_code
+        psum = bins[@@powerSumIndex]
         if @nbins == 0 then
-          @running_count = bin.binCount
-          @running_powerSum = bin.powerSum
+          @running_count = count
+          @running_powerSum = psum
           return
         end
-        (@last_code+1).upto(bin.binCode) do |code|
-          index = offset(bin.binCode)
+        index = nil
+        (@last_code+1).upto(to_code) do |code|
+          index = offset(code)
           next unless @count_cbuf[index]
           @running_count -= @count_cbuf[index]
           @running_powerSum -= @powerSum_cbuf[index]
           @count_cbuf[index] = nil
           @powerSum_cbuf[index] = nil
         end
-        add(bin,index)
+        add(index,count,psum)
+        @last_code = to_code
       end
       
-      def running_energy
+      def usage
         # returns the running energy use in kWh over the past @@duration
         @@conversion*@running_powerSum/@running_count if @running_count > 0
       end
@@ -79,7 +90,7 @@ class Accumulator
     def initialize(netID,bin_size)
       @netID = netID
       @bins = Array.new(@@fields)
-      @integrator = Integrator.new(bin_size)
+      @integrator = Integrator.new(netID,bin_size)
       reset
     end
     
@@ -92,10 +103,16 @@ class Accumulator
 
     def synch(code,bin=nil)
       @code = code
+      @integrator.synch @code
       return unless bin
       @count = bin.binCount
       @bins = bin.values_as_array
       @pending = bin
+    end
+    
+    def advance
+      @integrator.advance @code,@count,@bins
+      #puts "Integrated #{sprintf '%6.2f',@integrator.usage} kWh at #{sprintf '%08x',@code}"
     end
     
     def add(count,bins)
@@ -177,6 +194,8 @@ class Accumulator
       crossing_depth = @@levels.times do |level|
         code = BinnedSample.bin(at,level)
         break(level) if code==@level_acc[level].code
+        # advance this bin's integrator
+        @level_acc[level].advance
         # save this bin now
         @level_acc[level].save
         # fold this bin's contents into its enclosing bins
