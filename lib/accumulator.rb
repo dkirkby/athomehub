@@ -10,48 +10,76 @@ class Accumulator
     
     class Integrator
       
-      def initialize(size,code,history,&hasher)
-        @count_history = Array.new(size)
-        @powerSum_history = Array.new(size)
-        @hasher = hasher
+      @@duration = 24.hours
+      
+      # conversion from average Watts to kWh used over @@duration
+      @@conversion = @@duration/3.6e6
+      
+      def initialize(bin_size)
+        # Calculate the number of bins that span the integration interval.
+        @nbins,remainder = @@duration.divmod bin_size
+        raise 'Invalid integrator bin_size' if @nbins >= 1 and remainder != 0
+        # initialize running counts of the circular buffer contents
         @running_count = 0
         @running_powerSum = 0
-        history.each do |bin|
-          offset = @hasher.call(bin.binCode)
-          add(bin,offset)
-        end
+        # A bin size larger than the integration interval is allowed, in
+        # which case we do not actually do any integration.
+        return if @nbins == 0
+        # initialize circular buffers of sample counts and power sums
+        @count_cbuf = Array.new(@nbins)
+        @powerSum_cbuf = Array.new(@nbins)
+      end
+      
+      def offset(code)
+        # returns the offset of the specified code in our circular buffers
+        (code & 0x0fffffff) % @nbins
+      end
+      
+      def synch(code,history)
         @last_code = code
+        return if @nbins == 0
+        history.each do |bin|
+          add(bin,offset(bin.binCode))
+        end
       end
 
       def add(bin,offset)
         count,psum = bin.binCount,bin.powerSum
-        @count_history[offset] = count
-        @powerSum_history[offset] = psum
+        @count_cbuf[offset] = count
+        @powerSum_cbuf[offset] = psum
         @running_count += count
         @running_powerSum += psum
       end
       
-      def update(bin)
-        @last_code.upto(bin.binCode) do |code|
-          offset = @hasher.call(bin.binCode)
-          next unless @count_history[offset]
-          @running_count -= @count_history[offset]
-          @running_powerSum -= @powerSum_history[offset]
-          @count_history[offset] = nil
-          @powerSum_history[offset] = nil
+      def advance(bin)
+        raise "Advance must move forwards!" unless bin.binCode > @last_code
+        if @nbins == 0 then
+          @running_count = bin.binCount
+          @running_powerSum = bin.powerSum
+          return
         end
-        add(bin,offset)
+        (@last_code+1).upto(bin.binCode) do |code|
+          index = offset(bin.binCode)
+          next unless @count_cbuf[index]
+          @running_count -= @count_cbuf[index]
+          @running_powerSum -= @powerSum_cbuf[index]
+          @count_cbuf[index] = nil
+          @powerSum_cbuf[index] = nil
+        end
+        add(bin,index)
       end
       
-      def power_average
-        @running_count > 0 ? @running_powerSum/@running_count : 0
+      def running_energy
+        # returns the running energy use in kWh over the past @@duration
+        @@conversion*@running_powerSum/@running_count if @running_count > 0
       end
       
     end
 
-    def initialize(netID,level)
+    def initialize(netID,bin_size)
       @netID = netID
       @bins = Array.new(@@fields)
+      @integrator = Integrator.new(bin_size)
       reset
     end
     
@@ -96,7 +124,9 @@ class Accumulator
 
   def initialize(networkID)
     @networkID = networkID
-    @level_acc = Array.new(@@levels) { |level| Level.new(networkID,level) }
+    @level_acc = Array.new(@@levels) do |level|
+      Level.new(networkID,BinnedSample.size(level))
+    end
     @last_id = -1
     @bin_boundary = nil
     at_exit { self.flush }
