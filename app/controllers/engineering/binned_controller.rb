@@ -36,7 +36,7 @@ protected
       # don't include zoom levels with too many bins
       next if last_code - first_code > 300
       # initialize arrays for plot values
-      tval = [ ]
+      tval,tval_energy = [ ],[ ]
       temp,light,art,lf,pwr,energy,pf,cmplx = [ ],[ ],[ ],[ ],[ ],[ ],[ ],[ ]
       binned = BinnedSample.find_all_by_networkID(@config.networkID,
         :conditions=>['binCode >= ? and binCode <= ?',first_code,last_code])
@@ -51,9 +51,12 @@ protected
         art << bin.artificial
         lf << bin.lightFactor
         pwr << bin.power
-        energy << bin.energyUsage
         pf << bin.powerFactor
         cmplx << bin.complexity
+        if bin.energyUsage then
+          tval_energy << 1e3*(ival.end.to_i + ival.end.utc_offset)
+          energy << bin.energyUsage
+        end
       end
       next unless tval.length > 0
       label = "Zoom-#{zoom_level} #{BinnedSample.size_as_words(zoom_level)}"
@@ -62,7 +65,7 @@ protected
       @binnedPlots[:artificial] << { :data => tval.zip(art), :label => label }
       @binnedPlots[:lightFactor] << { :data => tval.zip(lf), :label => label }
       @binnedPlots[:power] << { :data => tval.zip(pwr), :label => label }
-      @binnedPlots[:energy] << { :data => tval.zip(energy), :label => label }
+      @binnedPlots[:energy] << { :data => tval_energy.zip(energy), :label => label }
       @binnedPlots[:powerFactor] << { :data => tval.zip(pf), :label => label }
       @binnedPlots[:complexity] << { :data => tval.zip(cmplx), :label => label }
     end

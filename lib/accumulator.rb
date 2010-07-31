@@ -27,8 +27,9 @@ class Accumulator
         # initialize running counts of the circular buffer contents
         @running_count = 0
         @running_powerSum = 0
-        # A bin size larger than the integration interval is allowed, in
+        # A bin size >= than the integration interval is allowed, in
         # which case we do not actually do any integration.
+        @nbins = 0 if @nbins == 1
         return if @nbins == 0
         # initialize circular buffers of sample counts and power sums
         @count_cbuf = Array.new(@nbins)
@@ -52,6 +53,7 @@ class Accumulator
           raise 'Circular buffer collision' if @count_cbuf[index]
           add(index,bin.binCount,bin.powerSum)
         end
+        #puts "synch: #{@netID} count is #{@running_count} for #{code >> 28},#{code & 0x0fffffff}"
       end
 
       def add(offset,count,psum)
@@ -64,17 +66,22 @@ class Accumulator
       def advance(to_code,count,bins)
         raise "Advance must move forwards!" unless to_code > @last_code
         psum = bins[@@powerSumIndex]
-        return energyUsage(psum,1) if @nbins == 0
+        return energyUsage(psum,count) if @nbins == 0
         index = nil
+        dropped = 0
         (@last_code+1).upto(to_code) do |code|
           index = offset(code)
           next unless @count_cbuf[index]
+          dropped += 1
           @running_count -= @count_cbuf[index]
           @running_powerSum -= @powerSum_cbuf[index]
+          @running_powerSum = 0 if @running_powerSum < 0
           @count_cbuf[index] = nil
           @powerSum_cbuf[index] = nil
         end
         add(index,count,psum)
+        #puts "advance: #{@netID} count is #{@running_count} for " +
+        #  "#{to_code >> 28},#{to_code & 0x0fffffff} (dropped #{dropped}/#{to_code-@last_code})"
         @last_code = to_code
         return energyUsage(@running_powerSum,@running_count)
       end
@@ -222,6 +229,7 @@ class Accumulator
     puts "flushing accumulator for network ID #{@networkID}"
     @@levels.times do |level|
       if @level_acc[level].count > 0 then
+        @level_acc[level].advance
         @level_acc[level].save
         fold level
         @level_acc[level].reset
