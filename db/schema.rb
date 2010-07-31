@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(:version => 20100731141747) do
     t.float   "powerFactorSum"
     t.float   "complexitySum"
     t.integer "binCount"
-    t.float   "usage"
+    t.float   "energyUsage"
   end
 
   add_index "binned_samples", ["binCode"], :name => "index_binned_samples_on_binCode"
