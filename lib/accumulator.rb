@@ -4,7 +4,9 @@ class Accumulator
 
   class Level
 
-    @@fields = Sample.new.values_as_array.length
+    @@fields = BinnedSample.array_order.length
+    raise 'Expected :usage as BinnedSample.array_order.last' unless
+      BinnedSample.array_order.last == :usage
 
     attr_reader :code,:count,:bins
     
@@ -62,11 +64,7 @@ class Accumulator
       def advance(to_code,count,bins)
         raise "Advance must move forwards!" unless to_code > @last_code
         psum = bins[@@powerSumIndex]
-        if @nbins == 0 then
-          @running_count = count
-          @running_powerSum = psum
-          return
-        end
+        return usage(psum,1) if @nbins == 0
         index = nil
         (@last_code+1).upto(to_code) do |code|
           index = offset(code)
@@ -78,11 +76,12 @@ class Accumulator
         end
         add(index,count,psum)
         @last_code = to_code
+        return usage(@running_powerSum,@running_count)
       end
       
-      def usage
+      def usage psum,count
         # returns the running energy use in kWh over the past @@duration
-        @@conversion*@running_powerSum/@running_count if @running_count > 0
+        @@conversion*psum/count if count > 0
       end
       
     end
@@ -111,13 +110,14 @@ class Accumulator
     end
     
     def advance
-      @integrator.advance @code,@count,@bins
+      @bins[-1] = @integrator.advance @code,@count,@bins
       #puts "Integrated #{sprintf '%6.2f',@integrator.usage} kWh at #{sprintf '%08x',@code}"
     end
     
     def add(count,bins)
       @count += count
-      @@fields.times {|k| @bins[k] += bins[k] }
+      # update our xxxSum values (but not the last value which is the integrated usage)
+      (@@fields-1).times {|k| @bins[k] += bins[k] }
     end
     
     def save(partial=false)
@@ -278,7 +278,7 @@ class Accumulator
         raise "Internal Error: found existing bin " +
           "#{sprintf '%08x',@pending.binCode}" if @pending
         return if partial
-        @@rebuild_row_data << "(#{@netID},#{@code},#{@count},#{@bins.join(',')})"
+        @@rebuild_row_data << "(#{@netID},#{@code},#{@count},#{@bins[0..-2].join(',')})"
         @@rebuild_total += 1
       end
       def self.rebuild_total
@@ -294,7 +294,7 @@ class Accumulator
     count = 0
     batch_number = 0
     batch_sql = "INSERT INTO binned_samples (networkID,binCode,binCount," +
-      BinnedSample.array_order.join(',') + ") VALUES "
+      BinnedSample.array_order[0..-2].join(',') + ") VALUES "
     begin
       samples = Sample.find(:all,:order=>'id ASC',:readonly=>true,
         :offset=>batch_number*batch_size,:limit=>batch_size,:conditions=>[
