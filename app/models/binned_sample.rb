@@ -175,7 +175,7 @@ class BinnedSample < ActiveRecord::Base
       :powerSum,
       :powerFactorSum,
       :complexitySum,
-      :usage
+      :energyUsage
     ]
   end
   
@@ -188,7 +188,7 @@ class BinnedSample < ActiveRecord::Base
       self.powerSum,
       self.powerFactorSum,
       self.complexitySum,
-      @usage
+      self.energyUsage
     ]
   end
   
@@ -200,7 +200,7 @@ class BinnedSample < ActiveRecord::Base
     self.powerSum,
     self.powerFactorSum,
     self.complexitySum,
-    @usage = values
+    self.energyUsage = values
   end
 
 protected

@@ -5,8 +5,8 @@ class Accumulator
   class Level
 
     @@fields = BinnedSample.array_order.length
-    raise 'Expected :usage as BinnedSample.array_order.last' unless
-      BinnedSample.array_order.last == :usage
+    raise 'Expected :energyUsage as BinnedSample.array_order.last' unless
+      BinnedSample.array_order.last == :energyUsage
 
     attr_reader :code,:count,:bins
     
@@ -64,7 +64,7 @@ class Accumulator
       def advance(to_code,count,bins)
         raise "Advance must move forwards!" unless to_code > @last_code
         psum = bins[@@powerSumIndex]
-        return usage(psum,1) if @nbins == 0
+        return energyUsage(psum,1) if @nbins == 0
         index = nil
         (@last_code+1).upto(to_code) do |code|
           index = offset(code)
@@ -76,10 +76,10 @@ class Accumulator
         end
         add(index,count,psum)
         @last_code = to_code
-        return usage(@running_powerSum,@running_count)
+        return energyUsage(@running_powerSum,@running_count)
       end
       
-      def usage psum,count
+      def energyUsage psum,count
         # returns the running energy use in kWh over the past @@duration
         @@conversion*psum/count if count > 0
       end
@@ -111,7 +111,7 @@ class Accumulator
     
     def advance
       @bins[-1] = @integrator.advance @code,@count,@bins
-      #puts "Integrated #{sprintf '%6.2f',@integrator.usage} kWh at #{sprintf '%08x',@code}"
+      #puts "Integrated #{sprintf '%6.2f',@bins[-1]} kWh at #{sprintf '%08x',@code}"
     end
     
     def add(count,bins)
@@ -278,7 +278,7 @@ class Accumulator
         raise "Internal Error: found existing bin " +
           "#{sprintf '%08x',@pending.binCode}" if @pending
         return if partial
-        @@rebuild_row_data << "(#{@netID},#{@code},#{@count},#{@bins[0..-2].join(',')})"
+        @@rebuild_row_data << "(#{@netID},#{@code},#{@count},#{@bins.join(',')})"
         @@rebuild_total += 1
       end
       def self.rebuild_total
@@ -294,7 +294,7 @@ class Accumulator
     count = 0
     batch_number = 0
     batch_sql = "INSERT INTO binned_samples (networkID,binCode,binCount," +
-      BinnedSample.array_order[0..-2].join(',') + ") VALUES "
+      BinnedSample.array_order.join(',') + ") VALUES "
     begin
       samples = Sample.find(:all,:order=>'id ASC',:readonly=>true,
         :offset=>batch_number*batch_size,:limit=>batch_size,:conditions=>[
