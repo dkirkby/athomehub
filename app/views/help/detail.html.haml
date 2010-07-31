@@ -29,10 +29,20 @@
 	
 %p
 	The power graph displays the energy consumption rate in
-	=link_to "Watts.", :action=>:units
+	=link_to "Watts (W).", :action=>:units
 	Move the mouse pointer over a power graph point to display its equivalent 24-hour
 	cost. The area below the power graph is shaded since it is the amount of shaded area
-	that measures to your energy use and bill.
+	that measures to your energy use and cost, as displayed in the next graph.
+	
+%p
+	The energy cost graph displays the actual energy cost over the past 24
+	hours in cents. Move the mouse pointer over a graph point to display the usage
+	in both
+	=link_to "Kilowatt-hours (kWh)", :action=>:units
+	and &cent;/day. Each point on this graph is based on the power measured
+	by the smartstrip over the preceding 24 hours. In case the smartstrip was not
+	reporting data for some part of these 24 hours, the value displayed will be an
+	estimate assuming that data that was reported is typical for the whole period.
 	
 %p
 	Use the note area below the graphs to enter any questions or observations about
