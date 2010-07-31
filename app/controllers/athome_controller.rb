@@ -3,6 +3,8 @@ class AthomeController < ApplicationController
   before_filter :valid_nid,:only=>[:detail,:replot]
   before_filter :valid_window,:only=>[:detail,:replot]
 
+  @@no_data = "<span class='nodata'>no data</span>"
+
   def index
     @samples = [ ]
     # cutoff for supressing stale data
@@ -17,18 +19,17 @@ class AthomeController < ApplicationController
       sample = Sample.for_networkID(profile.networkID,@at).last
       # find the most recent binned sample at the smallest zoom level
       bin = BinnedSample.for_networkID(profile.networkID,0,@at).last
-      energyCost = bin ? bin.displayEnergyCost : no_data
+      energyCost = bin ? bin.displayEnergyCost : @@no_data
       # update the maximum sample record ID seen
       @max_id = sample.id if sample.id > @max_id
       # is this a recent enough sample to display?
       if sample.created_at < stale_cutoff then
-        no_data = "<span class='nodata'>no data</span>"
         @samples << {
           :profile => profile,
-          :temperature => no_data,
-          :lighting => [no_data],
-          :power => no_data,
-          :cost => no_data,
+          :temperature => @@no_data,
+          :lighting => [@@no_data],
+          :power => @@no_data,
+          :cost => @@no_data,
           :energy => energyCost
         }
       else
@@ -68,6 +69,9 @@ class AthomeController < ApplicationController
       cells << s[:lighting][0] if ATHOME['display_lighting']
       cells << @template.colorize(s.displayPower) <<
         @template.colorize(s.displayCost) if ATHOME['display_power']
+      # lookup the latest energy usage for this networkID
+      bin = BinnedSample.for_networkID(sample.networkID,0).last
+      cells << (bin ? bin.displayEnergyCost : @@no_data) if ATHOME['display_power']
       tag = sprintf "nid%02x",s.networkID
       response[:updates][tag] = cells
     end
