@@ -42,6 +42,24 @@ class BinnedSample < ActiveRecord::Base
       :conditions => ['binCode >= ? and binCode <= ?',begin_code-1,end_code+1]
     }
   }
+  
+  # Returns bins recorded for the specified networkID at the specified zoom level
+  # and up to the specified utc time which defaults to now.
+  named_scope :for_networkID, lambda { |*args|
+    networkID,zoom_level = args[0..1]
+    begin_code = (zoom_level << 28)
+    if args.length > 2 then
+      end_code = BinnedSample.bin(args.last,zoom_level)
+    else
+      end_code = (begin_code|0x0fffffff)
+    end
+    {
+      :order => 'binCode ASC',
+      :conditions => [ 'networkID = ? and binCode >= ? and binCode <= ?',
+        networkID,begin_code,end_code],
+      :readonly => true
+    }
+  }    
 
   def temperature
     temperatureSum/binCount if binCount > 0

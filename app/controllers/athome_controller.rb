@@ -13,8 +13,11 @@ class AthomeController < ApplicationController
     DeviceProfile.latest(@at).each do |profile|
       # hide this profile's data if requested
       next if profile.display_order < 0
-      # find most recent sample for this profile at the requested time
+      # find the most recent sample for this profile at the requested time
       sample = Sample.for_networkID(profile.networkID,@at).last
+      # find the most recent binned sample at the smallest zoom level
+      bin = BinnedSample.for_networkID(profile.networkID,0,@at).last
+      energyCost = bin ? bin.displayEnergyCost : no_data
       # update the maximum sample record ID seen
       @max_id = sample.id if sample.id > @max_id
       # is this a recent enough sample to display?
@@ -25,7 +28,8 @@ class AthomeController < ApplicationController
           :temperature => no_data,
           :lighting => [no_data],
           :power => no_data,
-          :cost => no_data
+          :cost => no_data,
+          :energy => energyCost
         }
       else
         @samples << {
@@ -33,7 +37,8 @@ class AthomeController < ApplicationController
           :temperature => sample.displayTemperature,
           :lighting => [sample.lighting,sample.artificial,sample.lightFactor],
           :power => sample.displayPower,
-          :cost => sample.displayCost
+          :cost => sample.displayCost,
+          :energy => energyCost
         }
       end
     end

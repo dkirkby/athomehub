@@ -1,7 +1,7 @@
 :javascript
 	last = #{@max_id}
 
-#content.live-updates
+#content.no-live-updates
 	#header
 		uci@home
 	#body
@@ -18,6 +18,7 @@
 				-if ATHOME['display_power']
 					%th.vcol Power
 					%th.vcol Projected
+					%th.vcol Actual
 			-@samples.each do |s|
 				-where = s[:profile].description
 				-nid = s[:profile].networkID
@@ -30,6 +31,7 @@
 					-if ATHOME['display_power']
 						%td= colorize s[:power]
 						%td= colorize s[:cost]
+						%td= s[:energy]
 	%ul#navigation
 		%li home
 		%li=link_to "help",:controller=>:help,:action=>:home
