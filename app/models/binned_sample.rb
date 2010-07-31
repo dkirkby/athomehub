@@ -75,24 +75,12 @@ class BinnedSample < ActiveRecord::Base
     energyUsage*ATHOME['energy_cost'] if energyUsage
   end
   
+  def displayEnergyCost
+    autoRangeCost theEnergyCost
+  end
+  
   def displayEnergyUsage
-    # select a precision based on the value and append "W" for Watts
-    case energyUsage
-    when nil
-      # this can happen if the device reports float16 infinity
-      display = "&mdash;"
-    when 0..0.003
-      display = "0kWh"
-    when 0.003..0.03
-      display = sprintf "%.3fkWh",energyUsage
-    when 0.03..0.3
-      display = sprintf "%.2fkWh",energyUsage
-    when 0.3..3
-      display = sprintf "%.1fkWh",energyUsage
-    else
-      display = sprintf "%.0fkWh",energyUsage
-    end
-    return display
+    autoRange energyUsage,'kWh'
   end
 
   def self.zoom_levels

@@ -43,24 +43,27 @@ module Measured
     @colorPower = [hue,saturation,brightness]
   end
 
-  def displayPower
-    # select a precision based on the value and append "W" for Watts
-    case power
+  def autoRange(value,units,nilDisplay='&mdash;')
+    # select a precision based on the value and append the specified units
+    case value
     when nil
-      # this can happen if the device reports float16 infinity
-      display = "&mdash;"
+      display = nilDisplay
     when 0..0.003
-      display = "0W"
+      display = "0"
     when 0.003..0.03
-      display = sprintf "%.3fW",power
+      display = sprintf "%.3f",value
     when 0.03..0.3
-      display = sprintf "%.2fW",power
+      display = sprintf "%.2f",value
     when 0.3..3
-      display = sprintf "%.1fW",power
+      display = sprintf "%.1f",value
     else
-      display = sprintf "%.0fW",power
+      display = sprintf "%.0f",value
     end
-    return {:content=>display,:hsb=>colorPower}
+    display + units
+  end
+  
+  def displayPower
+    {:content=>autoRange(power,'W'),:hsb=>colorPower}
   end
 
   # Returns the cost in cents corresponding to 24 hour continuous usage
@@ -73,16 +76,21 @@ module Measured
     return kWh_per_day*ATHOME['energy_cost']
   end
   
-  def displayCost
-    case cost = theCost
+  def autoRangeCost(amount,period='/day')
+    # select a format based on the specified amount in cents
+    case amount
     when 0..1
-      display = "&lt;1&cent;/day"
+      display = "&lt;1&cent;"
     when 1..99
-      display = sprintf "%d&cent;/day",cost.round
+      display = sprintf "%d&cent;",amount.round
     else
-      display = sprintf "$%.2f/day",1e-2*cost
+      display = sprintf "$%.2f",1e-2*amount.round
     end
-    return {:content=>display,:hsb=>colorPower}
+    display + period
+  end
+
+  def displayCost
+    {:content=>autoRangeCost(theCost),:hsb=>colorPower}
   end
 
 end

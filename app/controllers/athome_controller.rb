@@ -163,7 +163,7 @@ protected
         # interval since it represents the running usage through the whole bin
         tval_e << 1e3*(midpt.to_i + @bin_size/2)
         energy << bin.theEnergyCost
-        energy_labels << bin.displayEnergyUsage
+        energy_labels << "#{bin.displayEnergyUsage}, #{bin.displayEnergyCost}"
       end
     end
     # prepare plot titles
