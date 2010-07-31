@@ -139,8 +139,8 @@ protected
       rightEdge = 1e3*(@window_end.to_i + @window_end.utc_offset)
     end
     # build arrays of t,y values to plot
-    tval,temp,light,pwr = [ ],[ ],[ ],[ ]
-    temp_labels,light_labels,pwr_labels = [ ],[ ],[ ]
+    tval,tval_e,temp,light,pwr,energy = [ ],[ ],[ ],[ ],[ ],[ ]
+    temp_labels,light_labels,pwr_labels,energy_labels = [ ],[ ],[ ],[ ]
     pwr_colors = [ ]
     @binned.each do |bin|
       # save the interval midpoint as this bin's timestamp
@@ -158,18 +158,27 @@ protected
       pwr_labels << "#{bin.displayPower[:content]}, #{bin.displayCost[:content]}"
       color = @template.rgb_to_hex(@template.hsb_to_rgb(bin.colorPower))
       pwr_colors << color
+      if bin.energyUsage then
+        # display each energy usage update at the end of the corresponding bin
+        # interval since it represents the running usage through the whole bin
+        tval_e << 1e3*(midpt.to_i + @bin_size/2)
+        energy << bin.theEnergyCost
+        energy_labels << bin.displayEnergyUsage
+      end
     end
     # prepare plot titles
     @plotTitles = {
       :temperature => "Temperature (&deg;#{ATHOME['temperature_units']})",
       :lighting => "Lighting",
-      :power => "Power Consumption (Watts)"
+      :power => "Power Consumption (Watts)",
+      :energy => "Actual Energy Cost (&cent; for past 24 hours)"
     }
     # prepare datapoint labels
     @dataLabels = {
       :temperature => temp_labels,
       :lighting => light_labels,
-      :power => pwr_labels
+      :power => pwr_labels,
+      :energy => energy_labels
     }
     # prepare plotting options
     commonOptions = {
@@ -202,6 +211,10 @@ protected
       :power => commonOptions.merge({
         # power axis always starts at zero
         :yaxis=>{ :labelWidth=>label_width, :min=>0 }
+      }),
+      :energy => commonOptions.merge({
+        # energy axis always starts at zero
+        :yaxis=>{ :labelWidth=>label_width, :min=>0 }
       })
     }
     # prepare the plots from the arrays built above
@@ -216,6 +229,10 @@ protected
       :power => [{
         :data => tval.zip(pwr), :color=>plot_color, :pointColors=>pwr_colors,
         :lines=>{ :fill=>true, :fillColor=>'rgba(200,200,200,0.5)' }
+      }],
+      :energy => [{
+        :data => tval_e.zip(energy), :color=>plot_color,
+        :points => { :show=>false }
       }]
     }
   end
