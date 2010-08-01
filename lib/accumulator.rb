@@ -104,6 +104,7 @@ class Accumulator
       @code = code
       @count = 0
       @bins.map! {0}
+      @bins[-1] = nil # energy usage is undefined until a bin is fully accumulated
       @pending= nil    
     end
 
