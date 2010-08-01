@@ -155,7 +155,7 @@ class DeviceConfig < ActiveRecord::Base
     line1 + line2 + line3 + line4
   end
   
-  def update_energy_feedback
+  def update_energy_feedback(make_changes = true)
     # compares the most recent 24-hour energy cost for this configuration's
     # networkID with the 'energy_feedback_green' and 'energy_feedback_red'
     # preferences and enables the greenGlow or redGlow capability if appropriate.
@@ -173,22 +173,22 @@ class DeviceConfig < ActiveRecord::Base
       if cost < ATHOME['energy_feedback_green'] then
         # greenGlow should be enabled
         changed ||= (self.greenGlow == false)
-        self.greenGlow = true
+        self.greenGlow = true if make_changes
       else
         # greenGlow should be disabled
         changed ||= (self.greenGlow == true)
-        self.greenGlow = false
+        self.greenGlow = false if make_changes
       end
     end
     if ATHOME['energy_feedback_red'] then
       if cost > ATHOME['energy_feedback_red'] then
         # redGlow should be enabled
         changed ||= (self.redGlow == false)
-        self.redGlow = true
+        self.redGlow = true if make_changes
       else
         # redGlow should be disabled
         changed ||= (self.redGlow == true)
-        self.redGlow = false
+        self.redGlow = false if make_changes
       end
     end
     ##puts "after: #{greenGlow} #{redGlow}, changed is #{changed}"
