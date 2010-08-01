@@ -154,5 +154,45 @@ class DeviceConfig < ActiveRecord::Base
       lightGainHiLoRatio,darkThreshold,artificialThreshold
     line1 + line2 + line3 + line4
   end
+  
+  def update_energy_feedback
+    # compares the most recent 24-hour energy cost for this configuration's
+    # networkID with the 'energy_feedback_green' and 'energy_feedback_red'
+    # preferences and enables the greenGlow or redGlow capability if appropriate.
+    # Returns true if the update changes this configuration or else false.
+    return false unless
+      ATHOME['energy_feedback_green'] || ATHOME['energy_feedback_red']
+    # lookup the most recent BinnedSample for this config's network ID
+    bin = BinnedSample.for_networkID(self.networkID,0).last
+    return false unless bin
+    cost = bin.theEnergyCost
+    ##puts "before: #{greenGlow} #{redGlow}"
+    ##puts "energy cost is #{cost}"
+    changed = false
+    if ATHOME['energy_feedback_green'] then
+      if cost < ATHOME['energy_feedback_green'] then
+        # greenGlow should be enabled
+        changed ||= (self.greenGlow == false)
+        self.greenGlow = true
+      else
+        # greenGlow should be disabled
+        changed ||= (self.greenGlow == true)
+        self.greenGlow = false
+      end
+    end
+    if ATHOME['energy_feedback_red'] then
+      if cost > ATHOME['energy_feedback_red'] then
+        # redGlow should be enabled
+        changed ||= (self.redGlow == false)
+        self.redGlow = true
+      else
+        # redGlow should be disabled
+        changed ||= (self.redGlow == true)
+        self.redGlow = false
+      end
+    end
+    ##puts "after: #{greenGlow} #{redGlow}, changed is #{changed}"
+    return changed
+  end
 
 end
