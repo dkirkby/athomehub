@@ -134,6 +134,10 @@ protected
   # Sends a device its configuration data
   def sendConfig(config)
     @logger.info "Sending config ID #{config.id} created at #{config.created_at.localtime} for SN #{config.serialNumber}"
+    # update this config, if necessary to reflect visual energy feedback prefs
+    updated = config.update_energy_feedback
+    @logger.info "Updated config based on energy feedback prefs" if updated
+    # prepare the serial command to send to the hub
     config_msg = config.serialize_for_device
     @logger.info "Using config command #{config_msg.rstrip}"
     # The following write sometimes gets corrupted but I don't know why.
