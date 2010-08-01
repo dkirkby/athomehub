@@ -136,7 +136,8 @@ protected
     @logger.info "Sending config ID #{config.id} created at #{config.created_at.localtime} for SN #{config.serialNumber}"
     # update this config, if necessary to reflect visual energy feedback prefs
     updated = config.update_energy_feedback
-    @logger.info "Updated config based on energy feedback prefs" if updated
+    @logger.info "Modified config based on energy feedback prefs to " +
+      "green=#{config.greenGlow}, red=#{config.redGlow}" if updated
     # prepare the serial command to send to the hub
     config_msg = config.serialize_for_device
     @logger.info "Using config command #{config_msg.rstrip}"
@@ -482,9 +483,12 @@ protected
     # check if we need to update the config of any already-configured device
     # because of a change in its 24-hour energy usage
     @configured.each do |netID,c|
+      @logger.info "NetworkID #{netID} visual energy feedback: " +
+        "green=#{c.greenGlow}, red=#{c.redGlow}"
       next if to_send.has_key? netID
       next unless c.update_energy_feedback
-      @logger.info "Updating visual energy feedback for network ID #{netID}"
+      @logger.info "Updating visual energy feedback for network ID #{netID} to " +
+        "green=#{c.greenGlow}, red=#{c.redGlow}"
       to_send[c.serialNumber] = c
     end
     # send the config updates now
