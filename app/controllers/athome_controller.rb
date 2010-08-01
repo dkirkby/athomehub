@@ -65,7 +65,7 @@ class AthomeController < ApplicationController
       # Add this sample to our response, overwriting any previous update
       # for the same network ID.
       cells = [ ]
-      cells << s[:temperature] if ATHOME['display_temperature']
+      cells << s.displayTemperature if ATHOME['display_temperature']
       cells << s[:lighting][0] if ATHOME['display_lighting']
       cells << @template.colorize(s.displayPower) <<
         @template.colorize(s.displayCost) if ATHOME['display_power']
