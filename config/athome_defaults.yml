@@ -4,5 +4,5 @@ display_power: true
 temperature_units: F # only F and C are supported
 energy_cost: 10.0 # cost of one kWh in cents
 
-energy_feedback_red: false # false or threshold energy cost in cents/day
-energy_feedback_green: false # false or threshold energy cost in cents/day
+energy_feedback_red: false # false or min threshold energy cost in cents/day
+energy_feedback_green: false # false or max threshold energy cost in cents/day

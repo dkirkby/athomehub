@@ -71,7 +71,8 @@ class AthomeController < ApplicationController
         @template.colorize(s.displayCost) if ATHOME['display_power']
       # lookup the latest energy usage for this networkID
       bin = BinnedSample.for_networkID(s.networkID,0).last
-      cells << (bin ? bin.displayEnergyCost : @@no_data) if ATHOME['display_power']
+      cells << (bin ? @template.colorize(bin.displayEnergyCost) :
+        @@no_data) if ATHOME['display_power']
       tag = sprintf "nid%02x",s.networkID
       response[:updates][tag] = cells
     end
@@ -172,7 +173,7 @@ protected
         # interval since it represents the running usage through the whole bin
         tval_e << 1e3*(midpt.to_i + @bin_size/2)
         energy << bin.theEnergyCost
-        energy_labels << "#{bin.displayEnergyUsage}, #{bin.displayEnergyCost}"
+        energy_labels << "#{bin.displayEnergyUsage}, #{bin.displayEnergyCost[:content]}"
       end
     end
     # prepare plot titles

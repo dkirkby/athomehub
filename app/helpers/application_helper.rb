@@ -61,7 +61,9 @@ module ApplicationHelper
     # pass through unless we can find the content to colorize
     return what unless what.instance_of? Hash and what.has_key? :content
     # apply color if requested
-    if what.has_key? :rgb then
+    if what.has_key? :color then
+      color = what[:color]
+    elsif what.has_key? :rgb then
       color = rgb_to_hex what[:rgb]
     elsif what.has_key? :hsb then
       color = rgb_to_hex(hsb_to_rgb(what[:hsb]))

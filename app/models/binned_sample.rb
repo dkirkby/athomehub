@@ -93,8 +93,18 @@ class BinnedSample < ActiveRecord::Base
     energyUsage*ATHOME['energy_cost'] if energyUsage
   end
   
+  def colorEnergyCost
+    cost = theEnergyCost
+    return 'inherit' unless cost
+    return 'green' if ATHOME['energy_feedback_green'] &&
+      (cost < ATHOME['energy_feedback_green'])
+    return 'red' if ATHOME['energy_feedback_red'] &&
+      (cost > ATHOME['energy_feedback_red'])
+    return 'inherit'
+  end
+  
   def displayEnergyCost
-    autoRangeCost theEnergyCost
+    {:content=>autoRangeCost(theEnergyCost),:color=>colorEnergyCost}
   end
   
   def displayEnergyUsage
