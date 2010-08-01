@@ -160,7 +160,7 @@ protected
     # update the config associated with each serial number
     @configs[config.serialNumber] = config
     # remember that this networkID is configured
-    @configured[config.networkID] = true
+    @configured[config.networkID] = config
     # update our config high water mark if it was set by this pending config
     @config_min_id += 1 if @config_min_id == config.id
     # we are no longer pending on this device
@@ -479,6 +479,14 @@ protected
     end
     # our min ID should be at least the smallest ID seen
     @config_min_id = id_min if id_min and id_min > @config_min_id
+    # check if we need to update the config of any already-configured device
+    # because of a change in its 24-hour energy usage
+    @configured.each do |netID,c|
+      next if to_send.has_key? netID
+      next unless c.update_energy_feedback
+      @logger.info "Updating visual energy feedback for network ID #{netID}"
+      to_send[c.serialNumber] = c
+    end
     # send the config updates now
     to_send.each do |sn,c|
       sendConfig c
