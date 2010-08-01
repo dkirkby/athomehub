@@ -47,7 +47,7 @@ module Measured
     # select a precision based on the value and append the specified units
     case value
     when nil
-      display = nilDisplay
+      return nilDisplay
     when 0..0.003
       display = "0"
     when 0.003..0.03
@@ -76,9 +76,11 @@ module Measured
     return kWh_per_day*ATHOME['energy_cost']
   end
   
-  def autoRangeCost(amount,period='/day')
+  def autoRangeCost(amount,period='/day',nilDisplay='&mdash;')
     # select a format based on the specified amount in cents
     case amount
+    when nil
+      return nilDisplay
     when 0..1
       display = "&lt;1&cent;"
     when 1..99
