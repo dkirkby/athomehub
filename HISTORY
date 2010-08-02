@@ -1,3 +1,4 @@
+Sun Aug  1 17:22:40 PDT 2010 david@dk.local Implement 24 hour energy usage visual feedback
 Sat Jul 31 12:17:40 PDT 2010 david@dk.local Implement 24 hour power integration
 Thu Jul 29 12:52:10 PDT 2010 david@dk.local More optimization of binned rebuild task
 Mon Jul 26 14:29:01 PDT 2010 david@dk.local Speed up binned sample accumulate for rebuild task
