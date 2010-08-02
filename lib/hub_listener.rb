@@ -483,13 +483,17 @@ protected
     # check if we need to update the config of any already-configured device
     # because of a change in its 24-hour energy usage
     @configured.each do |netID,c|
-      @logger.info "NetworkID #{netID} visual energy feedback: " +
-        "green=#{c.greenGlow}, red=#{c.redGlow}"
+      ##@logger.info "NetworkID #{netID} visual energy feedback: " +
+      ##  "green=#{c.greenGlow}, red=#{c.redGlow}"
       next if to_send.has_key? netID
-      next unless c.update_energy_feedback
+      # test if this config needs updating (without actually updating it)
+      next unless c.update_energy_feedback(false)
+      # queue up a new config with the energy feedback updates
+      new_config = c.clone
+      new_config.update_energy_feedback(true)
       @logger.info "Updating visual energy feedback for network ID #{netID} to " +
-        "green=#{c.greenGlow}, red=#{c.redGlow}"
-      to_send[c.serialNumber] = c
+        "green=#{new_config.greenGlow}, red=#{new_config.redGlow}"
+      to_send[c.serialNumber] = new_config
     end
     # send the config updates now
     to_send.each do |sn,c|
