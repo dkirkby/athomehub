@@ -242,7 +242,7 @@ protected
       }],
       :energy => [{
         :data => tval_e.zip(energy), :color=>plot_color,
-        :points => { :show=>false }
+        :points => { :radius=>3, :fillColor=>plot_color }
       }]
     }
   end
