@@ -25,9 +25,22 @@
 %h2 Power Display
 
 %p
-	The electric power consumed by each smartstrip is display in two ways: in
+	The real-time electric power consumed by each smartstrip is display in two ways: in
 	=link_to "Watts",:action=>:units
 	and as a projected cost. The projected cost corresponds to continuous usage at the
 	present rate for 24 hours, using a nominal energy cost of 10&cent; per kilowatt-hour.
 	Let one of the researchers know if you would like to use a different nominal cost
 	for your display.
+
+%p
+	The right-hand column on your home page shows the actual cost of the energy used
+	by each smartstrip over the past 24 hours. The value updates continuously so that,
+	for example, at 3:14pm on Thursday it is reporting your actual energy cost since
+	3:14pm Wednesday.	When the projected cost is above the actual cost, you are using 
+	more power than usual at that location, based on the past 24 hours.
+
+%p
+	Actual cost values are based on the power measured by the smartstrip over the 
+	preceding 24 hours. In case the smartstrip was not reporting data for some part
+	of these 24 hours, the value displayed will be an estimate assuming that data
+	that was reported is typical for the whole period.
