@@ -21,7 +21,7 @@ class AthomeController < ApplicationController
       bin = BinnedSample.for_networkID(profile.networkID,0,@at).last
       energyCost = bin ? bin.displayEnergyCost : @@no_data
       # update the maximum sample record ID seen
-      @max_id = sample.id if sample && sample.id > @max_id
+      @max_id = sample.id if (sample && sample.id > @max_id)
       # is this a recent enough sample to display?
       if (sample == nil) || (sample.created_at < stale_cutoff) then
         @samples << {
