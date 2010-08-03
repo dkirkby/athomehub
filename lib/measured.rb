@@ -34,7 +34,7 @@ module Measured
     return unless temp
     tmin = config.comfortTempMin
     tmax = config.comfortTempMax
-    dt = 0.1*(tmax-tmin)
+    dt = 0.2*(tmax-tmin)
     blue = 1/(1+Math.exp(-(tmin-temp)/dt))
     red = 1/(1+Math.exp(-(temp-tmax)/dt))
     @colorTemperature = [red,0,blue]

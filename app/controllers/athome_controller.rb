@@ -152,7 +152,7 @@ protected
     # build arrays of t,y values to plot
     tval,tval_e,temp,light,pwr,energy = [ ],[ ],[ ],[ ],[ ],[ ]
     temp_labels,light_labels,pwr_labels,energy_labels = [ ],[ ],[ ],[ ]
-    pwr_colors = [ ]
+    temp_colors,pwr_colors = [ ],[ ]
     @binned.each do |bin|
       # save the interval midpoint as this bin's timestamp
       ival = bin.interval
@@ -162,7 +162,9 @@ protected
       # convert seconds since epoch to millisecs for javascript
       tval << 1e3*midpt.to_i
       temp << bin.theTemperature
-      temp_labels << bin.displayTemperature
+      temp_labels << bin.displayTemperature[:content]
+      color = @template.rgb_to_hex(bin.colorTemperature)
+      temp_colors << color
       light << bin.lighting
       light_labels << sprintf("%.1f",bin.lighting)
       pwr << bin.power
@@ -232,7 +234,7 @@ protected
     plot_color = 'rgba(150,150,150,0.5)'
     @plotData = {
       :temperature => [{
-        :data => tval.zip(temp), :color=>plot_color
+        :data => tval.zip(temp), :color=>plot_color, :pointColors=>temp_colors
       }],
       :lighting => [{
         :data => tval.zip(light), :color=>plot_color
