@@ -1,7 +1,7 @@
 :javascript
 	last = #{@max_id}
 
-#content.live-updates
+#content{:class=> (params.has_key?('at') ? 'replay':'live-updates')}
 	#header
 		uci@home
 	#body
