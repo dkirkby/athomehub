@@ -26,6 +26,15 @@ module Measured
   end
   
   def colorTemperature
+    return @colorTemperature if @colorTemperature
+    temp = theTemperature
+    return unless temp
+    tmin = config.comfortTempMin
+    tmax = config.comfortTempMax
+    dt = 0.1*(tmax-tmin)
+    red = 1/(1+Math.exp(-(tmin-temp)/dt))
+    blue = 1/(1+Math.exp(-(temp-tmax)/dt))
+    return [red,0,blue]
   end
   
   def displayTemperature
