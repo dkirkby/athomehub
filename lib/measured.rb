@@ -15,26 +15,29 @@ module Measured
   # Returns the temperature with self-heating corrections applied.
   # Corrections are based on the most recent DeviceConfig defined for
   # this instance's network ID. Uses the temperature units specified in ATHOME.
-  def theTemperature
+  def theTemperature(convert=true)
     # raw measurement is in hundredths of a degree Farenheit
     result = 1e-2*temperature
     # adjust for self-heating
     result -= 1e-2*config.selfHeatOffset
     # convert to Celsius if requested
-    result = (result - 32.0)/1.8 if ATHOME['temperature_units'] == 'C'
+    result = (result-32.0)/1.8 if convert && (ATHOME['temperature_units'] == 'C')
     return result
   end
   
   def colorTemperature
+    # Return the previously cached value if available
     return @colorTemperature if @colorTemperature
-    temp = theTemperature
+    # Returns the RGB color corresponding to this sample's temperature relative
+    # to the comfort zone specified for its network ID
+    temp = theTemperature(convert=false)
     return unless temp
     tmin = config.comfortTempMin
     tmax = config.comfortTempMax
     dt = 0.1*(tmax-tmin)
-    red = 1/(1+Math.exp(-(tmin-temp)/dt))
-    blue = 1/(1+Math.exp(-(temp-tmax)/dt))
-    return [red,0,blue]
+    blue = 1/(1+Math.exp(-(tmin-temp)/dt))
+    red = 1/(1+Math.exp(-(temp-tmax)/dt))
+    @colorTemperature = [red,0,blue]
   end
   
   def displayTemperature
@@ -42,7 +45,7 @@ module Measured
     display = sprintf "%.1f",theTemperature
     # append the appropriate unit
     display += "&deg;" + ATHOME['temperature_units']
-    return display
+    return {:content=>display,:rgb=>colorTemperature}
   end
 
   def colorPower
