@@ -4,23 +4,28 @@
 
 module Measured
   
+  @@config_cache = { }
+  
+  def config
+    @@config_cache[networkID] = DeviceConfig.for_networkID(networkID).last unless
+      @@config_cache.has_key? networkID
+    return @@config_cache[networkID]
+  end
+
   # Returns the temperature with self-heating corrections applied.
   # Corrections are based on the most recent DeviceConfig defined for
   # this instance's network ID. Uses the temperature units specified in ATHOME.
   def theTemperature
     # raw measurement is in hundredths of a degree Farenheit
     result = 1e-2*temperature
-    # lookup this network ID's self-heating correction if necessary
-    @@self_heating = { } unless defined? @@self_heating
-    if not @@self_heating.has_key? networkID then
-      config = DeviceConfig.for_networkID(networkID).last
-      @@self_heating[networkID] = config ? 1e-2*config.selfHeatOffset : 0
-    end
     # adjust for self-heating
-    result -= @@self_heating[networkID]
+    result -= 1e-2*config.selfHeatOffset
     # convert to Celsius if requested
     result = (result - 32.0)/1.8 if ATHOME['temperature_units'] == 'C'
     return result
+  end
+  
+  def colorTemperature
   end
   
   def displayTemperature
