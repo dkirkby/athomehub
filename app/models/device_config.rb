@@ -166,6 +166,7 @@ class DeviceConfig < ActiveRecord::Base
     bin = BinnedSample.for_networkID(self.networkID,0).last
     return false unless bin
     cost = bin.theEnergyCost
+    return false unless cost
     ##puts "before: #{greenGlow} #{redGlow}"
     ##puts "energy cost is #{cost}"
     changed = false
