@@ -12,13 +12,13 @@
 			%tr
 				%th.where Location
 				-if ATHOME['display_temperature']
-					%th.vcol= "Temp"
+					%th Temp
 				-if ATHOME['display_lighting']
-					%th.vcol Light
+					%th Light
 				-if ATHOME['display_power']
-					%th.vcol Power
-					%th.vcol Projected
-					%th.vcol Actual
+					%th Power
+					%th Projected
+					%th Actual
 			-@samples.each do |s|
 				-where = s[:profile].description
 				-nid = s[:profile].networkID
@@ -27,7 +27,7 @@
 					-if ATHOME['display_temperature']
 						%td= colorize s[:temperature]
 					-if ATHOME['display_lighting']
-						%td.light= s[:lighting][0]
+						%td= s[:lighting][0]
 					-if ATHOME['display_power']
 						%td= colorize s[:power]
 						%td= colorize s[:cost]

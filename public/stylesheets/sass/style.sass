@@ -61,14 +61,21 @@ body
       background-color= !whiteish
       width: 100%
       text-align: right
-      td
-        padding-top: 8px
-        border-top= 1px dotted !blackish
-      th.vcol
-        width: 100px
+      border-collapse: collapse
+      th
+        font-weight: bold
+        font-style: italic
+        color= !contrast
+        padding: 4px 4px
       .where
         text-align: left
-      td.temp
+      td
+        margin: 0
+        padding: 4px 4px
+        border-top= 1px solid !contrast
+      .td
+        padding-top: 8px
+        border-top= 1px dotted !blackish
       td.light
         padding: 4 2 4 12
         border= solid 1px !shade1
