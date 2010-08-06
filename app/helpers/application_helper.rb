@@ -56,11 +56,8 @@ module ApplicationHelper
     r,g,b = rgb
     sprintf '#%02x%02x%02x',(255*r).round,(255*g).round,(255*b).round
   end
-  
-  def colorize(what)
-    # pass through unless we can find the content to colorize
-    return what unless what.instance_of? Hash and what.has_key? :content
-    # apply color if requested
+
+  def the_color(what)
     if what.has_key? :color then
       color = what[:color]
     elsif what.has_key? :rgb then
@@ -68,11 +65,30 @@ module ApplicationHelper
     elsif what.has_key? :hsb then
       color = rgb_to_hex(hsb_to_rgb(what[:hsb]))
     end
+  end
+  
+  def colorize(what)
+    # pass through unless we can find the content to colorize
+    return what unless what.instance_of? Hash and what.has_key? :content
+    # apply color if requested
+    color = the_color what
     if color then
       "<span style='color:#{color}'>#{what[:content]}</span>"
     else
       what[:content]
     end
+  end
+  
+  def lighting(what)
+    return what unless what.instance_of? Hash and what.has_key? :content
+    width = what[:content]/320.0
+    width = 100 if width > 100
+    color = the_color what
+    if color then
+      "<span class='lighting'><span style='background-color:#{color}; width: #{width}%'>abc</span></span>"
+    else
+      "<span class='lighting'></span>"
+    end 
   end
 
 end

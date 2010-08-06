@@ -27,7 +27,7 @@ class AthomeController < ApplicationController
         @samples << {
           :profile => profile,
           :temperature => @@no_data,
-          :lighting => [@@no_data],
+          :lighting => @@no_data,
           :power => @@no_data,
           :cost => @@no_data,
           :energy => energyCost
@@ -36,7 +36,7 @@ class AthomeController < ApplicationController
         @samples << {
           :profile => profile,
           :temperature => sample.displayTemperature,
-          :lighting => [sample.lighting,sample.artificial,sample.lightFactor],
+          :lighting => sample.displayLighting,
           :power => sample.displayPower,
           :cost => sample.displayCost,
           :energy => energyCost

@@ -27,7 +27,7 @@
 					-if ATHOME['display_temperature']
 						%td= colorize s[:temperature]
 					-if ATHOME['display_lighting']
-						%td= s[:lighting][0]
+						%td= colorize s[:lighting]
 					-if ATHOME['display_power']
 						%td= colorize s[:power]
 						%td= colorize s[:cost]

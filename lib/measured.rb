@@ -48,6 +48,10 @@ module Measured
     return {:content=>display,:rgb=>colorTemperature}
   end
 
+  def displayLighting
+    {:content=>"",:color=>'rgba(255,255,0,0.75)'}
+  end
+
   def colorPower
     # Return the previously cached value if available
     return @colorPower if @colorPower
