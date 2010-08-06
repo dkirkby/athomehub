@@ -27,7 +27,8 @@
 					-if ATHOME['display_temperature']
 						%td= colorize s[:temperature]
 					-if ATHOME['display_lighting']
-						%td= colorize s[:lighting]
+						%td.lighting
+							%img{:src=>'/images/lighting-artificial.png',:style=>"opacity:0.8"}
 					-if ATHOME['display_power']
 						%td= colorize s[:power]
 						%td= colorize s[:cost]

@@ -49,7 +49,7 @@ module Measured
   end
 
   def displayLighting
-    {:content=>"",:color=>'rgba(255,255,0,0.75)'}
+    {:content=>"50%",:color=>'rgba(255,255,0,0.75)'}
   end
 
   def colorPower
