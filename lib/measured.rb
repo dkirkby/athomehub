@@ -49,7 +49,9 @@ module Measured
   end
 
   def lightingLevel
-    sprintf "%.3f",lighting/32767.0
+    ratio = lighting/32767.0
+    ratio = 0.3 if ratio < 0.3
+    sprintf "%.3f",ratio
   end
 
   def displayLighting
