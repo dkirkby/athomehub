@@ -19,6 +19,7 @@
 					%th Power
 					%th Projected
 					%th Actual
+			-nodata = "<td class='nodata'>no data</td>"
 			-@samples.each do |s|
 				-where = s[:profile].description
 				-nid = s[:profile].networkID
@@ -27,7 +28,7 @@
 					-if ATHOME['display_temperature']
 						%td= colorize s[:temperature]
 					-if ATHOME['display_lighting']
-						%td= lighting s[:lighting]
+						=lighting(s[:lighting]) or nodata
 					-if ATHOME['display_power']
 						%td= colorize s[:power]
 						%td= colorize s[:cost]

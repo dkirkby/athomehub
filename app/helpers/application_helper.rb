@@ -80,16 +80,14 @@ module ApplicationHelper
   end
   
   def lighting(what)
-    return what unless what.instance_of? Hash and what.has_key? :type
+    return nil unless what.instance_of? Hash and what.has_key? :type
     case what[:type]
-    when :dark
-      "<span class='lighting'></span>"
     when :artificial
-      "<img class='lighting'><img src='/images/lighting-artificial.png' /></span>"
+      "<td class='lighting'><span class='lighting'><img class='level #{what[:level]}' src='/images/lighting-artificial.png' /><img class='overlay' src='/images/lighting-bolt.png' /></span></td>"
     when :natural
-      "<img class='lighting'><img src='/images/natural-artificial.png' /></span>"
+      "<td class='lighting'><span class='lighting'><img class='level #{what[:level]}' src='/images/natural-artificial.png' /></span></td>"
     else
-      ""
+      "<td class='lighting'><span class='lighting'></span></td>"
     end
   end
 

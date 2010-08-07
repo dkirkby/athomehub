@@ -73,20 +73,27 @@ body
         margin: 0
         padding: 4px 4px
         border-top= 1px solid !contrast
-      .lighting
+      .nodata
+        font-style: italic
+        color: #bbb
+      td.lighting
         padding: 0
+      span.lighting
+        display: inline-block
         background-image: url(/images/lighting-background.png)
         background-repeat: no-repeat
         background-position: right top
+        position: relative
+        .overlay
+          position: absolute
+          right: 0
+          top: 0
       a:link,a:visited
         text-decoration: none
         color: inherit
       a:hover,a:active
         text-decoration: none
         color= !contrast
-    .nodata
-      font-style: italic
-      color: #bbb
     .frame
       width: auto
       padding-right: 20px

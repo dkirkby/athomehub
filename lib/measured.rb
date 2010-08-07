@@ -49,11 +49,13 @@ module Measured
   end
 
   def lightingLevel
-    lighting/32767.0
+    sprintf "%.3f",lighting/32767.0
   end
 
   def displayLighting
-    if lighting == nil || lighting < (config.darkThreshold & 0xff) then
+    if lighting == nil
+      return nil
+    elsif lighting < (config.darkThreshold & 0xff) then
       {:type=>:dark}
     elsif artificial > config.artificialThreshold then
       {:type=>:artificial,:level=>lightingLevel}
