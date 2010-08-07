@@ -65,13 +65,13 @@ class AthomeController < ApplicationController
       cells = [ ]
       cells << @template.colorize(s.displayTemperature) if
         ATHOME['display_temperature']
-      cells << s[:lighting][0] if ATHOME['display_lighting']
+      cells << @template.lighting(s.displayLighting) if ATHOME['display_lighting']
       cells << @template.colorize(s.displayPower) <<
         @template.colorize(s.displayCost) if ATHOME['display_power']
       # lookup the latest energy usage for this networkID
       bin = BinnedSample.for_networkID(s.networkID,0).last
-      cells << (bin ? @template.colorize(bin.displayEnergyCost) :
-        @@no_data) if ATHOME['display_power']
+      cells << @template.colorize(bin.displayEnergyCost) if
+        bin && ATHOME['display_power']
       tag = sprintf "nid%02x",s.networkID
       response[:updates][tag] = cells
     end

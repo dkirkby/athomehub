@@ -85,7 +85,7 @@ module ApplicationHelper
     when :artificial
       "<td class='lighting'><span class='lighting'><img class='level #{what[:level]}' src='/images/lighting-artificial.png' /><img class='overlay' src='/images/lighting-bolt.png' /></span></td>"
     when :natural
-      "<td class='lighting'><span class='lighting'><img class='level #{what[:level]}' src='/images/natural-artificial.png' /></span></td>"
+      "<td class='lighting'><span class='lighting'><img class='level #{what[:level]}' src='/images/lighting-natural.png' /></span></td>"
     else
       "<td class='lighting'><span class='lighting'></span></td>"
     end

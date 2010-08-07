@@ -18,7 +18,7 @@ function handleUpdate(response) {
     // iterate over the cells of the table row displaying this network ID
     $('#'+nid_tag+' > *').each(function(index) {
       // replace the cell contents after the initial location cell
-      if(index > 0) $(this).html(cells[index-1]);
+      if(index > 0) $(this).replaceWith(cells[index-1]);
     })
   });
 }
