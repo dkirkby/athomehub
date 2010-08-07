@@ -48,8 +48,18 @@ module Measured
     return {:content=>display,:rgb=>colorTemperature}
   end
 
+  def lightingLevel
+    lighting/32767.0
+  end
+
   def displayLighting
-    {:content=>"50%",:color=>'rgba(255,255,0,0.75)'}
+    if lighting == nil || lighting < (config.darkThreshold & 0xff) then
+      {:type=>:dark}
+    elsif artificial > config.artificialThreshold then
+      {:type=>:artificial,:level=>lightingLevel}
+    else
+      {:type=>:natural,:level=>lightingLevel}
+    end
   end
 
   def colorPower

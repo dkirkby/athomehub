@@ -80,15 +80,17 @@ module ApplicationHelper
   end
   
   def lighting(what)
-    return what unless what.instance_of? Hash and what.has_key? :content
-    width = what[:content]/320.0
-    width = 100 if width > 100
-    color = the_color what
-    if color then
-      "<span class='lighting'><span style='background-color:#{color}; width: #{width}%'>abc</span></span>"
-    else
+    return what unless what.instance_of? Hash and what.has_key? :type
+    case what[:type]
+    when :dark
       "<span class='lighting'></span>"
-    end 
+    when :artificial
+      "<img class='lighting'><img src='/images/lighting-artificial.png' /></span>"
+    when :natural
+      "<img class='lighting'><img src='/images/natural-artificial.png' /></span>"
+    else
+      ""
+    end
   end
 
 end
