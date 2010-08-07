@@ -42,6 +42,8 @@ class AthomeController < ApplicationController
     @note = new_note
   end
   
+  @@max_samples_per_update = 10
+  
   def update
     # initialize our response
     # (we create a temporary note to ensure that the view_at timestamp is
@@ -56,24 +58,28 @@ class AthomeController < ApplicationController
     # loop over new samples with record IDs newer than the caller's
     # high watermark
     last = params['last'].to_i or -1
-    Sample.find(:all,:conditions=>['id > ?',last],
-      :order=>'id ASC',:limit=>10).each do |s|
-      last = s.id if (s.id > last)
-      # Add this sample to our response, overwriting any previous update
-      # for the same network ID.
-      cells = [ ]
-      cells << @template.colorize(s.displayTemperature) if
-        ATHOME['display_temperature']
-      cells << @template.lighting(s.displayLighting) if ATHOME['display_lighting']
-      cells << @template.colorize(s.displayPower) <<
-        @template.colorize(s.displayCost) if ATHOME['display_power']
-      # lookup the latest energy usage for this networkID
-      puts "update...bin"
-      bin = BinnedSample.for_networkID(s.networkID,0).last
-      cells << @template.colorize(bin.displayEnergyCost) if
-        bin && ATHOME['display_power']
-      tag = sprintf "nid%02x",s.networkID
-      response[:updates][tag] = cells
+    last_sample = Sample.last
+    if last_sample and last_sample.id > last then
+      # there is at least one new sample: make sure there are not too many
+      last = last_sample.id - @@max_samples_per_update if
+        last_sample.id > last + @@max_samples_per_update
+      Sample.find(:all,:conditions=>['id > ?',last],:order=>'id ASC').each do |s|
+        # Add this sample to our response, overwriting any previous update
+        # for the same network ID.
+        cells = [ ]
+        cells << @template.colorize(s.displayTemperature) if
+          ATHOME['display_temperature']
+        cells << @template.lighting(s.displayLighting) if ATHOME['display_lighting']
+        cells << @template.colorize(s.displayPower) <<
+          @template.colorize(s.displayCost) if ATHOME['display_power']
+        # lookup the latest energy usage for this networkID
+        bin = BinnedSample.for_networkID(s.networkID,0).last
+        cells << @template.colorize(bin.displayEnergyCost) if
+          bin && ATHOME['display_power']
+        tag = sprintf "nid%02x",s.networkID
+        response[:updates][tag] = cells
+      end
+      last = last_sample.id
     end
     # include the new high water mark in our response
     response[:last] = last
