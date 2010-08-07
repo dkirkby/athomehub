@@ -7,8 +7,6 @@ class AthomeController < ApplicationController
     @samples = [ ]
     # cutoff for supressing stale data
     stale_cutoff = @at - 1.minute
-    # keep track of the maximum sample record ID seen
-    @max_id = -1
     # use profiles for the requested @at time
     DeviceProfile.latest(@at).each do |profile|
       # hide this profile's data if requested
@@ -18,8 +16,6 @@ class AthomeController < ApplicationController
       # find the most recent binned sample at the smallest zoom level
       bin = BinnedSample.for_networkID(profile.networkID,0,@at).last
       energyCost = bin ? bin.displayEnergyCost : nil
-      # update the maximum sample record ID seen
-      @max_id = sample.id if (sample && sample.id > @max_id)
       # is this a recent enough sample to display?
       if (sample == nil) || (sample.created_at < stale_cutoff) then
         @samples << {
@@ -41,6 +37,8 @@ class AthomeController < ApplicationController
         }
       end
     end
+    last_sample = Sample.last
+    @max_id = last_sample ? last_sample.id : -1
     @note = new_note
   end
   
@@ -58,7 +56,8 @@ class AthomeController < ApplicationController
     # loop over new samples with record IDs newer than the caller's
     # high watermark
     last = params['last'].to_i or -1
-    Sample.find(:all,:conditions=>['id > ?',last],:order=>'id ASC').each do |s|
+    Sample.find(:all,:conditions=>['id > ?',last],
+      :order=>'id ASC',:limit=>10).each do |s|
       last = s.id if (s.id > last)
       # Add this sample to our response, overwriting any previous update
       # for the same network ID.
@@ -69,6 +68,7 @@ class AthomeController < ApplicationController
       cells << @template.colorize(s.displayPower) <<
         @template.colorize(s.displayCost) if ATHOME['display_power']
       # lookup the latest energy usage for this networkID
+      puts "update...bin"
       bin = BinnedSample.for_networkID(s.networkID,0).last
       cells << @template.colorize(bin.displayEnergyCost) if
         bin && ATHOME['display_power']
