@@ -460,7 +460,7 @@ protected
       # are we already talking to the device whose config this is?
       if @configs.has_key? c.serialNumber then
         # is this config newer than what we have already sent?
-        if c.id <= @configs[c.serialNumber].id then
+        if @configs[c.serialNumber].id && c.id <= @configs[c.serialNumber].id then
           # don't resend it
           @config_min_id += 1 if c.id == @config_min_id
         elsif not c.enabled then
@@ -490,6 +490,7 @@ protected
       next unless c.update_energy_feedback(false)
       # queue up a new config with the energy feedback updates
       new_config = c.clone
+      new_config.id = c.id # copy the id to allow the check for a newer config above
       new_config.update_energy_feedback(true)
       @logger.info "Updating visual energy feedback for network ID #{netID} to " +
         "green=#{new_config.greenGlow}, red=#{new_config.redGlow}"
