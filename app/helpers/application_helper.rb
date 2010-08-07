@@ -69,13 +69,13 @@ module ApplicationHelper
   
   def colorize(what)
     # pass through unless we can find the content to colorize
-    return what unless what.instance_of? Hash and what.has_key? :content
+    return nil unless what.instance_of? Hash and what.has_key? :content
     # apply color if requested
     color = the_color what
     if color then
-      "<span style='color:#{color}'>#{what[:content]}</span>"
+      "<td><span style='color:#{color}'>#{what[:content]}</span></td>"
     else
-      what[:content]
+      "<td>what[:content]</td>"
     end
   end
   

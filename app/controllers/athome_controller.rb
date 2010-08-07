@@ -3,8 +3,6 @@ class AthomeController < ApplicationController
   before_filter :valid_nid,:only=>[:detail,:replot]
   before_filter :valid_window,:only=>[:detail,:replot]
 
-  @@no_data = "<span class='nodata'>no data</span>"
-
   def index
     @samples = [ ]
     # cutoff for supressing stale data
@@ -19,17 +17,17 @@ class AthomeController < ApplicationController
       sample = Sample.for_networkID(profile.networkID,@at).last
       # find the most recent binned sample at the smallest zoom level
       bin = BinnedSample.for_networkID(profile.networkID,0,@at).last
-      energyCost = bin ? bin.displayEnergyCost : @@no_data
+      energyCost = bin ? bin.displayEnergyCost : nil
       # update the maximum sample record ID seen
       @max_id = sample.id if (sample && sample.id > @max_id)
       # is this a recent enough sample to display?
       if (sample == nil) || (sample.created_at < stale_cutoff) then
         @samples << {
           :profile => profile,
-          :temperature => @@no_data,
+          :temperature => nil,
           :lighting => nil,
-          :power => @@no_data,
-          :cost => @@no_data,
+          :power => nil,
+          :cost => nil,
           :energy => energyCost
         }
       else

@@ -26,13 +26,13 @@
 				%tr{:id=>sprintf("nid%02x",nid)}
 					%td.where= link_to where,:action=>'detail',:nid=>nid
 					-if ATHOME['display_temperature']
-						%td= colorize s[:temperature]
+						=colorize s[:temperature] or nodata
 					-if ATHOME['display_lighting']
-						=lighting(s[:lighting]) or nodata
+						=lighting s[:lighting] or nodata
 					-if ATHOME['display_power']
-						%td= colorize s[:power]
-						%td= colorize s[:cost]
-						%td= colorize s[:energy]
+						=colorize s[:power] or nodata
+						=colorize s[:cost] or nodata
+						=colorize s[:energy] or nodata
 	%ul#navigation
 		%li home
 		%li=link_to "help",:controller=>:help,:action=>:home
