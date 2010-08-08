@@ -9,7 +9,7 @@ class DeviceProfile < ActiveRecord::Base
       :conditions => args.first ?
         [ 'c1.id = (select id from device_profiles c2 where ' +
           'c2.networkID = c1.networkID and created_at <= ? ' +
-          'ORDER BY id DESC LIMIT 1)',args.first ] :
+          'ORDER BY id DESC LIMIT 1)',args.first.utc ] :
         ( 'c1.id = (select id from device_profiles c2 where ' +
           'c2.networkID = c1.networkID ORDER BY id DESC LIMIT 1)' ),
       :readonly => true
@@ -22,7 +22,7 @@ class DeviceProfile < ActiveRecord::Base
     {
       :order => 'id ASC',
       :conditions => (args.length > 1) ?
-        [ 'networkID = ? and created_at <= ?',args.first,args.last ] :
+        [ 'networkID = ? and created_at <= ?',args.first,args.last.utc ] :
         [ 'networkID = ?',args.first ],
       :readonly => true
     }

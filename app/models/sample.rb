@@ -12,7 +12,7 @@ class Sample < ActiveRecord::Base
     {
       :order => 'id ASC',
       :conditions => (args.length > 1) ?
-        [ 'networkID = ? and created_at <= ?',args.first,args.last ] :
+        [ 'networkID = ? and created_at <= ?',args.first,args.last.utc ] :
         [ 'networkID = ?',args.first ],
       :readonly => true
     }
