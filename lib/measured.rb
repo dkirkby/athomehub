@@ -25,6 +25,10 @@ module Measured
     return result
   end
   
+  def sigmoid(x)
+    1/(1+Math.exp(-x))
+  end
+  
   def colorTemperature
     # Return the previously cached value if available
     return @colorTemperature if @colorTemperature
@@ -35,8 +39,8 @@ module Measured
     tmin = config.comfortTempMin
     tmax = config.comfortTempMax
     dt = 0.2*(tmax-tmin)
-    blue = 1/(1+Math.exp(-(tmin-temp)/dt))
-    red = 1/(1+Math.exp(-(temp-tmax)/dt))
+    blue = sigmoid (tmin-temp)/dt
+    red = sigmoid (temp-tmax)/dt
     @colorTemperature = [red,0,blue]
   end
   
@@ -52,6 +56,22 @@ module Measured
     ratio = lighting/32767.0
     ratio = 0.3 if ratio < 0.3
     sprintf "%.3f",ratio
+  end
+
+  def colorLighting
+    # Return the previously cached value if available
+    return @colorLighting if @colorLighting
+    # Returns the HSB color corresponding to this sample's lighting conditions
+    threshold = config.artificialThreshold
+    # s1 varies from 0 to 1 as lighting becomes more artificial
+    s1 = sigmoid (artificial-threshold)/(0.25*threshold)
+    threshold = config.darkThreshold & 0xff
+    # s2 varies from 0 to 1 as lighting level increases through dark threshold
+    s2 = sigmoid (lighting-threshold)/(0.25*threshold)    
+    hue = 120 - 60*s1 # green to yellow
+    saturation = s2
+    brightness = 0.87 + 0.13*s2
+    @colorLighting = [hue,saturation,brightness]
   end
 
   def displayLighting
