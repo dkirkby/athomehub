@@ -86,22 +86,33 @@ function requestPlotUpdate(clickable,options) {
 var lastClick = null;
 
 var plotTitleControls =
-  "<span class='title-controls'><span>HIDE</span><span>SHOW ALWAYS</span></span>";
+  "<span class='title-controls'><span>HIDE/SHOW</span><span>SHOW ALWAYS</span></span>";
 
 function displayPlots() {
   /* display any binned plots on this page */
   $('.plot').each(function(index) {
+    var thePlot = $(this);
     // render the plot using the flot library
-    $.plot($(this),plotData[this.id],plotOptions[this.id]);
+    $.plot(thePlot,plotData[this.id],plotOptions[this.id]);
     // display a plot title with embedded hide/show buttons
-    $(this).siblings('.title').html(plotTitles[this.id]).hover(
+    thePlot.siblings('.title').html(plotTitles[this.id]).hover(
       function() {
+        $(this).addClass('hover');
         $(this).children('.title-controls').fadeIn('fast');
       },
       function() {
+        $(this).removeClass('hover');
         $(this).children('.title-controls').fadeOut('fast');
       }
     ).append(plotTitleControls).children('.title-controls').hide();
+    /* attach ajax actions to the plot title controls */
+    thePlot.siblings(".title").find(".title-controls > span:nth-child(1)").click(
+      function() {
+        thePlot.slideToggle('slow');
+        return false;
+      }
+    );
+    
     /**
     click(function() {
       $(this).next().slideToggle('slow');
