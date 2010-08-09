@@ -89,6 +89,8 @@ function requestPlotUpdate(clickable,options) {
 
 var lastClick = null;
 
+var titleMsg = "<span class='title-msg'>CLICK TO HIDE THIS PLOT</span>"
+
 function displayPlots() {
   /* display any binned plots on this page */
   $('.section').each(function() {
@@ -100,23 +102,23 @@ function displayPlots() {
     var theFrame = $(this).find('.frame').first();
     $(this).find(".title").html(plotTitles[plotID]).hover(
       function() {
-        $(this).addClass('hover');
-        //$(this).children('.title-controls').fadeIn('fast');
+        $(this).addClass('hover').children('.title-msg').fadeIn('fast');
       },
       function() {
-        $(this).removeClass('hover');
-        //$(this).children('.title-controls').fadeOut('fast');
+        $(this).removeClass('hover').children('.title-msg').fadeOut('fast');
       }
     ).toggle(
       function() {
         theFrame.slideUp(500);
+        $(this).children('.title-msg').html("CLICK TO REVEAL THIS PLOT");
       },
       function() {
         theFrame.slideDown(500);
+        $(this).children('.title-msg').html("CLICK TO HIDE THIS PLOT");
         // update the plot (we can only do this when it is visible)
         $.plot(thePlot,plotData[plotID],plotOptions[plotID]);
       }
-    );
+    ).append(titleMsg).children('.title-msg').hide();
     // bind a hover event handler to the plot
     thePlot.bind("plothover", function (event, pos, item) {
       if(item) {
