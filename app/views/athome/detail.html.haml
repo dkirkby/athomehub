@@ -1,5 +1,5 @@
 -content_for :head do
-	=javascript_include_tag 'excanvas','myflot.min'
+	=javascript_include_tag 'excanvas','myflot.min','jquery.cookie.min'
 
 :javascript
 	plotData = #{@plotData.to_json};
@@ -44,7 +44,6 @@
 				%a#zoom-out Zoom Out
 			%a#newer &rsaquo; Newer
 			%a#newest &raquo; Newest
-		-#%p="id=#{@config.networkID}, index=#{@index}, zoom=#{@zoom}, size=#{@bin_size_as_words}, n=#{@binned.length}"
 	%ul#navigation
 		%li=link_to "home", :action=>:index
 		%li=link_to "help", :controller=>:help, :action=>:detail
