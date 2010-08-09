@@ -156,7 +156,7 @@ protected
     # build arrays of t,y values to plot
     tval,tval_e,temp,light,pwr,energy = [ ],[ ],[ ],[ ],[ ],[ ]
     temp_labels,light_labels,pwr_labels,energy_labels = [ ],[ ],[ ],[ ]
-    temp_colors,pwr_colors = [ ],[ ]
+    temp_colors,light_colors,pwr_colors = [ ],[ ],[ ]
     @binned.each do |bin|
       # save the interval midpoint as this bin's timestamp
       ival = bin.interval
@@ -170,7 +170,9 @@ protected
       color = @template.rgb_to_hex(bin.colorTemperature)
       temp_colors << color
       light << bin.lighting
-      light_labels << sprintf("%.1f",bin.lighting)
+      color = @template.rgb_to_hex(@template.hsb_to_rgb(bin.colorLighting))
+      light_labels << sprintf("%d",bin.artificial)
+      light_colors << color
       pwr << bin.power
       pwr_labels << "#{bin.displayPower[:content]}, #{bin.displayCost[:content]}"
       color = @template.rgb_to_hex(@template.hsb_to_rgb(bin.colorPower))
@@ -241,7 +243,7 @@ protected
         :data => tval.zip(temp), :color=>plot_color, :pointColors=>temp_colors
       }],
       :lighting => [{
-        :data => tval.zip(light), :color=>plot_color
+        :data => tval.zip(light), :color=>plot_color, :pointColors=>light_colors
       }],
       :power => [{
         :data => tval.zip(pwr), :color=>plot_color, :pointColors=>pwr_colors,
