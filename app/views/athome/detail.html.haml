@@ -18,20 +18,24 @@
 	#body
 		#datetime= @window_title
 		-if ATHOME['display_temperature']
-			.frame
+			.section
 				.title
-				#temperature.plot
+				.frame
+					#temperature.plot
 		-if ATHOME['display_lighting']
-			.frame
+			.section
 				.title
-				#lighting.plot
+				.frame
+					#lighting.plot
 		-if ATHOME['display_power']
-			.frame
+			.section
 				.title
-				#power.plot
-			.frame
+				.frame
+					#power.plot
+			.section
 				.title
-				#energy.plot
+				.frame
+					#energy.plot
 		#footer
 			%a#oldest Oldest &laquo;
 			%a#older Older &lsaquo;

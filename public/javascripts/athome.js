@@ -60,9 +60,13 @@ function updatePlot(response) {
   zoom_out = response.zoom_out;
   updateControls();
   // update the plots
+  plotData = response.data;
+  plotOptions = response.options;
   dataLabels = response.labels;
-  $('.plot').each(function(index) {
-    $.plot($(this),response.data[this.id],response.options[this.id]);
+  $('.plot').each(function() {
+    if($(this).height() > 0) {
+      $.plot($(this),plotData[this.id],plotOptions[this.id]);
+    }
   });
 }
 
@@ -85,48 +89,42 @@ function requestPlotUpdate(clickable,options) {
 
 var lastClick = null;
 
-var plotTitleControls =
-  "<span class='title-controls'><span>HIDE/SHOW</span><span>SHOW ALWAYS</span></span>";
-
 function displayPlots() {
   /* display any binned plots on this page */
-  $('.plot').each(function(index) {
-    var thePlot = $(this);
+  $('.section').each(function() {
+    var thePlot = $(this).find(".plot").first();
+    var plotID = $(thePlot).attr('id');
     // render the plot using the flot library
-    $.plot(thePlot,plotData[this.id],plotOptions[this.id]);
-    // display a plot title with embedded hide/show buttons
-    thePlot.siblings('.title').html(plotTitles[this.id]).hover(
+    $.plot(thePlot,plotData[plotID],plotOptions[plotID]);
+    // display a plot title that is clickable to hide/show the plot
+    var theFrame = $(this).find('.frame').first();
+    $(this).find(".title").html(plotTitles[plotID]).hover(
       function() {
         $(this).addClass('hover');
-        $(this).children('.title-controls').fadeIn('fast');
+        //$(this).children('.title-controls').fadeIn('fast');
       },
       function() {
         $(this).removeClass('hover');
-        $(this).children('.title-controls').fadeOut('fast');
+        //$(this).children('.title-controls').fadeOut('fast');
       }
-    ).append(plotTitleControls).children('.title-controls').hide();
-    /* attach ajax actions to the plot title controls */
-    thePlot.siblings(".title").find(".title-controls > span:nth-child(1)").click(
+    ).toggle(
       function() {
-        thePlot.slideToggle('slow');
-        return false;
+        theFrame.slideUp(500);
+      },
+      function() {
+        theFrame.slideDown(500);
+        // update the plot (we can only do this when it is visible)
+        $.plot(thePlot,plotData[plotID],plotOptions[plotID]);
       }
     );
-    
-    /**
-    click(function() {
-      $(this).next().slideToggle('slow');
-      return false;
-    });
-    **/
-    // bind a hover event handler
-    $(this).bind("plothover", function (event, pos, item) {
+    // bind a hover event handler to the plot
+    thePlot.bind("plothover", function (event, pos, item) {
       if(item) {
         if(item.datapoint != lastClick) {
           $('#data-label').remove();
           lastClick = item.datapoint;
           $('<div id="data-label" class="popup">' +
-            dataLabels[this.id][item.dataIndex] + '</div>').css({
+            dataLabels[plotID][item.dataIndex] + '</div>').css({
             top: item.pageY - 35, left: item.pageX - 20
           }).appendTo("body");
         }
