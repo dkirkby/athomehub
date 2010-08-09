@@ -92,6 +92,14 @@ var lastClick = null;
 var titleMsg = "<span class='title-msg'>CLICK TO HIDE THIS PLOT</span>"
 
 function displayPlots() {
+  /* look for a cookie listing the plots that should be initially hidden */
+  hidden = $.cookie('hidden');
+  if(hidden == null) {
+    // create a new cookie now
+    hidden = 'temperature,lighting,energy';
+    $.cookie('hidden',hidden,{expires:365});
+  }
+  alert(hidden);
   /* display any binned plots on this page */
   $('.section').each(function() {
     var thePlot = $(this).find(".plot").first();
