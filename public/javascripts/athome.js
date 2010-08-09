@@ -90,11 +90,20 @@ function displayPlots() {
   $('.plot').each(function(index) {
     // render the plot using the flot library
     $.plot($(this),plotData[this.id],plotOptions[this.id]);
-    // display a title below the plot
-    $(this).siblings('.title').html(plotTitles[this.id]).click(function() {
+    // display a title below the plot with embedded hide/show buttons
+    $(this).siblings('.title').html(plotTitles[this.id]).hover(
+    function() {
+      $(this).css('background-color','yellow')
+    },
+    function() {
+      $(this).css('background-color','inherit')
+    });
+    /**
+    click(function() {
       $(this).next().slideToggle('slow');
       return false;
     });
+    **/
     // bind a hover event handler
     $(this).bind("plothover", function (event, pos, item) {
       if(item) {
