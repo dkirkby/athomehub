@@ -89,42 +89,65 @@ function requestPlotUpdate(clickable,options) {
 
 var lastClick = null;
 
-var titleMsg = "<span class='title-msg'>CLICK TO HIDE THIS PLOT</span>"
+var titleMsg = "<span class='title-msg'></span>"
 
 function displayPlots() {
-  /* look for a cookie listing the plots that should be initially hidden */
-  hidden = $.cookie('hidden');
-  if(hidden == null) {
+  /* look for a cookie saving this client's plot visibility preferences */
+  var visible = $.cookie('visible');
+  if(visible == null) {
     // create a new cookie now
-    hidden = 'temperature,lighting,energy';
-    $.cookie('hidden',hidden,{expires:365});
+    visible = {temperature:true,lighting:true,power:true,energy:false};
+    $.cookie('visible',JSON.stringify(visible),{expires:365});
   }
-  alert(hidden);
+  else {
+    visible = JSON.parse(visible);
+  }
   /* display any binned plots on this page */
   $('.section').each(function() {
+    var theFrame = $(this).find('.frame').first();
     var thePlot = $(this).find(".plot").first();
     var plotID = $(thePlot).attr('id');
-    // render the plot using the flot library
-    $.plot(thePlot,plotData[plotID],plotOptions[plotID]);
+    // render the plot using the flot library unless it should be initially hidden
+    if((plotID in visible) && !visible[plotID]) {
+      theFrame.hide();
+    }
+    else {
+      visible[plotID] = true;
+      $.plot(thePlot,plotData[plotID],plotOptions[plotID]);
+    }
     // display a plot title that is clickable to hide/show the plot
-    var theFrame = $(this).find('.frame').first();
     $(this).find(".title").html(plotTitles[plotID]).hover(
       function() {
-        $(this).addClass('hover').children('.title-msg').fadeIn('fast');
+        $(this).addClass('hover');
+        if(theFrame.is(':visible')) {
+          $(this).children('.title-msg').html('CLICK TO HIDE THIS PLOT').fadeIn('fast');
+        }
+        else {
+          $(this).children('.title-msg').html('CLICK TO REVEAL THIS PLOT').fadeIn('fast');
+        }
       },
       function() {
-        $(this).removeClass('hover').children('.title-msg').fadeOut('fast');
+        $(this).removeClass('hover');
+        $(this).children('.title-msg').fadeOut('fast');
       }
-    ).toggle(
+    ).click(
       function() {
-        theFrame.slideUp(500);
-        $(this).children('.title-msg').html("CLICK TO REVEAL THIS PLOT");
-      },
-      function() {
-        theFrame.slideDown(500);
-        $(this).children('.title-msg').html("CLICK TO HIDE THIS PLOT");
-        // update the plot (we can only do this when it is visible)
-        $.plot(thePlot,plotData[plotID],plotOptions[plotID]);
+        if(theFrame.is(':visible')) {
+          theFrame.slideUp(500,function() {
+            $(this).parent().find('.title-msg').html('CLICK TO REVEAL THIS PLOT');
+          });
+          visible[plotID] = false;
+        }
+        else {
+          theFrame.slideDown(500,function() {
+            $(this).parent().find('.title-msg').html('CLICK TO HIDE THIS PLOT');            
+          });
+          $.plot(thePlot,plotData[plotID],plotOptions[plotID]);
+          visible[plotID] = true;
+        }
+        // save this visibility preference in a persistent cookie
+        $.cookie('visible',JSON.stringify(visible),{expires:365});
+        return false;
       }
     ).append(titleMsg).children('.title-msg').hide();
     // bind a hover event handler to the plot
