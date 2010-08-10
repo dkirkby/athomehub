@@ -93,14 +93,9 @@ var titleMsg = "<span class='title-msg'></span>"
 
 function displayPlots() {
   /* look for a cookie saving this client's plot visibility preferences */
-  var visible = $.cookie('visible');
-  if(visible == null) {
-    // create a new cookie now
-    visible = {temperature:true,lighting:true,power:true,energy:false};
-    $.cookie('visible',JSON.stringify(visible),{expires:365});
-  }
-  else {
-    visible = JSON.parse(visible);
+  var visible_prefs = $.cookie('visible');
+  if(visible_prefs != null) {
+    visible = JSON.parse(visible_prefs);
   }
   /* display any binned plots on this page */
   $('.section').each(function() {
