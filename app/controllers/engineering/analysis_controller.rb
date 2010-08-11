@@ -90,8 +90,8 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       :lightLevel => sharedOptions.merge({
         :grid => {
           :markings => [
-            { :yaxis=> {:from=> 0,:to=> @loDark}, :color=> 'rgba(255,0,0,0.3)' },
-            { :yaxis=> {:from=> 0,:to=> @hiDark}, :color=> 'rgba(0,0,255,0.6)' },
+            { :yaxis=> {:from=> 0,:to=> @loDark}, :color=> 'rgba(255,0,0,0.2)' },
+            { :yaxis=> {:from=> 0,:to=> @hiDark}, :color=> 'rgba(0,0,255,0.2)' },
             { :yaxis=> {:from=> 0.1*@hiDark/@artThresh,
               :to=> 0.1*@hiDark/@artThresh}, :color=> 'rgba(0,255,0,0.6)' }
           ]
@@ -100,12 +100,19 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       :artificialLevel => sharedOptions.merge({
         :grid => {
           :markings => [
-            { :yaxis=> {:from=> 0,:to=> 0.1*@loDark}, :color=> 'rgba(255,0,0,0.3)' },
-            { :yaxis=> {:from=> 0,:to=> 0.1*@hiDark}, :color=> 'rgba(0,0,255,0.3)' }
+            { :yaxis=> {:from=> 0,:to=> 0.1*@loDark}, :color=> 'rgba(255,0,0,0.2)' },
+            { :yaxis=> {:from=> 0,:to=> 0.1*@hiDark}, :color=> 'rgba(0,0,255,0.2)' }
           ]
         }
       }),
-      :artificialRatio => sharedOptions,
+      :artificialRatio => sharedOptions.merge({
+        :grid => {
+          :markings => [
+            { :yaxis=> {:from=> 0,
+              :to=> @config.artificialThreshold+0.5}, :color=> 'rgba(0,255,0,0.2)' }
+          ]
+        }
+      }),
       :numSamplesUsed => sharedOptions
     }
     
