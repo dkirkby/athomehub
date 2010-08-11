@@ -57,7 +57,7 @@ class Engineering::AnalysisController < Engineering::ApplicationController
     end
     # zip up (t,y) arrays for plotting and save them in a dictionary
     # that we will pass to javascript via json
-    @analysisPlots = {
+    @analysisPlotData = {
       :relPhase => [
         { :data => tHi.zip(relPhaseHi), :label=> "HI "+stats(relPhaseHi) },
         { :data => tLo.zip(relPhaseLo), :label=> "LO "+stats(relPhaseLo) }
@@ -79,6 +79,18 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         { :data => tLo.zip(nLo), :label=> "LO "+stats(nLo) }
       ]
     }
+    sharedOptions = {
+      :xaxis => { :mode => "time" },
+      :series => { :points => { :show => true, :radius => 2, :fill => false } }
+    }
+    @analysisPlotOptions = {
+      :relPhase => sharedOptions,
+      :lightLevel => sharedOptions,
+      :artificialLevel => sharedOptions,
+      :artificialRatio => sharedOptions,
+      :numSamplesUsed => sharedOptions
+    }
+    
   end
   
   def power
