@@ -13,7 +13,9 @@ class Engineering::AnalysisController < Engineering::ApplicationController
     @hiloRatio = @config.lightGainHiLoRatio*16.0/(1<<15)
     # calculate the dark thresholds
     @hiDark = @config.darkThreshold & 0xff
-    @loDark = (@config.darkThreshold >> 8)*@hiloRatio;
+    @loDark = (@config.darkThreshold >> 8)*@hiloRatio
+    # calculate the artificial threshold
+    @artThresh = (1+@config.artificialThreshold)/511.0
     # fill arrays of analysis results
     tLo,tHi = [ ],[ ]
     nLo,nHi = [ ],[ ]
@@ -89,11 +91,20 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         :grid => {
           :markings => [
             { :yaxis=> {:from=> 0,:to=> @loDark}, :color=> 'rgba(255,0,0,0.3)' },
-            { :yaxis=> {:from=> 0,:to=> @hiDark}, :color=> 'rgba(255,0,0,0.6)' },
+            { :yaxis=> {:from=> 0,:to=> @hiDark}, :color=> 'rgba(0,0,255,0.6)' },
+            { :yaxis=> {:from=> 0.1*@hiDark/@artThresh,
+              :to=> 0.1*@hiDark/@artThresh}, :color=> 'rgba(0,255,0,0.6)' }
           ]
         }
       }),
-      :artificialLevel => sharedOptions,
+      :artificialLevel => sharedOptions.merge({
+        :grid => {
+          :markings => [
+            { :yaxis=> {:from=> 0,:to=> 0.1*@loDark}, :color=> 'rgba(255,0,0,0.3)' },
+            { :yaxis=> {:from=> 0,:to=> 0.1*@hiDark}, :color=> 'rgba(0,0,255,0.3)' }
+          ]
+        }
+      }),
       :artificialRatio => sharedOptions,
       :numSamplesUsed => sharedOptions
     }

@@ -30,19 +30,20 @@
 %h3#lightLevel.analysis-plot Mean Lighting Level
 
 %ul
-	%li Dark Threshold: $#{sprintf "%04X",@config.darkThreshold}
+	%li Dark Threshold: LO-HI = $#{sprintf "%04X",@config.darkThreshold} = #{@config.darkThreshold}
+	%li 0.1 x Hi-Gain Dark Threshold / Artificial Threshold (min. for natural light feedback): #{0.1*@hiDark/@artThresh})
 	%li Hi-Gain Dark Threshold (use LO only): #{@hiDark}
 	%li Lo-Gain Dark Threshold (use HI+LO unless HI is clipped): #{@loDark}
 
 %h3#artificialLevel.analysis-plot Amplitude of 120Hz Detected
 
 %ul
-	%li 0.1 x Hi-Gain Dark Threshold (use HI only, no visual feedback): #{0.1*@hiDark}
+	%li 0.1 x Hi-Gain Dark Threshold (min. for artificial light feedback): #{0.1*@hiDark}
 	%li 0.1 x Lo-Gain Dark Threshold (use HI+LO unless HI is clipped): #{0.1*@loDark}
 
 %h3#artificialRatio.analysis-plot 120Hz / Mean Lighting Ratio
 
-%p Cut is at #{@config.artificialThreshold}
+%p Ratio is calculated as 511*(120Hz/Mean) with a max of 255. Cut is at ratio &gt; #{@config.artificialThreshold}
 
 %h2#numSamplesUsed.analysis-plot Number of Samples Clipped
 
