@@ -10,7 +10,8 @@
 %p Analysis requested at #{@at.localtime}. Using configuration ID #{@config.id} created at #{@config.created_at.localtime}.
 
 :javascript
-	analysisPlots = #{@analysisPlots.to_json}
+	analysisPlotData = #{@analysisPlotData.to_json};
+	analysisPlotOptions = #{@analysisPlotOptions.to_json};
 
 %h2 Current-Voltage Relative Phase
 
