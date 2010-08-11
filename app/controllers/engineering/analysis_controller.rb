@@ -76,6 +76,14 @@ class Engineering::AnalysisController < Engineering::ApplicationController
         { :data => tHi.zip(artRatioHi), :label=> "HI "+stats(artRatioHi) },
         { :data => tLo.zip(artRatioLo), :label=> "LO "+stats(artRatioLo) }
       ],
+      :scatterHi => [
+        { :data => calLevelHi.zip(calAmpHi), :label => "HI",
+        :lines => { :show=> false }, :points => { :show=> true, :radius => 1 } }
+      ],
+      :scatterLo => [
+        { :data => calLevelLo.zip(calAmpLo), :label => "LOW",
+        :lines => { :show=> false }, :points => { :show=> true, :radius => 1 } }
+      ],
       :numSamplesUsed => [
         { :data => tHi.zip(nHi), :label=> "HI "+stats(nHi) },
         { :data => tLo.zip(nLo), :label=> "LO "+stats(nLo) }
@@ -113,6 +121,8 @@ class Engineering::AnalysisController < Engineering::ApplicationController
           ]
         }
       }),
+      :scatterHi => { },
+      :scatterLo => { },
       :numSamplesUsed => sharedOptions
     }
     
