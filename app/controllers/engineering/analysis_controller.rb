@@ -8,7 +8,7 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       :conditions=>['created_at > ? and created_at <= ? and networkID = ? and source in (2,3)',
         @begin_at,@end_at,@config.networkID],
       :order=>'id ASC',:readonly=>true)
-    # calculate the channel gains (undo x10 in device dump)
+    # calculate the channel gains
     @hiGain = (1+@config.lightGainHi)/128.0
     @hiloRatio = @config.lightGainHiLoRatio*16.0/(1<<15)
     # calculate the dark thresholds
@@ -85,7 +85,14 @@ class Engineering::AnalysisController < Engineering::ApplicationController
     }
     @analysisPlotOptions = {
       :relPhase => sharedOptions,
-      :lightLevel => sharedOptions,
+      :lightLevel => sharedOptions.merge({
+        :grid => {
+          :markings => [
+            { :yaxis=> {:from=> 0,:to=> @loDark}, :color=> 'rgba(255,0,0,0.3)' },
+            { :yaxis=> {:from=> 0,:to=> @hiDark}, :color=> 'rgba(255,0,0,0.6)' },
+          ]
+        }
+      }),
       :artificialLevel => sharedOptions,
       :artificialRatio => sharedOptions,
       :numSamplesUsed => sharedOptions
