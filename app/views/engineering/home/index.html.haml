@@ -1,1 +1,10 @@
 %h1 uci@home engineering
+
+%table
+	%tr
+		%th
+		%th Device
+	-@devices.each do |dev|
+		%tr
+			%td= capability dev[:config].enabled
+			%td= link_to format_serialNumber(dev[:config].serialNumber), :controller=> :config, :action=>:edit, :id => dev[:config]
