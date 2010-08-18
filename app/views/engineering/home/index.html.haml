@@ -1,4 +1,4 @@
-%h1 uci@home engineering
+%h1= "#{format_date @at} #{format_time @at}"
 
 %table
 	%tr
@@ -8,3 +8,6 @@
 		%tr
 			%td= capability dev[:config].enabled
 			%td= link_to format_serialNumber(dev[:config].serialNumber), :controller=> :config, :action=>:edit, :id => dev[:config]
+	%tr
+		%td
+		%td= link_to "All Configs", :controller=>:config, :action=>:index
