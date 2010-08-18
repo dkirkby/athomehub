@@ -6,6 +6,7 @@
 		%th NetID
 		%th Serial #
 		%th Location
+		%th Samples
 	-@devices.each do |dev|
 		%tr
 			%td= capability dev[:config].enabled
@@ -15,8 +16,10 @@
 				%td= link_to dev[:profile].description, :controller=> :profile, :action=>:edit, :id=> dev[:profile]
 			-else
 				%td (no profile)
+			%td= link_to dev[:samples], :controller=> :sample, :action=>:recent, :nid=>dev[:config].networkID, :n=>100
 	%tr
 		%td
 		%td= link_to "All Configs", :controller=>:config, :action=>:index
 		%td
 		%td= link_to "All Profiles", :controller=>:profile, :action=>:index
+		%td= link_to "All Recent", :controller=>:sample, :action=>:recent, :n=>100
