@@ -3,11 +3,20 @@
 %table
 	%tr
 		%th
-		%th Device
+		%th NetID
+		%th Serial #
+		%th Location
 	-@devices.each do |dev|
 		%tr
 			%td= capability dev[:config].enabled
 			%td= link_to format_serialNumber(dev[:config].serialNumber), :controller=> :config, :action=>:edit, :id => dev[:config]
+			%td= dev[:config].networkID
+			-if dev[:profile]
+				%td= link_to dev[:profile].description, :controller=> :profile, :action=>:edit, :id=> dev[:profile]
+			-else
+				%td (no profile)
 	%tr
 		%td
 		%td= link_to "All Configs", :controller=>:config, :action=>:index
+		%td
+		%td= link_to "All Profiles", :controller=>:profile, :action=>:index
