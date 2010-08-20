@@ -5,15 +5,8 @@ class BufferDump < ActiveRecord::Base
     :foreign_key => "networkID",
     :primary_key => "networkID",
     :readonly => true
-    
-  named_scope :for_networkID, lambda { |*args|
-    {
-      :conditions => (args.length > 1) ?
-        [ 'networkID = ? and created_at <= ?',args.first,args.last.utc ] :
-        [ 'networkID = ?',args.first ],
-      :readonly => true
-    }
-  }
+
+  include Scoped
 
   before_save :save_samples
   serialize :samples, Array
