@@ -39,8 +39,8 @@ module Measured
     tmin = config.comfortTempMin
     tmax = config.comfortTempMax
     dt = 0.2*(tmax-tmin)
-    blue = sigmoid (tmin-temp)/dt
-    red = sigmoid (temp-tmax)/dt
+    blue = sigmoid((tmin-temp)/dt)
+    red = sigmoid((temp-tmax)/dt)
     @colorTemperature = [red,0,blue]
   end
   
@@ -64,10 +64,10 @@ module Measured
     # Returns the HSB color corresponding to this sample's lighting conditions
     threshold = config.artificialThreshold
     # s1 varies from 0 to 1 as lighting becomes more artificial
-    s1 = sigmoid (artificial-threshold)/(0.25*threshold)
+    s1 = sigmoid((artificial-threshold)/(0.25*threshold))
     threshold = config.darkThreshold & 0xff
     # s2 varies from 0 to 1 as lighting level increases through dark threshold
-    s2 = sigmoid (lighting-threshold)/(0.25*threshold)    
+    s2 = sigmoid((lighting-threshold)/(0.25*threshold))
     hue = 120 - 60*s1 # green to yellow
     saturation = s2
     brightness = 0.87 + 0.13*s2
