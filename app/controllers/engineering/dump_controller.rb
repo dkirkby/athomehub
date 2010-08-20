@@ -2,16 +2,28 @@ class Engineering::DumpController < Engineering::ApplicationController
 
   before_filter :valid_n,:only=>:recent
   before_filter :valid_ival,:only=>:bydate
+  before_filter :optional_nid,:only=>[:recent,:bydate]
   
   def recent
     @count = BufferDump.count
-    @dumps = BufferDump.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
+    if @config then
+      @dumps = BufferDump.for_networkID(@config.networkID).find(:all,
+        :limit=>@n,:order=>'id DESC')
+    else
+      @dumps = BufferDump.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
+    end
   end
 
   def bydate
-    @dumps = BufferDump.find(:all,
-      :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at],
-      :order=>'created_at DESC',:readonly=>true)
+    if @config then
+      @dumps = BufferDump.for_networkID(@config.networkID).find(:all,
+        :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at],
+        :order=>'id DESC')
+    else
+      @dumps = BufferDump.find(:all,
+        :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at],
+        :order=>'id DESC',:readonly=>true)
+    end
   end
   
   def samples
