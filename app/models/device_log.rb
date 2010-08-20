@@ -1,5 +1,7 @@
 class DeviceLog < ActiveRecord::Base
   
+  include Scoped
+  
   before_validation :set_severity
   
   @@messages = {
@@ -34,15 +36,6 @@ class DeviceLog < ActiveRecord::Base
   }
 
   @@levels = { :debug=> 0, :info=> 1, :warn=>2, :error=>3, :fatal=>4, :unknown=>9 }
-
-  named_scope :for_networkID, lambda { |*args|
-    {
-      :conditions => (args.length > 1) ?
-        [ 'networkID = ? and created_at <= ?',args.first,args.last.utc ] :
-        [ 'networkID = ?',args.first ],
-      :readonly => true
-    }
-  }
 
   # Returns the numeric severity level corresponding to a level name, or nil
   # if the name is not recognize

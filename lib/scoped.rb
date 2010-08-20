@@ -10,6 +10,7 @@ module Scoped
           :conditions => (args.length > 1 && Time.now - args.last > 1.second) ?
             [ 'networkID = ? and created_at <= ?',args.first,args.last.utc ] :
             [ 'networkID = ?',args.first ],
+          :order => 'id ASC',
           :readonly => true
         }
       }
