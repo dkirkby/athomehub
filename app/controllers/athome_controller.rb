@@ -14,7 +14,7 @@ class AthomeController < ApplicationController
       # find the most recent sample for this profile at the requested time
       sample = Sample.for_networkID(profile.networkID,@at).last
       # find the most recent binned sample at the smallest zoom level
-      bin = BinnedSample.for_networkID(profile.networkID,0,@at).last
+      bin = BinnedSample.for_networkID_and_zoom(profile.networkID,0,@at).last
       energyCost = bin ? bin.displayEnergyCost : nil
       # is this a recent enough sample to display?
       if (sample == nil) || (sample.created_at < stale_cutoff) then
@@ -73,7 +73,7 @@ class AthomeController < ApplicationController
         cells << @template.colorize(s.displayPower) <<
           @template.colorize(s.displayCost) if ATHOME['display_power']
         # lookup the latest energy usage for this networkID
-        bin = BinnedSample.for_networkID(s.networkID,0).last
+        bin = BinnedSample.for_networkID_and_zoom(s.networkID,0).last
         cells << @template.colorize(bin.displayEnergyCost) if
           bin && ATHOME['display_power']
         tag = sprintf "nid%02x",s.networkID

@@ -45,7 +45,7 @@ class BinnedSample < ActiveRecord::Base
   
   # Returns bins recorded for the specified networkID at the specified zoom level
   # and up to the specified utc time which defaults to now.
-  named_scope :for_networkID, lambda { |*args|
+  named_scope :for_networkID_and_zoom, lambda { |*args|
     networkID,zoom_level = args[0..1]
     begin_code = (zoom_level << 28)
     if args.length > 2 then

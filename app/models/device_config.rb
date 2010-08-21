@@ -154,7 +154,7 @@ class DeviceConfig < ActiveRecord::Base
     return false unless
       ATHOME['energy_feedback_green'] || ATHOME['energy_feedback_red']
     # lookup the most recent BinnedSample for this config's network ID
-    bin = BinnedSample.for_networkID(self.networkID,0).last
+    bin = BinnedSample.for_networkID_and_zoom(self.networkID,0).last
     return false unless bin
     cost = bin.theEnergyCost
     return false unless cost
