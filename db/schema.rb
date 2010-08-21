@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20100731141747) do
+ActiveRecord::Schema.define(:version => 20100821214846) do
 
   create_table "binned_samples", :force => true do |t|
     t.integer "networkID"
@@ -35,6 +35,9 @@ ActiveRecord::Schema.define(:version => 20100731141747) do
     t.text     "samples"
     t.integer  "source"
   end
+
+  add_index "buffer_dumps", ["networkID"], :name => "index_buffer_dumps_on_networkID"
+  add_index "buffer_dumps", ["source"], :name => "index_buffer_dumps_on_source"
 
   create_table "device_configs", :force => true do |t|
     t.integer  "networkID"
@@ -133,6 +136,9 @@ ActiveRecord::Schema.define(:version => 20100731141747) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "crypted_password"
+    t.string   "password_salt"
+    t.string   "persistence_token"
   end
 
 end
