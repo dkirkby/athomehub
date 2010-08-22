@@ -5,13 +5,11 @@ class Admin::NoteController < Admin::ApplicationController
 
   def recent
     @count = Note.count
-    @notes = Note.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
+    @notes = Note.recent(@n)
   end
 
   def bydate
-    @notes = Note.find(:all,
-      :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at],
-      :order=>'created_at DESC',:readonly=>true)
+    @notes = Note.bydate(@begin_at,@end_at)
   end
 
   def show
