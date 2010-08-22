@@ -7,22 +7,17 @@ class Engineering::DumpController < Engineering::ApplicationController
   def recent
     @count = BufferDump.count
     if @config then
-      @dumps = BufferDump.for_networkID(@config.networkID).find(:all,
-        :limit=>@n,:order=>'id DESC')
+      @dumps = BufferDump.for_networkID(@config.networkID).recent(@n)
     else
-      @dumps = BufferDump.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
+      @dumps = BufferDump.recent(@n)
     end
   end
 
   def bydate
     if @config then
-      @dumps = BufferDump.for_networkID(@config.networkID).find(:all,
-        :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at],
-        :order=>'id DESC')
+      @dumps = BufferDump.for_networkID(@config.networkID).bydate(@begin_at,@end_at)
     else
-      @dumps = BufferDump.find(:all,
-        :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at],
-        :order=>'id DESC',:readonly=>true)
+      @dumps = BufferDump.bydate(@begin_at,@end_at)
     end
   end
   

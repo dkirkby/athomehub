@@ -6,16 +6,11 @@ class Engineering::LogController < Engineering::ApplicationController
 
   def recent
     @count = DeviceLog.count
-    @logs = DeviceLog.find(:all,:limit=>@n,:order=>'id DESC',
-      :conditions=>['severity >= ?',@level],:readonly=>true)
+    @logs = DeviceLog.recent(@n).min_severity(@level)
   end
 
   def bydate
-    @logs = DeviceLog.find(:all,
-      :conditions=>[
-        'created_at > ? and created_at <= ? and severity >= ?',
-        @begin_at,@end_at,@level
-      ],:order=>'created_at DESC',:readonly=>true)
+    @logs = DeviceLog.bydate(@begin_at,@end_at).min_severity(@level)
   end
 
 protected

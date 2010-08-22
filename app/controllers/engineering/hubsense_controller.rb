@@ -5,13 +5,11 @@ class Engineering::HubsenseController < Engineering::ApplicationController
 
   def recent
     @count = HubSample.count
-    @readings = HubSample.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
+    @readings = HubSample.recent(@n)
   end
 
   def bydate
-    @readings = HubSample.find(:all,
-      :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at],
-      :order=>'created_at DESC',:readonly=>true)
+    @readings = HubSample.bydate(@begin_at,@end_at)
   end
   
 end

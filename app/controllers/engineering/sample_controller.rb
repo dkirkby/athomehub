@@ -21,10 +21,9 @@ class Engineering::SampleController < Engineering::ApplicationController
     configs = DeviceConfig.latest
     # fetch the most recent samples and filter on networkID if requested
     if @config then
-      samples = Sample.find(:all,:conditions=>['networkID=?',@config.networkID],
-        :limit=>@n,:order=>'id DESC',:readonly=>true)
+      samples = Sample.for_networkID(@config.networkID).recent(@n)
     else
-      samples = Sample.find(:all,:limit=>@n,:order=>'id DESC',:readonly=>true)
+      samples = Sample.recent(@n)
     end
     prepare configs,samples
     respond_to do |format|
@@ -38,12 +37,9 @@ class Engineering::SampleController < Engineering::ApplicationController
     configs = DeviceConfig.latest(@end_at)
     # fetch samples from the requested interval and filter on networkID if requested
     if @config then
-      samples = Sample.find(:all,:order=>'created_at DESC',:readonly=>true,
-        :conditions=>['created_at > ? and created_at <= ? and networkID=?',
-          @begin_at,@end_at,@config.networkID])
+      samples = Sample.for_networkID(@config.networkID).bydate(@begin_at,@end_at)
     else
-      samples = Sample.find(:all,:order=>'created_at DESC',:readonly=>true,
-        :conditions=>['created_at > ? and created_at <= ?',@begin_at,@end_at])
+      samples = Sample.bydate(@begin_at,@end_at)
     end
     prepare configs,samples
     respond_to do |format|

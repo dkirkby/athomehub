@@ -2,6 +2,12 @@ class DeviceLog < ActiveRecord::Base
   
   include Scoped
   
+  named_scope :min_severity, lambda { |level|
+    {
+      :conditions=>['severity >= ?',level]
+    }
+  }
+  
   before_validation :set_severity
   
   @@messages = {
