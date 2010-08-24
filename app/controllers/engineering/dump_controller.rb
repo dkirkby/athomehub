@@ -3,22 +3,47 @@ class Engineering::DumpController < Engineering::ApplicationController
   before_filter :valid_n,:only=>:recent
   before_filter :valid_ival,:only=>:bydate
   before_filter :optional_nid,:only=>[:recent,:bydate]
+  before_filter :optional_type,:only=>[:recent,:bydate]
   
-  def recent
-    @count = BufferDump.count
+  # Checks for an optional 'power' or 'light' keyword which signals that
+  # only the specified type of dump source is requested.
+  def optional_type
+    @only_power = false
+    @only_light = false
+    if params.has_key? 'power' and not params.has_key? 'light' then
+      @only_power = true
+    elsif params.has_key? 'light' and not params.has_key? 'power' then
+      @only_light = true
+    end
+  end
+  
+  def query
     if @config then
-      @dumps = BufferDump.for_networkID(@config.networkID).recent(@n)
+      if @only_power then
+        BufferDump.for_networkID(@config.networkID).power
+      elsif @only_light then
+        BufferDump.for_networkID(@config.networkID).light
+      else
+        BufferDump.for_networkID(@config.networkID)
+      end
     else
-      @dumps = BufferDump.recent(@n)
+      if @only_power then
+        BufferDump.power
+      elsif @only_light then
+        BufferDump.light
+      else
+        BufferDump.any
+      end
     end
   end
 
+  def recent
+    @count = BufferDump.count
+    @dumps = query.recent(@n)
+  end
+
   def bydate
-    if @config then
-      @dumps = BufferDump.for_networkID(@config.networkID).bydate(@begin_at,@end_at)
-    else
-      @dumps = BufferDump.bydate(@begin_at,@end_at)
-    end
+    @dumps = query.bydate(@begin_at,@end_at)
   end
   
   def samples

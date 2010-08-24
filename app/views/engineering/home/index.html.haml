@@ -19,8 +19,8 @@
 			%td= link_to time_ago(dev[:last_config],'(unconfigured)'), :controller=> :config, :action=>:edit, :id => dev[:config]
 			%td= link_to_if dev[:profile], dev[:profile] || '(none)', :controller=> :profile, :action=>:edit, :id=> dev[:profile]
 			%td= link_to_if dev[:last_sample], time_ago(dev[:last_sample],'(none)'), :controller=> :sample, :action=>:recent, :nid=>netID, :n=>100
-			%td= link_to_if dev[:last_power_dump], time_ago(dev[:last_power_dump],'(none)'), :controller=> :dump, :action=>:recent, :nid=>netID, :n=>15
-			%td= link_to_if dev[:last_light_dump], time_ago(dev[:last_light_dump],'(none)'), :controller=> :dump, :action=>:recent, :nid=>netID, :n=>10
+			%td= link_to_if dev[:last_power_dump], time_ago(dev[:last_power_dump],'(none)'), :controller=> :dump, :action=>:recent, :nid=>netID, :n=>15, :power=>true
+			%td= link_to_if dev[:last_light_dump], time_ago(dev[:last_light_dump],'(none)'), :controller=> :dump, :action=>:recent, :nid=>netID, :n=>10, :light=>true
 	%tr
 		%td
 		%td

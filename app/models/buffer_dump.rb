@@ -8,6 +8,10 @@ class BufferDump < ActiveRecord::Base
 
   include Scoped
 
+  named_scope :any, :conditions => { }  
+  named_scope :power, :conditions => 'source in (0,1,4)'
+  named_scope :light, :conditions => 'source in (2,3)'
+
   before_save :save_samples
   serialize :samples, Array
   
