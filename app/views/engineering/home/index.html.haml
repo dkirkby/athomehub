@@ -5,22 +5,38 @@
 		%th
 		%th Serial #
 		%th NetID
-		%th Last Config
 		%th Profile
+		%th Last Config
 		%th Last Sample
 		%th Power Dump
+		%th Power Analysis
 		%th Light Dump
+		%th Light Analysis
 	-@devices.each do |dev|
 		-netID= dev[:config].networkID
 		%tr
 			%td= capability dev[:config].enabled
 			%td= format_serialNumber(dev[:config].serialNumber)
 			%td= dev[:config].networkID
-			%td= link_to time_ago(dev[:last_config],'(unconfigured)'), :controller=> :config, :action=>:edit, :id => dev[:config]
 			%td= link_to_if dev[:profile], dev[:profile] || '(none)', :controller=> :profile, :action=>:edit, :id=> dev[:profile]
+			%td= link_to time_ago(dev[:last_config],'(unconfigured)'), :controller=> :config, :action=>:edit, :id => dev[:config]
 			%td= link_to_if dev[:last_sample], time_ago(dev[:last_sample],'(none)'), :controller=> :sample, :action=>:recent, :nid=>netID, :n=>100
 			%td= link_to_if dev[:last_power_dump], time_ago(dev[:last_power_dump],'(none)'), :controller=> :dump, :action=>:recent, :nid=>netID, :n=>15, :power=>true
+			%td
+				-if dev[:last_power_dump]
+					=link_to "5min",:controller=>:analysis,:nid=>netID,:action=>:power,:ival=>'5m',:end=>dev[:last_power_dump]
+					|
+					=link_to "15min",:controller=>:analysis,:nid=>netID,:action=>:power,:ival=>'15m',:end=>dev[:last_power_dump]
+					|
+					=link_to "1hr",:controller=>:analysis,:nid=>netID,:action=>:power,:ival=>'1h',:end=>dev[:last_power_dump]
 			%td= link_to_if dev[:last_light_dump], time_ago(dev[:last_light_dump],'(none)'), :controller=> :dump, :action=>:recent, :nid=>netID, :n=>10, :light=>true
+			%td
+				-if dev[:last_light_dump]
+					=link_to "5min",:controller=>:analysis,:nid=>netID,:action=>:light,:ival=>'5m',:end=>dev[:last_light_dump]
+					|
+					=link_to "15min",:controller=>:analysis,:nid=>netID,:action=>:light,:ival=>'15m',:end=>dev[:last_light_dump]
+					|
+					=link_to "1hr",:controller=>:analysis,:nid=>netID,:action=>:light,:ival=>'1h',:end=>dev[:last_light_dump]
 	%tr
 		%td
 		%td
