@@ -69,12 +69,9 @@ protected
       pf[netID] = [ ]
       cmplx[netID] = [ ]
     end
-    # prepare to build an array of [config,sample] entries
-    @samples = [ ]
-    # build the arrays now
+    # build arrays of sample data for plotting and text dumping
     samples.each do |s|
       netID = s.networkID
-      @samples << [ @config_lookup[s.networkID],s ]
       # convert the sample timestamp to microseconds in the local timezone
       tval[netID] << 1e3*(s.created_at.to_i + tz_offset)
       # rescale temperature to degF (but no self-heating correction applied)
