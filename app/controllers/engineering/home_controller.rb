@@ -12,15 +12,15 @@ class Engineering::HomeController < Engineering::ApplicationController
       dev[:profile] = profile.description if profile
       # look for the most recent log of this device being configured
       last = DeviceLog.for_networkID(netID,@at).find(:last,:conditions=>'code in (-4,-5)')
-      dev[:last_config] = @template.time_ago_in_words last.created_at if last
+      dev[:last_config] = last.created_at if last
       # fetch the most recent sample from this device, if any
       last = Sample.for_networkID(netID,@at).last
-      dev[:last_sample] = @template.time_ago_in_words last.created_at if last
+      dev[:last_sample] = last.created_at if last
       # fetch the most recent dumps from this device, if any
       last = BufferDump.for_networkID(netID,@at).find(:last,:conditions=>'source in (0,1,4)')
-      dev[:last_power_dump] = @template.time_ago_in_words last.created_at if last
+      dev[:last_power_dump] = last.created_at if last
       last = BufferDump.for_networkID(netID,@at).find(:last,:conditions=>'source in (2,3)')
-      dev[:last_light_dump] = @template.time_ago_in_words last.created_at if last
+      dev[:last_light_dump] = last.created_at if last
       @devices << dev
     end
   end
