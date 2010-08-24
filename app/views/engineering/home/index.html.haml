@@ -16,10 +16,10 @@
 		-netID= dev[:config].networkID
 		%tr
 			%td= capability dev[:config].enabled
-			%td= format_serialNumber(dev[:config].serialNumber)
+			%td= link_to format_serialNumber(dev[:config].serialNumber), :controller=> :config, :action=>:edit, :id => dev[:config]
 			%td= dev[:config].networkID
 			%td= link_to_if dev[:profile], dev[:profile] || '(none)', :controller=> :profile, :action=>:edit, :id=> dev[:profile]
-			%td= link_to time_ago(dev[:last_config],'(unconfigured)'), :controller=> :config, :action=>:edit, :id => dev[:config]
+			%td= link_to_if dev[:last_config], time_ago(dev[:last_config],'(unconfigured)'), :controller=> :config, :action=>:edit, :id => dev[:config]
 			%td= link_to_if dev[:last_sample], time_ago(dev[:last_sample],'(none)'), :controller=> :sample, :action=>:recent, :nid=>netID, :n=>100
 			%td= link_to_if dev[:last_power_dump], time_ago(dev[:last_power_dump],'(none)'), :controller=> :dump, :action=>:recent, :nid=>netID, :n=>15, :power=>true
 			%td
@@ -39,8 +39,8 @@
 					=link_to "1hr",:controller=>:analysis,:nid=>netID,:action=>:light,:ival=>'1h',:end=>dev[:last_light_dump]
 	%tr
 		%td
-		%td
-		%td
 		%td= link_to "All Configs", :controller=>:config, :action=>:index
+		%td
 		%td= link_to "All Profiles", :controller=>:profile, :action=>:index
+		%td
 		%td= link_to "All Recent", :controller=>:sample, :action=>:recent, :n=>100
