@@ -12,8 +12,8 @@ class Engineering::LamController < Engineering::ApplicationController
     @lams = LookAtMe.bydate(@begin_at,@end_at)
   end
 
-  def active
-    @lams = LookAtMe.find(:all,:group=>'serialNumber',:readonly=>true)
+  def index
+    @lams = LookAtMe.latest.find(:all,:order=>'id DESC')
   end
 
 protected
