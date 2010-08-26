@@ -5,6 +5,12 @@ module ApplicationHelper
     "#{sn[0,2]}-#{sn[2,2]}-#{sn[4,2]}-#{sn[6,2]}"
   end
   
+  def link_to_commitID(lam)
+    link_to lam.commitID,
+      "http://github.com/dkirkby/athomeleaf/commit/#{lam.commitID}",
+      :target => "_blank"
+  end
+
   # Formats the provided UTC Time object and returns a sanitized date string.
   def format_date(timestamp)
     h timestamp.localtime.strftime("%A %d %B")

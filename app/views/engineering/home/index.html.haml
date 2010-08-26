@@ -12,6 +12,7 @@
 		%th Power Analysis
 		%th Light Dump
 		%th Light Analysis
+		%th Version
 	-@devices.each do |dev|
 		-netID= dev[:config].networkID
 		%tr
@@ -37,6 +38,10 @@
 					=link_to "15min",:controller=>:analysis,:nid=>netID,:action=>:light,:ival=>'15m',:end=>dev[:last_light_dump]
 					|
 					=link_to "1hr",:controller=>:analysis,:nid=>netID,:action=>:light,:ival=>'1h',:end=>dev[:last_light_dump]
+			-if dev[:last_lam]
+				%td= link_to_commitID dev[:last_lam]
+			-else
+				%td (unknown)
 	%tr
 		%td
 		%td= link_to "All Configs", :controller=>:config, :action=>:index

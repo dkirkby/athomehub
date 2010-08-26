@@ -21,6 +21,9 @@ class Engineering::HomeController < Engineering::ApplicationController
       dev[:last_power_dump] = last.created_at if last
       last = BufferDump.for_networkID(netID,@at).find(:last,:conditions=>'source in (2,3)')
       dev[:last_light_dump] = last.created_at if last
+      # fetch the most recent LAM from this device, if any
+      last = LookAtMe.for_serialNumber(config.serialNumber).last
+      dev[:last_lam] = last if last        
       @devices << dev
     end
   end
