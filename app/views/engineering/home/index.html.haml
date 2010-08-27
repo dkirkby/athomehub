@@ -8,6 +8,7 @@
 		%th Profile
 		%th Last Config
 		%th Last Sample
+		%th Binned
 		%th Power Dump
 		%th Power Analysis
 		%th Light Dump
@@ -23,6 +24,13 @@
 			%td= link_to_if dev[:profile], dev[:profile] || '(none)', :controller=> :profile, :action=>:edit, :id=> dev[:profile]
 			%td= link_to_if dev[:last_config], time_ago(dev[:last_config],'(unconfigured)'), :controller=> :config, :action=>:edit, :id => dev[:config]
 			%td= link_to_if dev[:last_sample], time_ago(dev[:last_sample],'(none)'), :controller=> :sample, :action=>:recent, :nid=>netID, :n=>100
+			%td
+				-if dev[:last_sample]
+					=link_to "1hr",:controller=>:binned,:nid=>netID,:action=>:bydate,:ival=>'1h',:end=>dev[:last_sample]
+					|
+					=link_to "1day",:controller=>:binned,:nid=>netID,:action=>:bydate,:ival=>'1d',:end=>dev[:last_sample]
+					|
+					=link_to "1wk",:controller=>:binned,:nid=>netID,:action=>:bydate,:ival=>'1w',:end=>dev[:last_sample]
 			%td= link_to_if dev[:last_power_dump], time_ago(dev[:last_power_dump],'(none)'), :controller=> :dump, :action=>:recent, :nid=>netID, :n=>15, :power=>true
 			%td
 				-if dev[:last_power_dump]
@@ -43,10 +51,3 @@
 				%td= link_to_commitID dev[:last_lam]
 			-else
 				%td (unknown)
-	%tr
-		%td
-		%td= link_to "All Configs", :controller=>:config, :action=>:index
-		%td
-		%td= link_to "All Profiles", :controller=>:profile, :action=>:index
-		%td
-		%td= link_to "All Recent", :controller=>:sample, :action=>:recent, :n=>100
