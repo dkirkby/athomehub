@@ -10,16 +10,14 @@
 	%body
 		%h1=yield :title
 		%ul#nav
-			%li Home
-			%li Config
-			%li Profile
-			%li Sample
-			%li Binned
-			%li Dump
-			%li Analysis
-			%li LAM
-			%li Log
-			%li Hub
+			%li= link_to "Home", :controller=>:home, :action=>:index
+			%li= link_to "Config", :controller=>:config, :action=>:index
+			%li= link_to "Profile", :controller=>:profile, :action=>:index
+			%li= link_to "Sample", :controller=>:sample, :action=>:recent, :n=>100
+			%li= link_to "Dump", :controller=>:dump, :action=>:recent, :n=>15
+			%li= link_to "LAM", :controller=>:lam, :action=>:index
+			%li= link_to "Log", :controller=>:log, :action=>:recent, :n=>25
+			%li= link_to "Hub", :controller=>:hubsense, :action=>:recent, :n=>10
 		-if flash[:notice]
 			#flash&= flash[:notice]
 		=yield
