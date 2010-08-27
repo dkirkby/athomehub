@@ -13,9 +13,10 @@
 		%th Light Dump
 		%th Light Analysis
 		%th Version
-	-@devices.each do |dev|
+	-@devices.each_index do |k|
+		-dev = @devices[k]
 		-netID= dev[:config].networkID
-		%tr
+		%tr{:class=> (k%2)==1 ? 'odd' : 'even'}
 			%td= capability dev[:config].enabled
 			%td= link_to format_serialNumber(dev[:config].serialNumber), :controller=> :config, :action=>:edit, :id => dev[:config]
 			%td= dev[:config].networkID
