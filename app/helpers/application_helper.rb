@@ -6,9 +6,10 @@ module ApplicationHelper
   end
   
   def link_to_commitID(lam)
-    link_to lam.commitID,
+    link_to lam.commitID[0,8]+'...',
       "http://github.com/dkirkby/athomeleaf/commit/#{lam.commitID}",
-      :target => "_blank"
+      :target => "_blank",
+      :title => lam.commitID
   end
 
   # Formats the provided UTC Time object and returns a sanitized date string.
