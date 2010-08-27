@@ -1,6 +1,5 @@
 %table
 	%tr
-		%th Timestamp
 		%th Time Ago
 		%th Serial #
 		%th Commit Date
@@ -12,7 +11,6 @@
 		%th Watch-dog Reset?
 	-@lams.each do |l|
 		%tr
-			%td&=l.created_at.localtime
 			%td&=time_ago_in_words l.created_at, true
 			%td&=format_serialNumber l.serialNumber
 			%td&=l.commitDate
