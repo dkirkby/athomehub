@@ -1,7 +1,7 @@
 -content_for :head do
 	=javascript_include_tag 'excanvas','flot','eng-plot'
 
-%h1 #{@window_title}
+-content_for :title,@window_title
 
 %p Displaying samples binned for network ID #{@config.networkID} in the window with index #{@index} at zoom level #{@zoom}.
 

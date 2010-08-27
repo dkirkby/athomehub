@@ -22,7 +22,7 @@ class Engineering::HomeController < Engineering::ApplicationController
       last = BufferDump.for_networkID(netID,@at).find(:last,:conditions=>'source in (2,3)')
       dev[:last_light_dump] = last.created_at if last
       # fetch the most recent LAM from this device, if any
-      last = LookAtMe.for_serialNumber(config.serialNumber).last
+      last = LookAtMe.for_serialNumber(config.serialNumber,@at).last
       dev[:last_lam] = last if last        
       @devices << dev
     end

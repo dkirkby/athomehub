@@ -1,4 +1,4 @@
-%h1 Update Device Configuration
+-content_for :title,'Update Device Configuration'
 
 -form_for(:device_config,@config,:url=>{:action=>"create"}) do |@form|
 	-if @form.error_messages and @form.error_messages.length > 0

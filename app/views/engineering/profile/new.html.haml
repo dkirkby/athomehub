@@ -1,4 +1,4 @@
-%h1 New Device Profile
+-content_for :title,'New Device Profile'
 
 -form_for(:device_profile,@profile,:url=>{:action=>"create"}) do |@form|
 	-if @form.error_messages and @form.error_messages.length > 0
