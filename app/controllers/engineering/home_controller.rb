@@ -28,7 +28,7 @@ class Engineering::HomeController < Engineering::ApplicationController
     end
     # find the most recent LAM record from a hub
     @hub = nil
-    LookAtMe.latest.each do |lam|
+    LookAtMe.find_latest.each do |lam|
       next unless lam.is_hub?
       next if @hub and @hub.created_at > lam.created_at
       @hub = lam

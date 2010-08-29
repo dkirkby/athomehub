@@ -22,7 +22,7 @@ class Engineering::LamController < Engineering::ApplicationController
   end
 
   def index
-    @lams = LookAtMe.latest.find(:all,:order=>'id DESC')
+    @lams = LookAtMe.find_latest(@at)
   end
 
 protected
