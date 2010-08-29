@@ -17,9 +17,9 @@ class Engineering::HomeController < Engineering::ApplicationController
       last = Sample.for_networkID(netID,@at).last
       dev[:last_sample] = last.created_at if last
       # fetch the most recent dumps from this device, if any
-      last = BufferDump.for_networkID(netID,@at).find(:last,:conditions=>'source in (0,1,4)')
+      last = BufferDump.for_networkID(netID,@at).find(:last,:conditions=>'source=0')
       dev[:last_power_dump] = last.created_at if last
-      last = BufferDump.for_networkID(netID,@at).find(:last,:conditions=>'source in (2,3)')
+      last = BufferDump.for_networkID(netID,@at).find(:last,:conditions=>'source=2')
       dev[:last_light_dump] = last.created_at if last
       # fetch the most recent LAM from this device, if any
       last = LookAtMe.for_serialNumber(config.serialNumber,@at).last
