@@ -50,7 +50,7 @@
 					=link_to "1hr",:controller=>:analysis,:nid=>netID,:action=>:light,:ival=>'1h',:end=>dev[:last_light_dump]
 			-if dev[:last_lam]
 				%td= link_to_commitID dev[:last_lam]
-				%td= link_to boot_bits(dev[:last_lam]), :controller=>:lam, :action=> :recent
+				%td= link_to boot_bits(dev[:last_lam]), :controller=>:lam, :action=> :recent, :nid=>netID
 			-else
 				%td (unknown)
 				%td &mdash;
