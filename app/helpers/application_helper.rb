@@ -9,7 +9,7 @@ module ApplicationHelper
     link_to lam.commitID[0,8]+'...',
       "http://github.com/dkirkby/athomeleaf/commit/#{lam.commitID}",
       :target => "_blank",
-      :title => lam.commitID,
+      :title => lam.commitDate,
       :class => lam.modified ? 'modified' : ''
   end
 
