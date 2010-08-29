@@ -1,5 +1,12 @@
 -content_for :title,"#{format_date @at} #{format_time @at}"
 
+%p
+	-if @hub
+		Hub #{format_serialNumber @hub.serialNumber} booted #{time_ago_in_words @hub.created_at} ago (#{boot_bits @hub}), running
+		= link_to_commitID @hub
+	-else
+		styled true,"No hub registered!"
+
 %table
 	%tr
 		%th
