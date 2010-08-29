@@ -24,7 +24,7 @@
 				-where = s[:profile].description
 				-nid = s[:profile].networkID
 				%tr{:id=>sprintf("nid%02x",nid)}
-					%td.where= link_to where,:action=>'detail',:nid=>nid
+					%td.where= link_to where,{:action=>'detail',:nid=>nid},{:title=>"Click to display graphs for #{format_serialNumber(s[:serial])}"}
 					-if ATHOME['display_temperature']
 						=colorize s[:temperature] or nodata
 					-if ATHOME['display_lighting']

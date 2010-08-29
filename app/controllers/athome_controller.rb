@@ -16,10 +16,13 @@ class AthomeController < ApplicationController
       # find the most recent binned sample at the smallest zoom level
       bin = BinnedSample.for_networkID_and_zoom(profile.networkID,0,@at).last
       energyCost = bin ? bin.displayEnergyCost : nil
+      # look up this network ID's configuration
+      config = DeviceConfig.for_networkID(profile.networkID,@at).last
       # is this a recent enough sample to display?
       if (sample == nil) || (sample.created_at < stale_cutoff) then
         @samples << {
           :profile => profile,
+          :serial => config ? config.serialNumber : nil,
           :temperature => nil,
           :lighting => nil,
           :power => nil,
@@ -29,6 +32,7 @@ class AthomeController < ApplicationController
       else
         @samples << {
           :profile => profile,
+          :serial => config ? config.serialNumber : nil,
           :temperature => sample.displayTemperature,
           :lighting => sample.displayLighting,
           :power => sample.displayPower,
