@@ -14,6 +14,7 @@
 		%th Light Dump
 		%th Light Analysis
 		%th Version
+		%th Boot
 	-@devices.each_index do |k|
 		-dev = @devices[k]
 		-netID= dev[:config].networkID
@@ -49,5 +50,7 @@
 					=link_to "1hr",:controller=>:analysis,:nid=>netID,:action=>:light,:ival=>'1h',:end=>dev[:last_light_dump]
 			-if dev[:last_lam]
 				%td= link_to_commitID dev[:last_lam]
+				%td= link_to boot_bits(dev[:last_lam]), :controller=>:lam, :action=> :recent
 			-else
 				%td (unknown)
+				%td &mdash;

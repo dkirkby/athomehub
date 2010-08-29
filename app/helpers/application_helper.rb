@@ -13,6 +13,19 @@ module ApplicationHelper
       :class => lam.modified ? 'modified' : ''
   end
 
+  def styled(apply_style,content,class_name = 'alert')
+    if apply_style then
+      "<span class='#{class_name}'>#{content}</span>"
+    else
+      content
+    end
+  end
+
+  def boot_bits(lam)
+    styled(lam.powerReset,'P') + styled(lam.extReset,'E') +
+      styled(lam.brownoutReset,'B') + styled(lam.wdogReset,'W')    
+  end
+
   # Formats the provided UTC Time object and returns a sanitized date string.
   def format_date(timestamp)
     h timestamp.localtime.strftime("%A %d %B")
