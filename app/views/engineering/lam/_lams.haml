@@ -15,8 +15,8 @@
 			%td&=format_serialNumber l.serialNumber
 			%td&=l.commitDate
 			%td=link_to_commitID(l)
-			%td&=l.modified
-			%td&=l.powerReset
-			%td&=l.extReset
-			%td&=l.brownoutReset
-			%td&=l.wdogReset
+			%td= styled l.modified,l.modified
+			%td= styled l.powerReset,l.powerReset
+			%td= styled l.extReset,l.extReset
+			%td= styled l.brownoutReset,l.brownoutReset
+			%td= styled l.wdogReset,l.wdogReset
