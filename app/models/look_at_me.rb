@@ -28,6 +28,14 @@ class LookAtMe < ActiveRecord::Base
     }
   }
 
+  def self.find_latest(at=nil)
+    latest = [ ]
+    LookAtMe.find(:all,:select=>:serialNumber,:group=>:serialNumber).each do |lam|
+      latest << LookAtMe.find(:last,:conditions=>['serialNumber = ?',lam.serialNumber])
+    end
+    latest
+  end
+
   # A hub serial number starts with $FF
   def is_hub?
     return (serialNumber.hex & 0xff000000) == 0xff000000
