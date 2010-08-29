@@ -31,8 +31,8 @@
 
 %ul
 	%li Dark Threshold: LO-HI = $#{sprintf "%04X",@config.darkThreshold} = #{@config.darkThreshold}
-	%li 0.1 x Hi-Gain Dark Threshold / Artificial Threshold (min. for natural light feedback): #{0.1*@hiDark/@artThresh})
-	%li Hi-Gain Dark Threshold (use LO only): #{@hiDark}
+	%li 0.1 x Hi-Gain Dark Threshold / Artificial Threshold (min. for natural light feedback): #{0.1*@hiDark/@artThresh}
+	%li Hi-Gain Dark Threshold (use HI only if above, else all LEDs off): #{@hiDark}
 	%li Lo-Gain Dark Threshold (use HI+LO unless HI is clipped): #{@loDark}
 
 %h3#artificialLevel.analysis-plot Amplitude of 120Hz Detected
