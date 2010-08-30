@@ -52,6 +52,7 @@ module Measured
     return {:content=>display,:rgb=>colorTemperature}
   end
 
+  # Is this method obsolete now that this calculation has moved into athome.js ?
   def lightingLevel
     ratio = lighting/32767.0
     ratio = 0.3 if ratio < 0.3
@@ -80,9 +81,9 @@ module Measured
     elsif lighting < (config.darkThreshold & 0xff) then
       {:type=>:dark}
     elsif artificial > config.artificialThreshold then
-      {:type=>:artificial,:level=>lightingLevel}
+      {:type=>:artificial,:level=>lighting.round}
     else
-      {:type=>:natural,:level=>lightingLevel}
+      {:type=>:natural,:level=>lighting.round}
     end
   end
 

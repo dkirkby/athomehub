@@ -10,8 +10,10 @@ $(document).ready(function(){
 function updateLighting() {
   $(".level").each(function() {
     var theLevel = $(this).attr("class").substr(6); // strip off leading "level "
-    $(this).css('opacity',theLevel); // jquery handles IE special cases
     $(this).parent().attr('title',theLevel);
+    // rescale from 0-32767 (int) to 0-1 (float) and require at least 0.3
+    theLevel = Math.max(0.3,theLevel/32767.0);
+    $(this).css('opacity',theLevel); // jquery handles IE special cases
   });
 }
 
