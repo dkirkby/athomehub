@@ -175,7 +175,7 @@ protected
       temp_colors << color
       light << bin.lighting
       color = @template.rgb_to_hex(@template.hsb_to_rgb(bin.colorLighting))
-      light_labels << sprintf("%d",bin.artificial)
+      light_labels << sprintf("%d",bin.lighting)
       light_colors << color
       pwr << bin.power
       pwr_labels << "#{bin.displayPower[:content]}, #{bin.displayCost[:content]}"
