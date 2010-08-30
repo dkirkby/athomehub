@@ -29,7 +29,7 @@
 			%td= capability dev[:config].enabled
 			%td= link_to format_serialNumber(dev[:config].serialNumber), :controller=> :config, :action=>:edit, :id => dev[:config]
 			%td= dev[:config].networkID
-			%td= link_to_if dev[:profile], dev[:profile] || '(none)', :controller=> :profile, :action=>:edit, :id=> dev[:profile]
+			%td= link_to_if dev[:profile], dev[:profile] || '(none)', :controller=> :profile, :action=>:edit, :id=> dev[:profile_id]
 			%td= link_to_if dev[:last_config], time_ago(dev[:last_config],'(unconfigured)'), :controller=> :config, :action=>:edit, :id => dev[:config]
 			%td= link_to_if dev[:last_sample], time_ago(dev[:last_sample],'(none)'), :controller=> :sample, :action=>:recent, :nid=>netID, :n=>100
 			%td
