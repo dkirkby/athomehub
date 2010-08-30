@@ -38,6 +38,26 @@
 	the information being displayed or the web page itself that you would like to record
 	for the research team. The software will capture the graphs you are viewing when
 	you submit a note so feel free to refer to them as you write.
+
+-if ATHOME['display_temperature']
+	%h2 Temperature Graphs
+	
+	%p
+		The temperature graph displays the temperature history in your preferred units
+		(&deg;F or &deg;C). Move the mouse pointer over a temperature graph point to
+		display the corresponding temperature. Each point is color coded to indicate
+		whether it is above (red) or below (blue) your preferred comfort range (nominally
+		70-80&deg;F).
+
+-if ATHOME['display_temperature']
+	%h2 Lighting Graphs
+	
+	%p
+		The lighting graph displays the history of lighting conditions measured by a
+		smartstrip. The vertical axis is in arbitrary units and points are color coded
+		to indicate whether artificial light is detected (yellow) or not (green). Click
+		=link_to "here", :action=>:lighting
+		for details on how lighting conditions are measured.
 	
 -if ATHOME['display_power']
 	%h2 Power Graphs
