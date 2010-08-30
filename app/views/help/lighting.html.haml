@@ -1,0 +1,32 @@
+%h1 Lighting Help
+
+%p
+	Lighting conditions are measured using the rounded sensor located on each
+	smartstrip's plug. The smartstrip measures both the quantity and quality
+	(artificial or natural) of light.
+
+%p
+	=link_to "Graphs", :action=>:detail
+	of the quantity of light reveal the combined effects of sunlight, which
+	varies smoothly over the course of a day, and artificial lighting, which
+	turns on and off abruptly. As long as your smartstrip plug remains in a
+	fixed location, you can compare the lighting from day to day to learn the
+	changing effects of weather and season and monitor your use of artificial
+	lighting.
+	
+%p
+	In addition to measuring the quantity of light, each smartstrip detects
+	whether artificial light is present or not. In situations where both sunlight
+	and electric lighting are present, the smartstrip will detect artificial
+	lighting as long as its contribution to the overall lighting (at the location
+	of the light sensor) is greater than about 10%.
+	
+%p
+	There is a software bug in the smartstrips used for this pilot study that
+	prevents artificial lighting from being detected when the quantity of light
+	exceeds about 1000 units on the
+	=link_to "graph.", :action=>:detail
+	This bug should only affect powerstrips whose light sensors are usually
+	brightly illuminated. Let one of the uci@home researchers know if you think
+	this bug is affecting one of your smartstrips and we will either reprogram it 
+	or else find another solution.
