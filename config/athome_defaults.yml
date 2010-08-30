@@ -1,5 +1,5 @@
-display_temperature: false
-display_lighting: false
+display_temperature: true
+display_lighting: true
 display_power: true
 temperature_units: F # only F and C are supported
 energy_cost: 10.0 # cost of one kWh in cents
