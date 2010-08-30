@@ -5,7 +5,10 @@
 	=link_to "home page", :controller=>:athome, :action=>:index
 	shows the most recent measurements from each smartstrip in
 	your home. The display will update automatically as long as you have the page open.
-	Each smartstrip sends new measurements wirelessly every three seconds or so.
+	Each smartstrip sends new measurements wirelessly every three seconds or so. Click
+	on a location name to display
+	=link_to "graphs", :action=>:detail
+	of past measurements.
 	
 %p
 	Let one of the uci@home researchers know during your next visit if you would like to
@@ -28,7 +31,7 @@
 	%p
 		The real-time temperature at each smartstrip location is displayed in the first
 		column of your home page. Values are color coded to indicate if they are above
-		(red) or below (blue) your preset comfort zone.
+		(red) or below (blue) your preset comfort zone which is, nominally, 70-80&deg;F.
 
 	%p
 		Temperatures are calibrated to reflect the ambient air temperature at the
@@ -46,7 +49,13 @@
 	%h2 Lighting Display
 	
 	%p
-		More details here...
+		The real-time lighting conditions detected by each smartstrip are displayed by an
+		icon whose color indicates whether natural (green) or artificial (yellow) light is
+		being used. Click
+		=link_to "here", :action=>:lighting
+		for details on how lighting conditions are measured. Use the
+		=link_to "lighting graphs", :action=>:detail
+		to get an overview of how the quantity of light changes at each location.
 
 -if ATHOME['display_power']
 	%h2 Power Display
