@@ -1,8 +1,20 @@
 class Engineering::HomeController < Engineering::ApplicationController
 
   def index
+    # scan the last 100 buffer dumps
+    last_power_dump = { }
+    last_light_dump = { }
+    BufferDump.find(:all,:select=>'created_at,networkID,source',
+      :order=>'id DESC',:limit=>100).each do |dump|
+      netID = dump.networkID
+      if dump.source == 2 || dump.source == 3 then
+        last_light_dump[netID] = dump unless last_light_dump[netID]
+      else
+        last_power_dump[netID] = dump unless last_power_dump[netID]
+      end
+    end
+    # scan the latest device configurations
     @devices = [ ]
-    # find the latest device configurations
     DeviceConfig.latest(@at).find(:all,:order=>'serialNumber ASC',
       :readonly=>true).each do |config|
       dev = { :config => config }
@@ -20,9 +32,11 @@ class Engineering::HomeController < Engineering::ApplicationController
       last = Sample.for_networkID(netID,@at).last
       dev[:last_sample] = last.created_at if last
       # fetch the most recent dumps from this device, if any
-      last = BufferDump.for_networkID(netID,@at).find(:last,:conditions=>'source=0')
+      ##last = BufferDump.for_networkID(netID,@at).find(:last,:conditions=>'source=0')
+      last = last_power_dump[netID]
       dev[:last_power_dump] = last.created_at if last
-      last = BufferDump.for_networkID(netID,@at).find(:last,:conditions=>'source=2')
+      ##last = BufferDump.for_networkID(netID,@at).find(:last,:conditions=>'source=2')
+      last = last_light_dump[netID]
       dev[:last_light_dump] = last.created_at if last
       # fetch the most recent LAM from this device, if any
       last = LookAtMe.for_serialNumber(config.serialNumber,@at).last
