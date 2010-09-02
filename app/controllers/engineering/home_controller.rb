@@ -13,6 +13,14 @@ class Engineering::HomeController < Engineering::ApplicationController
         last_power_dump[netID] = dump unless last_power_dump[netID]
       end
     end
+    # scan the last 1000 device log messages
+    last_config = { }
+    DeviceLog.find(:all,:select=>'code,created_at,networkID',
+      :order=>'id DESC',:limit=>1000).each do |log|
+      next unless (log.code == -4 || log.code == -5)
+      netID = log.networkID
+      last_config[netID] = log unless last_config[netID]
+    end
     # scan the latest device configurations
     @devices = [ ]
     DeviceConfig.latest(@at).find(:all,:order=>'serialNumber ASC',
@@ -26,7 +34,8 @@ class Engineering::HomeController < Engineering::ApplicationController
         dev[:profile_id] = profile.id
       end
       # look for the most recent log of this device being configured
-      last = DeviceLog.for_networkID(netID,@at).find(:last,:conditions=>'code in (-4,-5)')
+      ##last = DeviceLog.for_networkID(netID,@at).find(:last,:conditions=>'code in (-4,-5)')
+      last = last_config[netID]
       dev[:last_config] = last.created_at if last
       # fetch the most recent sample from this device, if any
       last = Sample.for_networkID(netID,@at).last
