@@ -3,24 +3,29 @@ class Engineering::HomeController < Engineering::ApplicationController
   def index
     # scan the last 1000 samples
     last_sample = { }
-    Sample.find(:all,:select=>'networkID,created_at',
-      :order=>'id DESC',:limit=>1000).each do |sample|
+    samples = Sample.find(:all,:select=>'networkID,created_at',
+      :order=>'id DESC',:limit=>1000)
+    samples.each do |sample|
       netID = sample.networkID
       last_sample[netID] = sample unless last_sample[netID]
     end
+    @oldest_sample = samples.last.created_at
     # scan the last 1000 device log messages
     last_config = { }
-    DeviceLog.find(:all,:select=>'code,created_at,networkID',
-      :order=>'id DESC',:limit=>1000).each do |log|
+    logs = DeviceLog.find(:all,:select=>'code,created_at,networkID',
+      :order=>'id DESC',:limit=>1000)
+    logs.each do |log|
       next unless (log.code == -4 || log.code == -5)
       netID = log.networkID
       last_config[netID] = log unless last_config[netID]
     end
-    # scan the last 100 buffer dumps
+    @oldest_config = logs.last.created_at
+    # scan the last 200 buffer dumps
     last_power_dump = { }
     last_light_dump = { }
-    BufferDump.find(:all,:select=>'created_at,networkID,source',
-      :order=>'id DESC',:limit=>100).each do |dump|
+    dumps = BufferDump.find(:all,:select=>'created_at,networkID,source',
+      :order=>'id DESC',:limit=>200)
+    dumps.each do |dump|
       netID = dump.networkID
       if dump.source == 2 || dump.source == 3 then
         last_light_dump[netID] = dump unless last_light_dump[netID]
@@ -28,6 +33,7 @@ class Engineering::HomeController < Engineering::ApplicationController
         last_power_dump[netID] = dump unless last_power_dump[netID]
       end
     end
+    @oldest_dump = dumps.last.created_at
     # scan the latest device configurations
     @devices = [ ]
     DeviceConfig.latest(@at).find(:all,:order=>'serialNumber ASC',

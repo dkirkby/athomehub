@@ -30,8 +30,8 @@
 			%td= link_to format_serialNumber(dev[:config].serialNumber), :controller=> :config, :action=>:edit, :id => dev[:config]
 			%td= dev[:config].networkID
 			%td= link_to_if dev[:profile], dev[:profile] || '(none)', :controller=> :profile, :action=>:edit, :id=> dev[:profile_id]
-			%td= link_to_if dev[:last_config], time_ago(dev[:last_config],'(unconfigured)'), :controller=> :config, :action=>:edit, :id => dev[:config]
-			%td= link_to_if dev[:last_sample], time_ago(dev[:last_sample],'(none)'), :controller=> :sample, :action=>:recent, :nid=>netID, :n=>100
+			%td= link_to_if dev[:last_config], time_ago(dev[:last_config],@oldest_config), :controller=> :config, :action=>:edit, :id => dev[:config]
+			%td= link_to_if dev[:last_sample], time_ago(dev[:last_sample],@oldest_sample), :controller=> :sample, :action=>:recent, :nid=>netID, :n=>100
 			%td
 				-if dev[:last_sample]
 					=link_to "1hr",:controller=>:binned,:nid=>netID,:action=>:bydate,:ival=>'1h',:end=>dev[:last_sample]
@@ -39,7 +39,7 @@
 					=link_to "1day",:controller=>:binned,:nid=>netID,:action=>:bydate,:ival=>'1d',:end=>dev[:last_sample]
 					|
 					=link_to "1wk",:controller=>:binned,:nid=>netID,:action=>:bydate,:ival=>'1w',:end=>dev[:last_sample]
-			%td= link_to_if dev[:last_power_dump], time_ago(dev[:last_power_dump],'(none)'), :controller=> :dump, :action=>:recent, :nid=>netID, :n=>15, :power=>true
+			%td= link_to_if dev[:last_power_dump], time_ago(dev[:last_power_dump],@oldest_dump), :controller=> :dump, :action=>:recent, :nid=>netID, :n=>15, :power=>true
 			%td
 				-if dev[:last_power_dump]
 					=link_to "5min",:controller=>:analysis,:nid=>netID,:action=>:power,:ival=>'5m',:end=>dev[:last_power_dump]
@@ -47,7 +47,7 @@
 					=link_to "15min",:controller=>:analysis,:nid=>netID,:action=>:power,:ival=>'15m',:end=>dev[:last_power_dump]
 					|
 					=link_to "1hr",:controller=>:analysis,:nid=>netID,:action=>:power,:ival=>'1h',:end=>dev[:last_power_dump]
-			%td= link_to_if dev[:last_light_dump], time_ago(dev[:last_light_dump],'(none)'), :controller=> :dump, :action=>:recent, :nid=>netID, :n=>10, :light=>true
+			%td= link_to_if dev[:last_light_dump], time_ago(dev[:last_light_dump],@oldest_dump), :controller=> :dump, :action=>:recent, :nid=>netID, :n=>10, :light=>true
 			%td
 				-if dev[:last_light_dump]
 					=link_to "5min",:controller=>:analysis,:nid=>netID,:action=>:light,:ival=>'5m',:end=>dev[:last_light_dump]

@@ -2,9 +2,13 @@ module Engineering::HomeHelper
 
   def time_ago(tval,alt)
     if tval then
-      time_ago_in_words tval
+      return time_ago_in_words(tval)
     else
-      alt
+      begin
+        return '> ' + time_ago_in_words(alt)
+      rescue
+        return alt
+      end
     end
   end
   
