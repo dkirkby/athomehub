@@ -3,7 +3,7 @@
 
 -content_for :title,'Device Samples By Date'
 
-%p Displaying #{@samples.length} samples received during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
+%p Displaying samples received during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
 
 =render :partial => "config" if @config
 =render :partial => "plots"
