@@ -129,7 +129,7 @@ protected
       netID = c.networkID
       lines << "# SN #{@template.format_serialNumber c.serialNumber} netID #{netID}"
       tval[netID].each_index do |k|
-        lines << sprintf("%d %.2f %d %d %d %d %d %d",
+        lines << sprintf("%d %.2f %.3f %d %d %.3f %d %d",
           1e-3*tval[netID][k],temp[netID][k],light[netID][k],art[netID][k],
           lf[netID][k],power[netID][k],pf[netID][k],cmplx[netID][k])
       end
