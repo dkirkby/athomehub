@@ -5,5 +5,8 @@
 
 %p Displaying samples received during the #{@ival}s from #{@begin_at.localtime} to #{@end_at.localtime}.
 
+-if @last_at
+	%p Last sample displayed was recorded #{@last_at.localtime}.
+
 =render :partial => "config" if @config
 =render :partial => "plots"

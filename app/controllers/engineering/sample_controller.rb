@@ -69,9 +69,12 @@ protected
       pf[netID] = [ ]
       cmplx[netID] = [ ]
     end
+    @last_at = nil
     # build arrays of sample data for plotting and text dumping
     samples.each do |s|
       netID = s.networkID
+      # remember the last sample's timestamp
+      @last_at = s.created_at if not @last_at or s.created_at > @last_at
       # convert the sample timestamp to microseconds in the local timezone
       tval[netID] << 1e3*(s.created_at.to_i + tz_offset)
       # rescale temperature to degF (but no self-heating correction applied)
