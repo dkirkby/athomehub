@@ -223,11 +223,14 @@ class Engineering::AnalysisController < Engineering::ApplicationController
       :series => { :points => { :show => true, :radius => 2, :fill => false } }
     }
     @analysisPlotOptions = {
+      :fidArea => sharedOptions,
       :relPhase => sharedOptions,
-      :lightLevel => sharedOptions,
-      :artificialLevel => sharedOptions,
-      :artificialRatio => sharedOptions,
-      :numSamplesUsed => sharedOptions
+      :calPhase => sharedOptions,
+      :rmsHi => sharedOptions,
+      :rmsLo => sharedOptions,
+      :rmsCal => sharedOptions,
+      :complexity => sharedOptions,
+      :nClipped => sharedOptions
     }
   end
   
